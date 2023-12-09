@@ -18,7 +18,7 @@ function add() {
 					default: false
 				},
 				field: {
-					name: 'qBittorent',
+					name: `qBittorent ${Lampa.Storage.field('td_qBittorent')}`,
 					description: ''
 				},
 				onChange: function (value) {
