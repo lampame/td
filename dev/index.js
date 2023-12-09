@@ -2,7 +2,7 @@
 import QB from './torrents/qb'
 
 //Menu
-function devTD() {
+function DevTD() {
     "use strict";
     Lampa.Platform.tv();
     function add() {
@@ -212,4 +212,4 @@ function devTD() {
         });
     }
 }
-export default devTD
+export default DevTD
