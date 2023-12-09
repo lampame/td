@@ -30,7 +30,8 @@ function add() {
                         Lampa.Storage.set('td_qBittorent', false);
                         Lampa.Settings.update();
                     } */
-					if (value) Lampa.Storage.set('td_qBittorent', true);
+					if (value == 'true') Lampa.Storage.set('td_qBittorent', true);
+                    else Lampa.Storage.set('td_qBittorent', false);
 					Lampa.Settings.update();
 				}
 			});
