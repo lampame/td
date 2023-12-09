@@ -13,17 +13,21 @@ function add() {
 			Lampa.SettingsApi.addParam({
 				component: 'torrentDownloader',
 				param: {
-					name: 'mods_fork',
+					name: 'td_qBittorent',
 					type: 'trigger', //доступно select,input,trigger,title,static
 					default: false
 				},
 				field: {
-					name: Lampa.Lang.translate('params_pub_on') + ' ForkTV',
-					description: Lampa.Lang.translate('fork_enable_descr')
+					name: 'qBittorent',
+					description: ''
 				},
 				onChange: function (value) {
-					if (value) ForkTV.check_forktv('', true);
-					Lampa.Settings.update();
+                    if (Lampa.Storage.get('td_qBittorent') !== true ) {
+                        Lampa.Storage.set('td_qBittorent', true);
+                    } else {
+                        Lampa.Storage.set('td_qBittorent', false);
+                    }
+					
 				}
 			});
 			Lampa.SettingsApi.addParam({
@@ -34,8 +38,8 @@ function add() {
 					default: true
 				},
 				field: {
-					name: '<div class="settings-folder" style="padding:0!important"><div style="width:1.8em;height:1.3em;padding-right:.5em"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="mdi-alpha-f-box-outline" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M9,7H15V9H11V11H14V13H11V17H9V7M3,5A2,2 0 0,1 5,3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5M5,5V19H19V5H5Z" /></svg></div><div style="font-size:1.3em">ForkTV</div></div>',
-					description: Lampa.Lang.translate('filmix_nodevice')
+					name: 'qBittorent',
+					description: 'Настройка сервера'
 				},
 				onRender: function (item) {
 					if (Lampa.Storage.field('mods_fork')) {
@@ -54,7 +58,7 @@ function add() {
 			Lampa.SettingsApi.addParam({
 				component: 'qBittorent',
 				param: {
-					name: 'forktv_url',
+					name: 'qBittorent_url',
 					type: 'static' //доступно select,input,trigger,title,static
 				},
 				field: {
@@ -69,16 +73,16 @@ function add() {
 			Lampa.SettingsApi.addParam({
 				component: 'qBittorent',
 				param: {
-					name: 'ForkTV_add',
+					name: 'qBittorent_add',
 					type: 'static', //доступно select,input,trigger,title,static
 					default: ''
 				},
 				field: {
-					name: Lampa.Storage.get('ForkTv_cat') ? Lampa.Lang.translate('title_fork_edit_cats') : Lampa.Lang.translate('title_fork_add_cats'),
+					name: Lampa.Storage.get('qBittorent_cat') ? Lampa.Lang.translate('title_fork_edit_cats') : Lampa.Lang.translate('title_fork_add_cats'),
 					description: ''
 				},
 				onRender: function (item) {
-					if (Lampa.Storage.get('forktv_auth')) {
+					if (Lampa.Storage.get('qBittorent_auth')) {
 						item.show();
 					} else item.hide();
 					item.on('hover:enter', function () {
@@ -89,7 +93,7 @@ function add() {
 			Lampa.SettingsApi.addParam({
 				component: 'qBittorent',
 				param: {
-					name: 'ForkTV_clear',
+					name: 'qBittorent_clear',
 					type: 'static', //доступно select,input,trigger,title,static
 					default: ''
 				},
@@ -98,11 +102,11 @@ function add() {
 					description: Lampa.Lang.translate('title_fork_clear_descr')
 				},
 				onRender: function (item) {
-					if (Lampa.Storage.get('forktv_auth')) {
+					if (Lampa.Storage.get('qBittorent_auth')) {
 						item.show();
 					} else item.hide();
 					item.on('hover:enter', function () {
-						Lampa.Storage.set('ForkTv_cat', '');
+						Lampa.Storage.set('qBittorent_cat', '');
 						Lampa.Noty.show(Lampa.Lang.translate('title_fork_clear_noty'));
 					});
 				}
@@ -110,7 +114,7 @@ function add() {
 			Lampa.SettingsApi.addParam({
 				component: 'qBittorent',
 				param: {
-					name: 'ForkTV_clearMac',
+					name: 'qBittorent_clearMac',
 					type: 'static', //доступно select,input,trigger,title,static
 					default: ''
 				},
