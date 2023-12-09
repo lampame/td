@@ -28,7 +28,7 @@ function add() {
 				}
 			});
 			Lampa.SettingsApi.addParam({
-				component: 'torrentDownloader',
+				component: 'qBittorent',
 				param: {
 					name: 'qBittorent',
 					type: 'static', //доступно select,input,trigger,title,static
@@ -39,11 +39,10 @@ function add() {
 					description: 'Настройка сервера'
 				},
 				onRender: function (item) {
-                    console.log(`Item ${item}`)
+                    
 					if (Lampa.Storage.field('td_qBittorent') === true ) {
 						item.show();
 						$('.settings-param__name', item).before('<div class="settings-param__status"></div>');
-						//ForkTV.check_forktv(item, true);
 					} else item.hide();
 					item.on('hover:enter', function () {
 						Lampa.Settings.create('qBittorent');
