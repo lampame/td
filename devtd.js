@@ -200,6 +200,8 @@ function add() {
             });
         }
     });
+
+    QB();
 }
 /* Если всё готово */
 if (window.appready) add();
