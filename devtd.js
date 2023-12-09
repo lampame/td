@@ -24,8 +24,10 @@ function add() {
 				onChange: function (value) {
                     if (Lampa.Storage.get('td_qBittorent') !== true ) {
                         Lampa.Storage.set('td_qBittorent', true);
+                        Lampa.Settings.update();
                     } else {
                         Lampa.Storage.set('td_qBittorent', false);
+                        Lampa.Settings.update();
                     }
 					
 				}
@@ -42,7 +44,7 @@ function add() {
 					description: 'Настройка сервера'
 				},
 				onRender: function (item) {
-					if (Lampa.Storage.field('mods_fork')) {
+					if (Lampa.Storage.field('td_qBittorent')) {
 						item.show();
 						$('.settings-param__name', item).before('<div class="settings-param__status"></div>');
 						//ForkTV.check_forktv(item, true);
