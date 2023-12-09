@@ -28,7 +28,7 @@ function add() {
 				}
 			});
 			Lampa.SettingsApi.addParam({
-				component: 'qBittorent',
+				component: 'torrentDownloader',
 				param: {
 					name: 'qBittorent',
 					type: 'static', //доступно select,input,trigger,title,static
@@ -53,7 +53,7 @@ function add() {
 				}
 			});
 			Lampa.SettingsApi.addParam({
-				component: 'qBittorent',
+				component: 'torrentDownloader',
 				param: {
 					name: 'qBittorent_url',
 					type: 'static' //доступно select,input,trigger,title,static
@@ -68,7 +68,7 @@ function add() {
 				}
 			});
 			Lampa.SettingsApi.addParam({
-				component: 'qBittorent',
+				component: 'torrentDownloader',
 				param: {
 					name: 'qBittorent_add',
 					type: 'static', //доступно select,input,trigger,title,static
@@ -88,7 +88,7 @@ function add() {
 				}
 			});
 			Lampa.SettingsApi.addParam({
-				component: 'qBittorent',
+				component: 'torrentDownloader',
 				param: {
 					name: 'qBittorent_clear',
 					type: 'static', //доступно select,input,trigger,title,static
@@ -109,7 +109,7 @@ function add() {
 				}
 			});
 			Lampa.SettingsApi.addParam({
-				component: 'qBittorent',
+				component: 'torrentDownloader',
 				param: {
 					name: 'qBittorent_clearMac',
 					type: 'static', //доступно select,input,trigger,title,static
