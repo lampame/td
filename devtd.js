@@ -58,7 +58,7 @@ function add() {
 					type: 'static' //доступно select,input,trigger,title,static
 				},
 				field: {
-					name: ForkTV.url,
+					name:'ForkTV.url',
 					description: Lampa.Lang.translate('filmix_nodevice')
 				},
 				onRender: function (item) {
