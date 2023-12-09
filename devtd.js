@@ -18,18 +18,10 @@ function add() {
 					default: false
 				},
 				field: {
-					name: `qBittorent ${Lampa.Storage.field('td_qBittorent')}`,
+					name: `qBittorent`,
 					description: ''
 				},
 				onChange: function (value) {
-                    /*
-                    if (Lampa.Storage.field('td_qBittorent') !== true ) {
-                        Lampa.Storage.set('td_qBittorent', true);
-                        Lampa.Settings.update();
-                    } else {
-                        Lampa.Storage.set('td_qBittorent', false);
-                        Lampa.Settings.update();
-                    } */
 					if (value == 'true') Lampa.Storage.set('td_qBittorent', true);
                     else Lampa.Storage.set('td_qBittorent', false);
 					Lampa.Settings.update();
@@ -47,6 +39,7 @@ function add() {
 					description: 'Настройка сервера'
 				},
 				onRender: function (item) {
+                    console.log(`Item ${item}`)
 					if (Lampa.Storage.field('td_qBittorent') === true ) {
 						item.show();
 						$('.settings-param__name', item).before('<div class="settings-param__status"></div>');
