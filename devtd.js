@@ -22,14 +22,16 @@ function add() {
 					description: ''
 				},
 				onChange: function (value) {
+                    /*
                     if (Lampa.Storage.field('td_qBittorent') !== true ) {
                         Lampa.Storage.set('td_qBittorent', true);
                         Lampa.Settings.update();
                     } else {
                         Lampa.Storage.set('td_qBittorent', false);
                         Lampa.Settings.update();
-                    }
-					
+                    } */
+					if (value) Lampa.Storage.set('td_qBittorent', true);
+					Lampa.Settings.update();
 				}
 			});
 			Lampa.SettingsApi.addParam({
