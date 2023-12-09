@@ -1,4 +1,5 @@
-Lampa.Listener.follow("torrent", function (e) {
+function QB() {
+  Lampa.Listener.follow("torrent", function (e) {
     if (e.type === "onlong") {
       let addQbittorrentItem = false;
       let selectedTorrent = e.element;
@@ -119,4 +120,7 @@ Lampa.Listener.follow("torrent", function (e) {
         originalSelectShow.call(this, options);
       };
     }
-  });
+  })
+}
+
+export default QB
