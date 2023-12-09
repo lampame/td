@@ -41,7 +41,7 @@ function add() {
 					if (Lampa.Storage.field('mods_fork')) {
 						item.show();
 						$('.settings-param__name', item).before('<div class="settings-param__status"></div>');
-						ForkTV.check_forktv(item, true);
+						//ForkTV.check_forktv(item, true);
 					} else item.hide();
 					item.on('hover:enter', function () {
 						Lampa.Settings.create('qBittorent');
@@ -63,7 +63,7 @@ function add() {
 				},
 				onRender: function (item) {
 					$('.settings-param__name', item).before('<div class="settings-param__status"></div>');
-					ForkTV.check_forktv(item);
+					//ForkTV.check_forktv(item);
 				}
 			});
 			Lampa.SettingsApi.addParam({
@@ -82,7 +82,7 @@ function add() {
 						item.show();
 					} else item.hide();
 					item.on('hover:enter', function () {
-						ForkTV.check_forktv(item);
+						//ForkTV.check_forktv(item);
 					});
 				}
 			});
@@ -120,7 +120,7 @@ function add() {
 				},
 				onRender: function (item) {
 					item.on('hover:enter', function () {
-						ForkTV.updMac(item);
+						//ForkTV.updMac(item);
 					});
 				}
 			});
