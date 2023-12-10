@@ -400,7 +400,7 @@ Lampa.Listener.follow("torrent", function (e) {
             /* Transmission BTN */
             if (Lampa.Storage.field("td_transmission") === true) {
                 options.items.push({
-                    title: `qBittorrent`,
+                    title: `Transmission`,
                     qb: true,
                     onSelect: function (a) {
                         if (a.qb) {
