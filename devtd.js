@@ -427,7 +427,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                         }
                                     })
                                         .then(response => {
-                                            console.log(JSON.stringify(response.status) + + selectedTorrent.MagnetUri);
+                                            console.log(JSON.stringify(response.status) + " " + selectedTorrent.MagnetUri);
                                             if (response.status === 409) {
                                                 // Параметры для добавления торрента
                                                 const addBody = {
