@@ -277,7 +277,7 @@ Lampa.Listener.follow("torrent", function (e) {
 
         // Override Select.show with custom functionality
         Lampa.Select.show = function (options) {
-            Lampa.Noty.show(`td_qBittorent - ${Lampa.Storage.field("td_qBittorent")}`)
+            //Lampa.Noty.show(`td_qBittorent - ${Lampa.Storage.field("td_qBittorent")}`)
             // Add the qBittorrent menu item
             if (Lampa.Storage.field("td_qBittorent") === true) {
                 options.items.push({
@@ -430,7 +430,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                       })
                                     })
                                     .then(response => {
-                                        console.log(JSON.stringify(response));
+                                        console.log(JSON.stringify(response.headers.get('X-Transmission-Session-Id')));
                                       if (response.ok) {
                                         // Параметры для добавления торрента
                                         const addBody = {
