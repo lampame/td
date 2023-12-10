@@ -430,7 +430,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                       })
                                     })
                                     .then(response => {
-                                        Lampa.Noty.show(JSON.stringify(response));
+                                        console.log(JSON.stringify(response));
                                       if (response.ok) {
                                         // Параметры для добавления торрента
                                         const addBody = {
