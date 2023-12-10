@@ -202,60 +202,60 @@ function add() {
     Lampa.SettingsApi.addParam({
         component: "transmission",
         param: {
-          name: "transmission_url",
-          type: "input", //доступно select,input,trigger,title,static
-          values: `${Lampa.Storage.get("transmissionUrl")}`,
+            name: "transmission_url",
+            type: "input", //доступно select,input,trigger,title,static
+            values: `${Lampa.Storage.get("transmissionUrl")}`,
         },
         field: {
-          name: `Adress`,
+            name: `Adress`,
         },
         onChange: function (item) {
-          Lampa.Storage.set("transmissionUrl", item)
+            Lampa.Storage.set("transmissionUrl", item)
         },
-      });
-      Lampa.SettingsApi.addParam({
+    });
+    Lampa.SettingsApi.addParam({
         component: "transmission",
         param: {
-          name: "transmission_port",
-          type: "input", //доступно select,input,trigger,title,static
-          values: `${Lampa.Storage.get("transmissionPort")}`,
+            name: "transmission_port",
+            type: "input", //доступно select,input,trigger,title,static
+            values: `${Lampa.Storage.get("transmissionPort")}`,
         },
         field: {
-          name: `Port`,
+            name: `Port`,
         },
         onChange: function (item) {
-          Lampa.Storage.set("transmissionPort", item)
+            Lampa.Storage.set("transmissionPort", item)
         },
-      });
-      /* auth */
-      Lampa.SettingsApi.addParam({
+    });
+    /* auth */
+    Lampa.SettingsApi.addParam({
         component: "transmission",
         param: {
-          name: "transmission_user",
-          type: "input", //доступно select,input,trigger,title,static
-          values: `${Lampa.Storage.get("transmissionUser")}`,
+            name: "transmission_user",
+            type: "input", //доступно select,input,trigger,title,static
+            values: `${Lampa.Storage.get("transmissionUser")}`,
         },
         field: {
-          name: `User`,
+            name: `User`,
         },
         onChange: function (item) {
-          Lampa.Storage.set("transmissionUser", item)
+            Lampa.Storage.set("transmissionUser", item)
         },
-      });
-      Lampa.SettingsApi.addParam({
+    });
+    Lampa.SettingsApi.addParam({
         component: "transmission",
         param: {
-          name: "transmission_password",
-          type: "input", //доступно select,input,trigger,title,static
-          values: `${Lampa.Storage.get("transmissionPass")}`,
+            name: "transmission_password",
+            type: "input", //доступно select,input,trigger,title,static
+            values: `${Lampa.Storage.get("transmissionPass")}`,
         },
         field: {
-          name: `Password`,
+            name: `Password`,
         },
         onChange: function (item) {
-          Lampa.Storage.set("transmissionPass", item)
+            Lampa.Storage.set("transmissionPass", item)
         },
-      });
+    });
 }
 /* Если всё готово */
 if (window.appready) add();
@@ -277,7 +277,6 @@ Lampa.Listener.follow("torrent", function (e) {
 
         // Override Select.show with custom functionality
         Lampa.Select.show = function (options) {
-            //Lampa.Noty.show(`td_qBittorent - ${Lampa.Storage.field("td_qBittorent")}`)
             // Add the qBittorrent menu item
             if (Lampa.Storage.field("td_qBittorent") === true) {
                 options.items.push({
@@ -420,118 +419,127 @@ Lampa.Listener.follow("torrent", function (e) {
                                 if (selectedTorrent.MagnetUri) {
                                     // Аутентификационный запрос
                                     fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
-                                      method: "POST",
-                                      headers: {
-                                        "Authorization": `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`,
-                                        "Content-Type": "application/json"
-                                      },
-                                      body: JSON.stringify({
-                                        method: "session-get"
-                                      })
-                                    })
-                                    .then(response => {
-                                        console.log(JSON.stringify(response.headers.get('X-Transmission-Session-Id')));
-                                      if (response.ok) {
-                                        // Параметры для добавления торрента
-                                        const addBody = {
-                                          method: "torrent-add",
-                                          arguments: {
-                                            paused: false,
-                                            filename: selectedTorrent.MagnetUri
-                                          }
-                                        };
-                                  
-                                        // Запрос на добавление торрента
-                                        return fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
-                                          method: "POST",
-                                          headers: {
-                                            "Content-Type": "application/json"
-                                          },
-                                          body: JSON.stringify(addBody)
-                                        });
-                                      } else {
-                                        throw new Error("Ошибка аутентификации");
-                                      }
-                                    })
-                                    .then(response => {
-                                      if (response.ok) {
-                                        // Запрос на получение списка торрентов, чтобы найти хэш последнего добавленного торрента
-                                        return fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
-                                          method: "POST",
-                                          headers: {
-                                            "Content-Type": "application/json"
-                                          },
-                                          body: JSON.stringify({
-                                            method: "torrent-get",
-                                            arguments: {
-                                              fields: ["id"],
-                                              ids: "recently-active"
-                                            }
-                                          })
-                                        });
-                                      } else {
-                                        throw new Error("Ошибка добавления торрента");
-                                      }
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                      const torrents = data.arguments.torrents;
-                                      const lastAddedTorrent = torrents[torrents.length - 1].id;
-                                  
-                                      // Установка приоритета первого/последнего куска
-                                      const firstBody = {
-                                        method: "torrent-set",
-                                        arguments: {
-                                          ids: [lastAddedTorrent],
-                                          priority_high: [0],
-                                          priority_low: [torrents[torrents.length - 1].totalSize / torrents[torrents.length - 1].pieceSize - 1]
-                                        }
-                                      };
-                                  
-                                      // Запрос на установку приоритета
-                                      return fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
                                         method: "POST",
                                         headers: {
-                                          "Content-Type": "application/json"
-                                        },
-                                        body: JSON.stringify(firstBody)
-                                      });
-                                    })
-                                    .then(response => {
-                                      if (response.ok) {
-                                        // Включение последовательной загрузки
-                                        const toggleBody = {
-                                          method: "torrent-set",
-                                          arguments: {
-                                            ids: [lastAddedTorrent],
-                                            "download-sequential": true
-                                          }
-                                        };
-                                  
-                                        // Запрос на включение последовательной загрузки
-                                        return fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
-                                          method: "POST",
-                                          headers: {
+                                            "Authorization": `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`,
+                                            //"X-Transmission-Session-Id": response.headers.get('X-Transmission-Session-Id'),
                                             "Content-Type": "application/json"
-                                          },
-                                          body: JSON.stringify(toggleBody)
+                                        },
+                                        body: JSON.stringify({
+                                            method: "session-get"
+                                        })
+                                    })
+                                        .then(response => {
+                                            console.log(JSON.stringify(response.headers.get('X-Transmission-Session-Id')));
+                                            if (response.ok) {
+                                                // Параметры для добавления торрента
+                                                const addBody = {
+                                                    method: "torrent-add",
+                                                    arguments: {
+                                                        paused: false,
+                                                        filename: selectedTorrent.MagnetUri
+                                                    }
+                                                };
+
+                                                // Запрос на добавление торрента
+                                                return fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Authorization": `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`,
+                                                        "X-Transmission-Session-Id": response.headers.get('X-Transmission-Session-Id'),
+                                                        "Content-Type": "application/json"
+                                                    },
+                                                    body: JSON.stringify(addBody)
+                                                });
+                                            } else {
+                                                throw new Error("Ошибка аутентификации");
+                                            }
+                                        })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                // Запрос на получение списка торрентов, чтобы найти хэш последнего добавленного торрента
+                                                return fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Authorization": `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`,
+                                                        "X-Transmission-Session-Id": response.headers.get('X-Transmission-Session-Id'),
+                                                        "Content-Type": "application/json"
+                                                    },
+                                                    body: JSON.stringify({
+                                                        method: "torrent-get",
+                                                        arguments: {
+                                                            fields: ["id"],
+                                                            ids: "recently-active"
+                                                        }
+                                                    })
+                                                });
+                                            } else {
+                                                throw new Error("Ошибка добавления торрента");
+                                            }
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            const torrents = data.arguments.torrents;
+                                            const lastAddedTorrent = torrents[torrents.length - 1].id;
+
+                                            // Установка приоритета первого/последнего куска
+                                            const firstBody = {
+                                                method: "torrent-set",
+                                                arguments: {
+                                                    ids: [lastAddedTorrent],
+                                                    priority_high: [0],
+                                                    priority_low: [torrents[torrents.length - 1].totalSize / torrents[torrents.length - 1].pieceSize - 1]
+                                                }
+                                            };
+
+                                            // Запрос на установку приоритета
+                                            return fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
+                                                method: "POST",
+                                                headers: {
+                                                    "Authorization": `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`,
+                                                    "X-Transmission-Session-Id": response.headers.get('X-Transmission-Session-Id'),
+                                                    "Content-Type": "application/json"
+                                                },
+                                                body: JSON.stringify(firstBody)
+                                            });
+                                        })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                // Включение последовательной загрузки
+                                                const toggleBody = {
+                                                    method: "torrent-set",
+                                                    arguments: {
+                                                        ids: [lastAddedTorrent],
+                                                        "download-sequential": true
+                                                    }
+                                                };
+
+                                                // Запрос на включение последовательной загрузки
+                                                return fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Authorization": `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`,
+                                                        "X-Transmission-Session-Id": response.headers.get('X-Transmission-Session-Id'),
+                                                        "Content-Type": "application/json"
+                                                    },
+                                                    body: JSON.stringify(toggleBody)
+                                                });
+                                            } else {
+                                                throw new Error("Ошибка установки приоритета");
+                                            }
+                                        })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                Lampa.Noty.show("Торрент загружается в Transmission");
+                                            } else {
+                                                throw new Error("Ошибка включения последовательной загрузки");
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error(error);
+                                            Lampa.Noty.show("Произошла ошибка");
                                         });
-                                      } else {
-                                        throw new Error("Ошибка установки приоритета");
-                                      }
-                                    })
-                                    .then(response => {
-                                      if (response.ok) {
-                                        Lampa.Noty.show("Торрент загружается в Transmission");
-                                      } else {
-                                        throw new Error("Ошибка включения последовательной загрузки");
-                                      }
-                                    })
-                                    .catch(error => {
-                                      console.error(error);
-                                      Lampa.Noty.show("Произошла ошибка");
-                                    });
-                                  }
+                                }
 
                                 setTimeout(() => {
                                     Lampa.Select.close();
