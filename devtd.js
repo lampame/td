@@ -1,5 +1,11 @@
 "use strict";
 Lampa.Platform.tv();
+/* Some function */
+function testConnect() {
+    response = "data";
+    return response;
+}
+/* start inject */
 function add() {
     //Создание пункта меню
     Lampa.SettingsApi.addComponent({
@@ -56,7 +62,7 @@ function add() {
             default: false,
         },
         field: {
-            name: `[Beta] qBittorent`,
+            name: `[Beta] qBittorent ${testConnect()}`,
             description: "",
         },
         onChange: function (value) {
