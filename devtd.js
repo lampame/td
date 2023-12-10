@@ -1,9 +1,7 @@
 "use strict";
 Lampa.Platform.tv();
 /* Some function */
-function testConnect() {
-  return "data";
-}
+
 /* start inject */
 function add() {
   //Создание пункта меню
@@ -68,7 +66,7 @@ function add() {
     }
     if (e.name == "td_info") $(".settings__title").html("О плагине"); //$(".settings__title").append("");
   });
-  
+
   Lampa.SettingsApi.addParam({
     component: "torrentDownloader",
     param: {
@@ -82,39 +80,40 @@ function add() {
     },
     onRender: function (item) {
       item.show();
-        $(".settings-param__name", item).before(
-          '<div class="settings-param__status"></div>'
-        );
+      $(".settings-param__name", item).before(
+        '<div class="settings-param__status"></div>'
+      );
       item.on("hover:enter", function () {
         Lampa.Settings.create("td_info");
         Lampa.Controller.enabled().controller.back = function () {
-        Lampa.Settings.create("torrentDownloader");
+          Lampa.Settings.create("torrentDownloader");
         };
       });
     },
   });
   Lampa.SettingsApi.addParam({
-				component: 'td_info',
-				param: {
-					name: 'group',
-					type: 'static'
-				},
-				field: {
-					name: '<img src="https://cdn.glitch.global/d9956867-398e-4a85-9c42-31911adc9981/groupLTD.jpg?v=1702216657917" alt="GroupLTD" width="100%" height="auto">',
-					description: 'Группа плагина Torrent downloader'
-				}
-			});
+    component: "td_info",
+    param: {
+      name: "group",
+      type: "static",
+    },
+    field: {
+      name: '<img src="https://cdn.glitch.global/d9956867-398e-4a85-9c42-31911adc9981/groupLTD.jpg?v=1702216657917" alt="GroupLTD" width="100%" height="auto">',
+      description: "Группа плагина Torrent downloader",
+    },
+  });
   Lampa.SettingsApi.addParam({
-				component: 'td_info',
-				param: {
-					name: 'group',
-					type: 'static'
-				},
-				field: {
-					name: '<b>Описание</b>',
-					description: 'Плагин служит для загрузки торрентов средствами Torrent клиентов. Вызывается через контекстное меню на выбранной раздаче</ br> Обязательные зависимости - Активированный парсер для торрентов. Torrserver НЕ ТРЕБУЕТСЯ</ br> Пожелания по клиентам принимаются в чате плагина'
-				}
-			});
+    component: "td_info",
+    param: {
+      name: "group",
+      type: "static",
+    },
+    field: {
+      name: "<b>Описание</b>",
+      description:
+        "Плагин служит для загрузки торрентов средствами Torrent клиентов. Вызывается через контекстное меню на выбранной раздаче</ br> Обязательные зависимости - Активированный парсер для торрентов. Torrserver НЕ ТРЕБУЕТСЯ</ br> Пожелания по клиентам принимаются в чате плагина",
+    },
+  });
   /* qBittorent */
   Lampa.SettingsApi.addParam({
     component: "torrentDownloader",
@@ -334,15 +333,16 @@ else {
 Lampa.Listener.follow("torrent", function (e) {
   if (e.type === "onlong") {
     // Assuming 'e.element' contains the torrent data
-    //let addQbittorrentItem = false;
     let selectedTorrent = e.element;
-
+    let addQbittorrentItem = false;
+    let addTransmissionItem = false;
     const originalSelectShow = Lampa.Select.show;
-
-    // Override Select.show with custom functionality
+    // Override Select.show with custom functionality    
     Lampa.Select.show = function (options) {
+      //console.log(options);
       // Add the qBittorrent menu item
-      if (Lampa.Storage.field("td_qBittorent") === true) {
+      if (Lampa.Storage.field("td_qBittorent") === true && !addQbittorrentItem) {
+        addQbittorrentItem = true;
         options.items.push({
           title: `qBittorrent`,
           qb: true,
@@ -472,10 +472,12 @@ Lampa.Listener.follow("torrent", function (e) {
         });
       }
       /* Transmission BTN */
-      if (Lampa.Storage.field("td_transmission") === true) {
-        options.items.push({
-          title: `Transmission`,
-          onSelect: function (a) {
+      if (Lampa.Storage.field("td_transmission") === true && !addTransmissionItem) {
+        addTransmissionItem = true;
+        //splice(0, 0, transmission)
+          options.items.push({
+            title: `Transmission`,            
+            onSelect: function (a) {
               if (selectedTorrent) {
                 if (!selectedTorrent.MagnetUri) {
                   Lampa.Parser.marnet(
@@ -494,27 +496,56 @@ Lampa.Listener.follow("torrent", function (e) {
                   var authXhr = new XMLHttpRequest();
                   authXhr.withCredentials = false;
 
-                  authXhr.addEventListener("readystatechange", function() {
-                    if(authXhr.readyState === 4 & authXhr.status === 409) {
+                  authXhr.addEventListener("readystatechange", function () {
+                    if ((authXhr.readyState === 4) & (authXhr.status === 409)) {
                       var addXhr = new XMLHttpRequest();
-                      console.log(authXhr.getResponseHeader('X-Transmission-Session-Id'));
-                      console.log(`Status ${authXhr.status} - and magnet ${selectedTorrent.MagnetUri.split("&")[0]}`);
+                      console.log(
+                        authXhr.getResponseHeader("X-Transmission-Session-Id")
+                      );
+                      console.log(
+                        `Status ${authXhr.status} - and magnet ${
+                          selectedTorrent.MagnetUri.split("&")[0]
+                        }`
+                      );
                       //Try add torrent
                       var data = JSON.stringify({
-                        "method": "torrent-add",
-                        "arguments": {
-                          "paused": true,
-                          "filename": selectedTorrent.MagnetUri.split("&")[0]
-                        }
+                        method: "torrent-add",
+                        arguments: {
+                          paused: false,
+                          filename: selectedTorrent.MagnetUri.split("&")[0],
+                        },
                       });
-                      addXhr.open("POST", `http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`);
-                      addXhr.setRequestHeader("X-Transmission-Session-Id", this.getResponseHeader('X-Transmission-Session-Id'));
-                      addXhr.setRequestHeader("Content-Type", "application/json");
-                      addXhr.setRequestHeader("Authorization", `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`);
+                      addXhr.open(
+                        "POST",
+                        `http://${Lampa.Storage.get(
+                          "transmissionUrl"
+                        )}:${Lampa.Storage.get(
+                          "transmissionPort"
+                        )}/transmission/rpc`
+                      );
+                      addXhr.setRequestHeader(
+                        "X-Transmission-Session-Id",
+                        this.getResponseHeader("X-Transmission-Session-Id")
+                      );
+                      addXhr.setRequestHeader(
+                        "Content-Type",
+                        "application/json"
+                      );
+                      addXhr.setRequestHeader(
+                        "Authorization",
+                        `Basic ${btoa(
+                          Lampa.Storage.get("transmissionUser") +
+                            ":" +
+                            Lampa.Storage.get("transmissionPass")
+                        )}`
+                      );
 
                       addXhr.send(data);
-                      addXhr.addEventListener("readystatechange", function() {
-                        if(addXhr.readyState === 4 & addXhr.status === 200) {
+                      addXhr.addEventListener("readystatechange", function () {
+                        if (
+                          (addXhr.readyState === 4) &
+                          (addXhr.status === 200)
+                        ) {
                           Lampa.Noty.show("Torrent add");
                         } else {
                           console.log(addXhr);
@@ -523,8 +554,22 @@ Lampa.Listener.follow("torrent", function (e) {
                     }
                   });
 
-                  authXhr.open("POST", `http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`);
-                  authXhr.setRequestHeader("Authorization", `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`);
+                  authXhr.open(
+                    "POST",
+                    `http://${Lampa.Storage.get(
+                      "transmissionUrl"
+                    )}:${Lampa.Storage.get(
+                      "transmissionPort"
+                    )}/transmission/rpc`
+                  );
+                  authXhr.setRequestHeader(
+                    "Authorization",
+                    `Basic ${btoa(
+                      Lampa.Storage.get("transmissionUser") +
+                        ":" +
+                        Lampa.Storage.get("transmissionPass")
+                    )}`
+                  );
 
                   authXhr.send();
                 }
@@ -534,9 +579,11 @@ Lampa.Listener.follow("torrent", function (e) {
               } else {
                 Lampa.Noty.show("Magnet link not found");
               }
-          },
-        });
+            },
+          });
+          
       }
+
       originalSelectShow.call(this, options);
     };
   }
