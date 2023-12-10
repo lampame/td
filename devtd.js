@@ -22,7 +22,6 @@ function add() {
         Lampa.SettingsApi.addComponent({
           component: "qBittorent",
           name: "qBittorent",
-          icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
         });
       }
       Lampa.Settings.main().update();
@@ -41,7 +40,6 @@ function add() {
         Lampa.SettingsApi.addComponent({
           component: "transmission",
           name: "transmission",
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><defs><linearGradient x1="34.012%" y1="0%" x2="76.373%" y2="76.805%" id="a"><stop stop-color="#72B4F5" offset="0%"/><stop stop-color="#356EBF" offset="100%"/></linearGradient></defs><g fill="none" fill-rule="evenodd"><circle stroke="#DAEFFF" stroke-width="32" fill="url(#a)" cx="512" cy="512" r="496"/><path d="M712.898 332.399q66.657 0 103.38 45.671 37.03 45.364 37.03 128.684t-37.34 129.61q-37.03 45.98-103.07 45.98-33.02 0-60.484-12.035-27.156-12.344-45.672-37.649h-3.703l-10.8 43.512h-36.724V196h51.227v116.65q0 39.191-2.469 70.359h2.47q35.796-50.61 106.155-50.61zm-7.406 42.894q-52.46 0-75.605 30.242-23.145 29.934-23.145 101.219t23.762 102.145q23.761 30.55 76.222 30.55 47.215 0 70.36-34.254 23.144-34.562 23.144-99.058 0-66.04-23.144-98.442-23.145-32.402-71.594-32.402z" fill="#fff"/><path d="M317.273 639.45q51.227 0 74.68-27.466 23.453-27.464 24.996-92.578v-11.418q0-70.976-24.07-102.144-24.07-31.168-76.223-31.168-45.055 0-69.125 35.18-23.762 34.87-23.762 98.75 0 63.879 23.454 97.515 23.761 33.328 70.05 33.328zm-7.715 42.894q-65.421 0-102.144-45.98-36.723-45.981-36.723-128.376 0-83.011 37.032-129.609 37.03-46.598 103.07-46.598 69.433 0 106.773 52.461h2.778l7.406-46.289h40.426V828h-51.227V683.27q0-30.86 3.395-52.461h-4.012q-35.488 51.535-106.774 51.535z" fill="#c8e8ff"/></g></svg>',
         });
       }
       Lampa.Settings.main().update();
@@ -51,7 +49,72 @@ function add() {
         .addClass("hide");
     }
     if (e.name == "transmission") $(".settings__title").append(" transmission");
+    /* info */
+    if (e.name == "main") {
+      if (
+        Lampa.Settings.main().render().find('[data-component="td_info"]')
+          .length == 0
+      ) {
+        Lampa.SettingsApi.addComponent({
+          component: "td_info",
+          name: "td_info",
+        });
+      }
+      Lampa.Settings.main().update();
+      Lampa.Settings.main()
+        .render()
+        .find('[data-component="td_info"]')
+        .addClass("hide");
+    }
+    if (e.name == "td_info") $(".settings__title").html("О плагине"); //$(".settings__title").append("");
   });
+  
+  Lampa.SettingsApi.addParam({
+    component: "torrentDownloader",
+    param: {
+      name: "tdInfo",
+      type: "static", //доступно select,input,trigger,title,static
+      default: true,
+    },
+    field: {
+      name: "О плагине",
+      description: "Информация",
+    },
+    onRender: function (item) {
+      item.show();
+        $(".settings-param__name", item).before(
+          '<div class="settings-param__status"></div>'
+        );
+      item.on("hover:enter", function () {
+        Lampa.Settings.create("td_info");
+        Lampa.Controller.enabled().controller.back = function () {
+        Lampa.Settings.create("torrentDownloader");
+        };
+      });
+    },
+  });
+  Lampa.SettingsApi.addParam({
+				component: 'td_info',
+				param: {
+					name: 'group',
+					type: 'static'
+				},
+				field: {
+					name: '<img src="https://cdn.glitch.global/d9956867-398e-4a85-9c42-31911adc9981/groupLTD.jpg?v=1702216657917" alt="GroupLTD" width="100%" height="auto">',
+					description: 'Группа плагина Torrent downloader'
+				}
+			});
+  Lampa.SettingsApi.addParam({
+				component: 'td_info',
+				param: {
+					name: 'group',
+					type: 'static'
+				},
+				field: {
+					name: '<b>Описание</b>',
+					description: 'Плагин служит для загрузки торрентов средствами Torrent клиентов. Вызывается через контекстное меню на выбранной раздаче</ br> Обязательные зависимости - Активированный парсер для торрентов. Torrserver НЕ ТРЕБУЕТСЯ</ br> Пожелания по клиентам принимаются в чате плагина'
+				}
+			});
   /* qBittorent */
   Lampa.SettingsApi.addParam({
     component: "torrentDownloader",
@@ -59,6 +122,7 @@ function add() {
       name: "td_qBittorent",
       type: "trigger", //доступно select,input,trigger,title,static
       default: false,
+      //icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
     },
     field: {
       name: `[Beta] qBittorent`,
