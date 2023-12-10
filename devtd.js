@@ -430,7 +430,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                         })
                                     })
                                         .then(response => {
-                                            console.log(JSON.stringify(response.headers.get('X-Transmission-Session-Id')));
+                                            console.log(JSON.stringify(`${response.headers.get('X-Transmission-Session-Id')} and ${response.ok} and ${response.body}`));
                                             if (response.ok) {
                                                 // Параметры для добавления торрента
                                                 const addBody = {
