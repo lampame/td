@@ -15,8 +15,8 @@ function add() {
                     .length == 0
             ) {
                 Lampa.SettingsApi.addComponent({
-                    component: "[Beta] qBittorent",
-                    name: "qBittorent",
+                    component: "qBittorent",
+                    name: "[Beta] qBittorent",
                     icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
                 });
             }
@@ -27,6 +27,25 @@ function add() {
                 .addClass("hide");
         }
         if (e.name == "qBittorent") $(".settings__title").append(" qBittorent");
+        /* Transmition */
+        if (e.name == "main") {
+            if (
+                Lampa.Settings.main().render().find('[data-component="Transmition"]')
+                    .length == 0
+            ) {
+                Lampa.SettingsApi.addComponent({
+                    component: "Transmition",
+                    name: "[Beta] Transmition",
+                    icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
+                });
+            }
+            Lampa.Settings.main().update();
+            Lampa.Settings.main()
+                .render()
+                .find('[data-component="Transmition"]')
+                .addClass("hide");
+        }
+        if (e.name == "Transmition") $(".settings__title").append(" Transmition");
     });
     /* qBittorent */
     Lampa.SettingsApi.addParam({
@@ -131,6 +150,50 @@ function add() {
         },
     });
     /* Transmition */
+    Lampa.SettingsApi.addParam({
+        component: "torrentDownloader",
+        param: {
+            name: "td_transmition",
+            type: "trigger", //доступно select,input,trigger,title,static
+            default: false,
+        },
+        field: {
+            name: `qBittorent`,
+            description: "",
+        },
+        onChange: function (value) {
+            if (value == "true") Lampa.Storage.set("td_transmition", true);
+            else Lampa.Storage.set("td_transmition", false);
+            Lampa.Settings.update();
+        },
+    });
+    Lampa.SettingsApi.addParam({
+        component: "torrentDownloader",
+        param: {
+            name: "Transmition",
+            type: "static", //доступно select,input,trigger,title,static
+            default: true,
+        },
+        field: {
+            name: "Transmition",
+            description: "Настройка сервера",
+        },
+        onRender: function (item) {
+            if (Lampa.Storage.field("td_transmition") === true) {
+                item.show();
+                $(".settings-param__name", item).before(
+                    '<div class="settings-param__status"></div>'
+                );
+            } else item.hide();
+            item.on("hover:enter", function () {
+                Lampa.Settings.create("Transmition");
+                Lampa.Controller.enabled().controller.back = function () {
+                    Lampa.Settings.create("torrentDownloader");
+                };
+            });
+        },
+    });
+    /* Client setting */
     Lampa.SettingsApi.addParam({
         component: "Transmition",
         param: {
