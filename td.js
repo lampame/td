@@ -503,7 +503,7 @@ Lampa.Listener.follow("torrent", function (e) {
                       var data = JSON.stringify({
                         "method": "torrent-add",
                         "arguments": {
-                          "paused": true,
+                          "paused": false,
                           "filename": selectedTorrent.MagnetUri.split("&")[0]
                         }
                       });
