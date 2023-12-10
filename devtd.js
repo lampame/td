@@ -16,7 +16,7 @@ function add() {
             ) {
                 Lampa.SettingsApi.addComponent({
                     component: "qBittorent",
-                    name: "[Beta] qBittorent",
+                    name: "qBittorent",
                     icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
                 });
             }
@@ -27,25 +27,25 @@ function add() {
                 .addClass("hide");
         }
         if (e.name == "qBittorent") $(".settings__title").append(" qBittorent");
-        /* Transmition */
+        /* transmission */
         if (e.name == "main") {
             if (
-                Lampa.Settings.main().render().find('[data-component="Transmition"]')
+                Lampa.Settings.main().render().find('[data-component="transmission"]')
                     .length == 0
             ) {
                 Lampa.SettingsApi.addComponent({
-                    component: "Transmition",
-                    name: "[Beta] Transmition",
+                    component: "transmission",
+                    name: "transmission",
                     icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
                 });
             }
             Lampa.Settings.main().update();
             Lampa.Settings.main()
                 .render()
-                .find('[data-component="Transmition"]')
+                .find('[data-component="transmission"]')
                 .addClass("hide");
         }
-        if (e.name == "Transmition") $(".settings__title").append(" Transmition");
+        if (e.name == "transmission") $(".settings__title").append(" transmission");
     });
     /* qBittorent */
     Lampa.SettingsApi.addParam({
@@ -56,7 +56,7 @@ function add() {
             default: false,
         },
         field: {
-            name: `qBittorent`,
+            name: `[Beta] qBittorent`,
             description: "",
         },
         onChange: function (value) {
@@ -149,44 +149,44 @@ function add() {
             Lampa.Storage.set("qBittorentPass", item)
         },
     });
-    /* Transmition */
+    /* transmission */
     Lampa.SettingsApi.addParam({
         component: "torrentDownloader",
         param: {
-            name: "td_transmition",
+            name: "td_transmission",
             type: "trigger", //доступно select,input,trigger,title,static
             default: false,
         },
         field: {
-            name: `qBittorent`,
+            name: `Transmission`,
             description: "",
         },
         onChange: function (value) {
-            if (value == "true") Lampa.Storage.set("td_transmition", true);
-            else Lampa.Storage.set("td_transmition", false);
+            if (value == "true") Lampa.Storage.set("td_transmission", true);
+            else Lampa.Storage.set("td_transmission", false);
             Lampa.Settings.update();
         },
     });
     Lampa.SettingsApi.addParam({
         component: "torrentDownloader",
         param: {
-            name: "Transmition",
+            name: "transmission",
             type: "static", //доступно select,input,trigger,title,static
             default: true,
         },
         field: {
-            name: "Transmition",
+            name: "transmission",
             description: "Настройка сервера",
         },
         onRender: function (item) {
-            if (Lampa.Storage.field("td_transmition") === true) {
+            if (Lampa.Storage.field("td_transmission") === true) {
                 item.show();
                 $(".settings-param__name", item).before(
                     '<div class="settings-param__status"></div>'
                 );
             } else item.hide();
             item.on("hover:enter", function () {
-                Lampa.Settings.create("Transmition");
+                Lampa.Settings.create("transmission");
                 Lampa.Controller.enabled().controller.back = function () {
                     Lampa.Settings.create("torrentDownloader");
                 };
@@ -195,60 +195,60 @@ function add() {
     });
     /* Client setting */
     Lampa.SettingsApi.addParam({
-        component: "Transmition",
+        component: "transmission",
         param: {
-          name: "transmition_url",
+          name: "transmission_url",
           type: "input", //доступно select,input,trigger,title,static
-          values: `${Lampa.Storage.get("transmitionUrl")}`,
+          values: `${Lampa.Storage.get("transmissionUrl")}`,
         },
         field: {
           name: `Adress`,
         },
         onChange: function (item) {
-          Lampa.Storage.set("transmitionUrl", item)
+          Lampa.Storage.set("transmissionUrl", item)
         },
       });
       Lampa.SettingsApi.addParam({
-        component: "Transmition",
+        component: "transmission",
         param: {
-          name: "transmition_port",
+          name: "transmission_port",
           type: "input", //доступно select,input,trigger,title,static
-          values: `${Lampa.Storage.get("transmitionPort")}`,
+          values: `${Lampa.Storage.get("transmissionPort")}`,
         },
         field: {
           name: `Port`,
         },
         onChange: function (item) {
-          Lampa.Storage.set("transmitionPort", item)
+          Lampa.Storage.set("transmissionPort", item)
         },
       });
       /* auth */
       Lampa.SettingsApi.addParam({
-        component: "Transmition",
+        component: "transmission",
         param: {
-          name: "transmition_user",
+          name: "transmission_user",
           type: "input", //доступно select,input,trigger,title,static
-          values: `${Lampa.Storage.get("transmitionUser")}`,
+          values: `${Lampa.Storage.get("transmissionUser")}`,
         },
         field: {
           name: `User`,
         },
         onChange: function (item) {
-          Lampa.Storage.set("transmitionUser", item)
+          Lampa.Storage.set("transmissionUser", item)
         },
       });
       Lampa.SettingsApi.addParam({
-        component: "Transmition",
+        component: "transmission",
         param: {
-          name: "transmition_password",
+          name: "transmission_password",
           type: "input", //доступно select,input,trigger,title,static
-          values: `${Lampa.Storage.get("transmitionPass")}`,
+          values: `${Lampa.Storage.get("transmissionPass")}`,
         },
         field: {
           name: `Password`,
         },
         onChange: function (item) {
-          Lampa.Storage.set("transmitionPass", item)
+          Lampa.Storage.set("transmissionPass", item)
         },
       });
 }
