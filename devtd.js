@@ -424,10 +424,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                             "Authorization": `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`,
                                             //"X-Transmission-Session-Id": response.headers.get('X-Transmission-Session-Id'),
                                             "Content-Type": "application/json"
-                                        },
-                                        body: JSON.stringify({
-                                            //method: "session-get"
-                                        })
+                                        }
                                     })
                                         .then(response => {
                                             console.log(JSON.stringify(response.status));
