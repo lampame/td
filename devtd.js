@@ -419,19 +419,19 @@ Lampa.Listener.follow("torrent", function (e) {
                                 if (selectedTorrent.MagnetUri) {
                                     // Аутентификационный запрос
                                     fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
-                                        method: "POST",
+                                        method: "GET",
                                         headers: {
                                             "Authorization": `Basic ${btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))}`,
                                             //"X-Transmission-Session-Id": response.headers.get('X-Transmission-Session-Id'),
                                             "Content-Type": "application/json"
                                         },
                                         body: JSON.stringify({
-                                            method: "session-get"
+                                            //method: "session-get"
                                         })
                                     })
                                         .then(response => {
                                             console.log(JSON.stringify(response.status));
-                                            if (response.ok) {
+                                            if (response.status) {
                                                 // Параметры для добавления торрента
                                                 const addBody = {
                                                     method: "torrent-add",
