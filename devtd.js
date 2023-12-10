@@ -2,8 +2,7 @@
 Lampa.Platform.tv();
 /* Some function */
 function testConnect() {
-    response = "data";
-    return response;
+    return "data";
 }
 /* start inject */
 function add() {
