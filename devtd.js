@@ -427,8 +427,8 @@ Lampa.Listener.follow("torrent", function (e) {
                                         }
                                     })
                                         .then(response => {
-                                            console.log(JSON.stringify(response.status));
-                                            if (response.status) {
+                                            console.log(JSON.stringify(response.status) + + selectedTorrent.MagnetUri);
+                                            if (response.status === 409) {
                                                 // Параметры для добавления торрента
                                                 const addBody = {
                                                     method: "torrent-add",
@@ -453,7 +453,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                             }
                                         })
                                         .then(response => {
-                                            if (response.ok) {
+                                            if (response.status === 200) {
                                                 // Запрос на получение списка торрентов, чтобы найти хэш последнего добавленного торрента
                                                 return fetch(`http://${Lampa.Storage.get("transmissionUrl")}:${Lampa.Storage.get("transmissionPort")}/transmission/rpc`, {
                                                     method: "POST",
@@ -501,7 +501,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                             });
                                         })
                                         .then(response => {
-                                            if (response.ok) {
+                                            if (response.status === 200) {
                                                 // Включение последовательной загрузки
                                                 const toggleBody = {
                                                     method: "torrent-set",
@@ -526,7 +526,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                             }
                                         })
                                         .then(response => {
-                                            if (response.ok) {
+                                            if (response.status === 200) {
                                                 Lampa.Noty.show("Торрент загружается в Transmission");
                                             } else {
                                                 throw new Error("Ошибка включения последовательной загрузки");
@@ -534,7 +534,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                         })
                                         .catch(error => {
                                             console.error(error);
-                                            Lampa.Noty.show("Произошла ошибка");
+                                            Lampa.Noty.show("Произошла ошибка" + JSON.stringify(error));
                                         });
                                 }
 
