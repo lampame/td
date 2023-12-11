@@ -12,6 +12,7 @@ function add() {
   });
   /* Menu */
   Lampa.Settings.listener.follow("open", function (e) {
+    console.log(e);
     if (e.name == "main") {
       if (
         Lampa.Settings.main().render().find('[data-component="qBittorent"]')
@@ -28,7 +29,7 @@ function add() {
         .find('[data-component="qBittorent"]')
         .addClass("hide");
     }
-    if (e.name == "qBittorent") $(".settings__title").append(" qBittorent");
+    //if (e.name == "qBittorent") $(".settings__title").append(" qBittorent");
     /* transmission */
     if (e.name == "main") {
       if (
@@ -46,7 +47,7 @@ function add() {
         .find('[data-component="transmission"]')
         .addClass("hide");
     }
-    if (e.name == "transmission") $(".settings__title").append(" transmission");
+    //if (e.name == "transmission") $(".settings__title").append(" transmission");
     /* info */
     if (e.name == "main") {
       if (
@@ -64,7 +65,7 @@ function add() {
         .find('[data-component="td_info"]')
         .addClass("hide");
     }
-    if (e.name == "td_info") $(".settings__title").html("О плагине"); //$(".settings__title").append("");
+    //if (e.name == "td_info") $(".settings__title").html("О плагине"); //$(".settings__title").append("");
   });
 
   Lampa.SettingsApi.addParam({
@@ -160,6 +161,17 @@ function add() {
     },
   });
   /* Client setting */
+  Lampa.SettingsApi.addParam({
+    component: "qBittorent",
+    param: {
+      name: "qBittorentHead",
+      type: "static",
+    },
+    field: {
+      //name: 'Настройка qBittorent',
+      description: "Настройка qBittorent",
+    },
+  });
   Lampa.SettingsApi.addParam({
     component: "qBittorent",
     param: {
@@ -280,6 +292,17 @@ function add() {
     },
   });
   /* Client setting */
+  Lampa.SettingsApi.addParam({
+    component: "transmission",
+    param: {
+      name: "transmissionHead",
+      type: "static",
+    },
+    field: {
+      //name: 'Настройка qBittorent',
+      description: "Настройка Transmission",
+    },
+  });
   Lampa.SettingsApi.addParam({
     component: "transmission",
     param: {
