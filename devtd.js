@@ -574,7 +574,8 @@ Lampa.Listener.follow("torrent", function (e) {
                   authXhr.withCredentials = false;
 
                   authXhr.addEventListener("readystatechange", function () {
-                    console.log("Bad login " + JSON.stringify(authXhr.status.status));
+                    console.log(addXhr);
+                    console.log("Login with status " + JSON.stringify(authXhr.status.status));
                     Lampa.Noty.show(
                       "Login with status " + JSON.stringify(authXhr.status)
                     );
