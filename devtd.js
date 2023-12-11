@@ -575,6 +575,11 @@ Lampa.Listener.follow("torrent", function (e) {
 
                   authXhr.addEventListener("readystatechange", function () {
                     console.log(addXhr);
+                    console.log(`${Lampa.Storage.get(qBittorentProtocol)}${Lampa.Storage.get(
+                      "transmissionUrl"
+                    )}:${Lampa.Storage.get(
+                      "transmissionPort"
+                    )}/transmission/rpc`);
                     console.log("Login with status " + JSON.stringify(authXhr.status.status));
                     Lampa.Noty.show(
                       "Login with status " + JSON.stringify(authXhr.status)
