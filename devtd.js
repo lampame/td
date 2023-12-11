@@ -168,8 +168,8 @@ function add() {
       type: "static",
     },
     field: {
-      //name: 'Настройка qBittorent',
-      description: "Настройка qBittorent",
+      name: 'Настройка qBittorent',
+      //description: "Настройка qBittorent",
     },
   });
   Lampa.SettingsApi.addParam({
@@ -299,8 +299,8 @@ function add() {
       type: "static",
     },
     field: {
-      //name: 'Настройка qBittorent',
-      description: "Настройка Transmission",
+      name: 'Настройка Transmission',
+      //description: "Настройка Transmission",
     },
   });
   Lampa.SettingsApi.addParam({
