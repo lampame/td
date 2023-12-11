@@ -575,7 +575,7 @@ Lampa.Listener.follow("torrent", function (e) {
 
                   authXhr.addEventListener("readystatechange", function () {
                     console.log(addXhr);
-                    console.log(`${Lampa.Storage.get(transmissionProtocol)}${Lampa.Storage.get(
+                    console.log(`${Lampa.Storage.get("transmissionProtocol")}${Lampa.Storage.get(
                       "transmissionUrl"
                     )}:${Lampa.Storage.get(
                       "transmissionPort"
