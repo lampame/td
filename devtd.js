@@ -163,6 +163,24 @@ function add() {
   Lampa.SettingsApi.addParam({
     component: "qBittorent",
     param: {
+      name: "qBittorent_ssl",
+      type: "trigger", //доступно select,input,trigger,title,static
+      default: false,
+      //icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
+    },
+    field: {
+      name: `Use HTTPS`,
+      description: "",
+    },
+    onChange: function (value) {
+      if (value == "true") Lampa.Storage.set("qBittorentProtocol", "https://");
+      else Lampa.Storage.set("qBittorentProtocol", "http://");
+      Lampa.Settings.update();
+    },
+  });
+  Lampa.SettingsApi.addParam({
+    component: "qBittorent",
+    param: {
       name: "qBittorent_url",
       type: "input", //доступно select,input,trigger,title,static
       values: `${Lampa.Storage.get("qBittorentUrl")}`,
@@ -217,7 +235,7 @@ function add() {
       Lampa.Storage.set("qBittorentPass", item);
     },
   });
-  /* transmission */
+  /* Transmission */
   Lampa.SettingsApi.addParam({
     component: "torrentDownloader",
     param: {
@@ -262,6 +280,24 @@ function add() {
     },
   });
   /* Client setting */
+  Lampa.SettingsApi.addParam({
+    component: "transmission",
+    param: {
+      name: "transmission_ssl",
+      type: "trigger", //доступно select,input,trigger,title,static
+      default: false,
+      //icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
+    },
+    field: {
+      name: `Use HTTPS`,
+      description: "",
+    },
+    onChange: function (value) {
+      if (value == "true") Lampa.Storage.set("transmissionProtocol", "https://");
+      else Lampa.Storage.set("transmissionProtocol", "http://");
+      Lampa.Settings.update();
+    },
+  });
   Lampa.SettingsApi.addParam({
     component: "transmission",
     param: {
@@ -319,6 +355,24 @@ function add() {
       Lampa.Storage.set("transmissionPass", item);
     },
   });
+  Lampa.SettingsApi.addParam({
+    component: "transmission",
+    param: {
+      name: "transmission_autostart",
+      type: "trigger", //доступно select,input,trigger,title,static
+      default: true,
+      //icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
+    },
+    field: {
+      name: `Autostop`,
+      description: "Все торренты добавляются на паузе",
+    },
+    onChange: function (value) {
+      if (value == "true") Lampa.Storage.set("transmissionAutostart", true);
+      else Lampa.Storage.set("transmissionAutostart", false);
+      Lampa.Settings.update();
+    },
+  });
 }
 /* Если всё готово */
 if (window.appready) add();
@@ -339,7 +393,6 @@ Lampa.Listener.follow("torrent", function (e) {
     const originalSelectShow = Lampa.Select.show;
     // Override Select.show with custom functionality    
     Lampa.Select.show = function (options) {
-      //console.log(options);
       // Add the qBittorrent menu item
       if (Lampa.Storage.field("td_qBittorent") === true && !addQbittorrentItem) {
         addQbittorrentItem = true;
@@ -511,7 +564,7 @@ Lampa.Listener.follow("torrent", function (e) {
                       var data = JSON.stringify({
                         method: "torrent-add",
                         arguments: {
-                          paused: false,
+                          paused: Lampa.Storage.get("transmissionAutostart"),
                           filename: selectedTorrent.MagnetUri.split("&")[0],
                         },
                       });
