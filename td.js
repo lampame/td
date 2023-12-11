@@ -442,7 +442,7 @@ Lampa.Listener.follow("torrent", function (e) {
                   var authXhr = new XMLHttpRequest();
                   authXhr.open(
                     "GET",
-                    `${Lampa.Storage.get("qBittorentUrl")}:${Lampa.Storage.get(
+                    `${Lampa.Storage.get("qBittorentProtocol") || "http://"}${Lampa.Storage.get("qBittorentUrl")}:${Lampa.Storage.get(
                       "qBittorentPort"
                     )}/api/v2/auth/login?username=${Lampa.Storage.get(
                       "qBittorentUser"
@@ -455,7 +455,7 @@ Lampa.Listener.follow("torrent", function (e) {
                       var addXhr = new XMLHttpRequest();
                       addXhr.open(
                         "POST",
-                        `${Lampa.Storage.get(
+                        `${Lampa.Storage.get("qBittorentProtocol") || "http://"}${Lampa.Storage.get(
                           "qBittorentUrl"
                         )}:${Lampa.Storage.get(
                           "qBittorentPort"
@@ -472,7 +472,7 @@ Lampa.Listener.follow("torrent", function (e) {
                           var listXhr = new XMLHttpRequest();
                           listXhr.open(
                             "GET",
-                            `${Lampa.Storage.get(
+                            `${Lampa.Storage.get("qBittorentProtocol") || "http://"}${Lampa.Storage.get(
                               "qBittorentUrl"
                             )}:${Lampa.Storage.get(
                               "qBittorentPort"
@@ -491,7 +491,7 @@ Lampa.Listener.follow("torrent", function (e) {
                               var firstXhr = new XMLHttpRequest();
                               firstXhr.open(
                                 "GET",
-                                `${Lampa.Storage.get(
+                                `${Lampa.Storage.get("qBittorentProtocol") || "http://"}${Lampa.Storage.get(
                                   "qBittorentUrl"
                                 )}:${Lampa.Storage.get(
                                   "qBittorentPort"
@@ -504,7 +504,7 @@ Lampa.Listener.follow("torrent", function (e) {
                                   var toggleXhr = new XMLHttpRequest();
                                   toggleXhr.open(
                                     "GET",
-                                    `${Lampa.Storage.get(
+                                    `${Lampa.Storage.get("qBittorentProtocol") || "http://"}${Lampa.Storage.get(
                                       "qBittorentUrl"
                                     )}:${Lampa.Storage.get(
                                       "qBittorentPort"
@@ -575,14 +575,8 @@ Lampa.Listener.follow("torrent", function (e) {
                   authXhr.addEventListener("readystatechange", function () {
                     if ((authXhr.readyState === 4) & (authXhr.status === 409)) {
                       var addXhr = new XMLHttpRequest();
-                      console.log(
-                        authXhr.getResponseHeader("X-Transmission-Session-Id")
-                      );
-                      console.log(
-                        `Status ${authXhr.status} - and magnet ${
-                          selectedTorrent.MagnetUri.split("&")[0]
-                        }`
-                      );
+                      console.log("Login with status " + authXhr.status);
+                      Lampa.Noty.show("Login with status " + authXhr.status);
                       //Try add torrent
                       var data = JSON.stringify({
                         method: "torrent-add",
@@ -593,7 +587,7 @@ Lampa.Listener.follow("torrent", function (e) {
                       });
                       addXhr.open(
                         "POST",
-                        `http://${Lampa.Storage.get(
+                        `${Lampa.Storage.get("transmissionProtocol") || "http://"}${Lampa.Storage.get(
                           "transmissionUrl"
                         )}:${Lampa.Storage.get(
                           "transmissionPort"
@@ -619,12 +613,12 @@ Lampa.Listener.follow("torrent", function (e) {
                       addXhr.send(data);
                       addXhr.addEventListener("readystatechange", function () {
                         if (
-                          (addXhr.readyState === 4) &
-                          (addXhr.status === 200)
+                          addXhr.readyState === 4 & addXhr.status === 200
                         ) {
-                          Lampa.Noty.show("Torrent add");
-                        } else {
+                          Lampa.Noty.show("Torrent add success");
+                        } else if (addXhr.status != 200) {
                           console.log(addXhr);
+                          Lampa.Noty.show("Something wrong " + addXhr.status);
                         }
                       });
                     }
@@ -632,7 +626,7 @@ Lampa.Listener.follow("torrent", function (e) {
 
                   authXhr.open(
                     "POST",
-                    `http://${Lampa.Storage.get(
+                    `${Lampa.Storage.get("transmissionProtocol") || "http://"}${Lampa.Storage.get(
                       "transmissionUrl"
                     )}:${Lampa.Storage.get(
                       "transmissionPort"
