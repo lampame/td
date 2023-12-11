@@ -195,13 +195,17 @@ function add() {
     param: {
       name: "qBittorent_url",
       type: "input", //доступно select,input,trigger,title,static
-      values: `${Lampa.Storage.get("qBittorentUrl")}`,
+      //values: `${Lampa.Storage.get("qBittorentUrl") || ""}`,
+      placeholder: '',
+      values: '',
+      default: ''
     },
     field: {
       name: `Adress`,
     },
     onChange: function (item) {
       Lampa.Storage.set("qBittorentUrl", item);
+      Lampa.Settings.update();
     },
   });
   Lampa.SettingsApi.addParam({
@@ -209,13 +213,17 @@ function add() {
     param: {
       name: "qBittorent_port",
       type: "input", //доступно select,input,trigger,title,static
-      values: `${Lampa.Storage.get("qBittorentPort")}`,
+      //values: `${Lampa.Storage.get("qBittorentPort")}`,
+      placeholder: '',
+      values: '',
+      default: ''
     },
     field: {
       name: `Port`,
     },
     onChange: function (item) {
       Lampa.Storage.set("qBittorentPort", item);
+      Lampa.Settings.update();
     },
   });
   /* auth */
@@ -224,13 +232,17 @@ function add() {
     param: {
       name: "qBittorent_user",
       type: "input", //доступно select,input,trigger,title,static
-      values: `${Lampa.Storage.get("qBittorentUser")}`,
+      //values: `${Lampa.Storage.get("qBittorentUser")}`,
+      placeholder: '',
+      values: '',
+      default: ''
     },
     field: {
       name: `User`,
     },
     onChange: function (item) {
       Lampa.Storage.set("qBittorentUser", item);
+      Lampa.Settings.update();
     },
   });
   Lampa.SettingsApi.addParam({
@@ -238,13 +250,17 @@ function add() {
     param: {
       name: "qBittorent_password",
       type: "input", //доступно select,input,trigger,title,static
-      values: `${Lampa.Storage.get("qBittorentPass")}`,
+      //values: `${Lampa.Storage.get("qBittorentPass")}`,
+      placeholder: '',
+      values: '',
+      default: ''
     },
     field: {
       name: `Password`,
     },
     onChange: function (item) {
       Lampa.Storage.set("qBittorentPass", item);
+      Lampa.Settings.update();
     },
   });
   /* Transmission */
@@ -326,13 +342,17 @@ function add() {
     param: {
       name: "transmission_url",
       type: "input", //доступно select,input,trigger,title,static
-      values: `${Lampa.Storage.get("transmissionUrl")}`,
+      //values: `${Lampa.Storage.get("transmissionUrl")}`,
+      placeholder: '',
+      values: '',
+      default: ''
     },
     field: {
       name: `Adress`,
     },
     onChange: function (item) {
       Lampa.Storage.set("transmissionUrl", item);
+      Lampa.Settings.update();
     },
   });
   Lampa.SettingsApi.addParam({
@@ -340,13 +360,17 @@ function add() {
     param: {
       name: "transmission_port",
       type: "input", //доступно select,input,trigger,title,static
-      values: `${Lampa.Storage.get("transmissionPort")}`,
+      //values: `${Lampa.Storage.get("transmissionPort")}`,
+      placeholder: '',
+      values: '',
+      default: ''
     },
     field: {
       name: `Port`,
     },
     onChange: function (item) {
       Lampa.Storage.set("transmissionPort", item);
+      Lampa.Settings.update();
     },
   });
   /* auth */
@@ -355,13 +379,17 @@ function add() {
     param: {
       name: "transmission_user",
       type: "input", //доступно select,input,trigger,title,static
-      values: `${Lampa.Storage.get("transmissionUser")}`,
+      //values: `${Lampa.Storage.get("transmissionUser")}`,
+      placeholder: '',
+      values: '',
+      default: ''
     },
     field: {
       name: `User`,
     },
     onChange: function (item) {
       Lampa.Storage.set("transmissionUser", item);
+      Lampa.Settings.update();
     },
   });
   Lampa.SettingsApi.addParam({
@@ -369,13 +397,17 @@ function add() {
     param: {
       name: "transmission_password",
       type: "input", //доступно select,input,trigger,title,static
-      values: `${Lampa.Storage.get("transmissionPass")}`,
+      //values: `${Lampa.Storage.get("transmissionPass")}`,
+      placeholder: '',
+      values: '',
+      default: ''
     },
     field: {
       name: `Password`,
     },
     onChange: function (item) {
       Lampa.Storage.set("transmissionPass", item);
+      Lampa.Settings.update();
     },
   });
   Lampa.SettingsApi.addParam({
