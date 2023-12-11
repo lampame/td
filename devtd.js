@@ -574,9 +574,9 @@ Lampa.Listener.follow("torrent", function (e) {
                   authXhr.withCredentials = false;
 
                   authXhr.addEventListener("readystatechange", function () {
-                    console.log("Bad login " + JSON.stringify(authXhr));
+                    console.log("Bad login " + JSON.stringify(authXhr.status));
                     Lampa.Noty.show(
-                      "Bad login " + JSON.stringify(authXhr)
+                      "Login with status " + JSON.stringify(authXhr.status)
                     );
                     if ((authXhr.readyState === 4) & (authXhr.status === 409)) {
                       var addXhr = new XMLHttpRequest();
@@ -629,9 +629,9 @@ Lampa.Listener.follow("torrent", function (e) {
                         ) {
                           Lampa.Noty.show("Torrent add");
                         } else {
-                          console.log("Bad add torrent" + JSON.stringify(addXhr));
+                          console.log("Bad add torrent" + JSON.stringify(addXhr.status));
                           Lampa.Noty.show(
-                            "Bad add torrent" + JSON.stringify(addXhr)
+                            "Bad add torrent" + JSON.stringify(addXhr.status)
                           );
                           console.log(addXhr);
                         }
