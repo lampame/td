@@ -13,6 +13,7 @@ function add() {
   /* Menu */
   Lampa.Settings.listener.follow("open", function (e) {
     console.log(e);
+    /* qBittorent */
     if (e.name == "main") {
       if (
         Lampa.Settings.main().render().find('[data-component="qBittorent"]')
@@ -29,7 +30,6 @@ function add() {
         .find('[data-component="qBittorent"]')
         .addClass("hide");
     }
-    //if (e.name == "qBittorent") $(".settings__title").append(" qBittorent");
     /* transmission */
     if (e.name == "main") {
       if (
@@ -47,7 +47,23 @@ function add() {
         .find('[data-component="transmission"]')
         .addClass("hide");
     }
-    //if (e.name == "transmission") $(".settings__title").append(" transmission");
+    /* Synology */
+    if (e.name == "main") {
+      if (
+        Lampa.Settings.main().render().find('[data-component="synology"]')
+          .length == 0
+      ) {
+        Lampa.SettingsApi.addComponent({
+          component: "synology",
+          name: "synology",
+        });
+      }
+      Lampa.Settings.main().update();
+      Lampa.Settings.main()
+        .render()
+        .find('[data-component="synology"]')
+        .addClass("hide");
+    }
     /* info */
     if (e.name == "main") {
       if (
@@ -65,7 +81,7 @@ function add() {
         .find('[data-component="td_info"]')
         .addClass("hide");
     }
-    //if (e.name == "td_info") $(".settings__title").html("О плагине"); //$(".settings__title").append("");
+    
   });
 
   Lampa.SettingsApi.addParam({
@@ -115,7 +131,7 @@ function add() {
         "Плагин служит для загрузки торрентов средствами Torrent клиентов. Вызывается через контекстное меню на выбранной раздаче</ br> Обязательные зависимости - Активированный парсер для торрентов. Torrserver НЕ ТРЕБУЕТСЯ</ br> Пожелания по клиентам принимаются в чате плагина",
     },
   });
-  /* qBittorent */
+  /* Start qBittorent */
   Lampa.SettingsApi.addParam({
     component: "torrentDownloader",
     param: {
@@ -260,6 +276,171 @@ function add() {
     },
     onChange: function (item) {
       Lampa.Storage.set("qBittorentPass", item);
+      Lampa.Settings.update();
+    },
+  });
+  /* Start Synology */
+  Lampa.SettingsApi.addParam({
+    component: "torrentDownloader",
+    param: {
+      name: "td_synology",
+      type: "trigger", //доступно select,input,trigger,title,static
+      default: false,
+    },
+    field: {
+      name: `Synology`,
+      description: "",
+    },
+    onChange: function (value) {
+      if (value == "true") Lampa.Storage.set("td_synology", true);
+      else Lampa.Storage.set("td_synology", false);
+      Lampa.Settings.update();
+    },
+  });
+  Lampa.SettingsApi.addParam({
+    component: "torrentDownloader",
+    param: {
+      name: "synology",
+      type: "static", //доступно select,input,trigger,title,static
+      default: true,
+    },
+    field: {
+      name: "Synology",
+      description: "Настройка сервера",
+    },
+    onRender: function (item) {
+      if (Lampa.Storage.field("td_synology") === true) {
+        item.show();
+        $(".settings-param__name", item).before(
+          '<div class="settings-param__status"></div>'
+        );
+      } else item.hide();
+      item.on("hover:enter", function () {
+        Lampa.Settings.create("synology");
+        Lampa.Controller.enabled().controller.back = function () {
+          Lampa.Settings.create("torrentDownloader");
+        };
+      });
+    },
+  });
+  /* Client setting */
+  Lampa.SettingsApi.addParam({
+    component: "synology",
+    param: {
+      name: "synologyHead",
+      type: "static",
+    },
+    field: {
+      name: 'Настройка Synology',
+      //description: "Настройка Transmission",
+    },
+  });
+  Lampa.SettingsApi.addParam({
+    component: "synology",
+    param: {
+      name: "synology_ssl",
+      type: "trigger", //доступно select,input,trigger,title,static
+      default: false,
+      //icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="2" class="stroke-000000"><path d="M4.4 2h15.2A2.4 2.4 0 0 1 22 4.4v15.2a2.4 2.4 0 0 1-2.4 2.4H4.4A2.4 2.4 0 0 1 2 19.6V4.4A2.4 2.4 0 0 1 4.4 2Z"></path><path d="M12 20.902V9.502c-.026-2.733 1.507-3.867 4.6-3.4M9 13.5h6"></path></g></svg>',
+    },
+    field: {
+      name: `Use HTTPS`,
+      description: "",
+    },
+    onChange: function (value) {
+      if (value == "true") Lampa.Storage.set("synologyProtocol", "https://");
+      else Lampa.Storage.set("synologyProtocol", "http://");
+      Lampa.Settings.update();
+    },
+  });
+  Lampa.SettingsApi.addParam({
+    component: "synology",
+    param: {
+      name: "synology_url",
+      type: "input", //доступно select,input,trigger,title,static
+      //values: `${Lampa.Storage.get("transmissionUrl")}`,
+      placeholder: '',
+      values: '',
+      default: ''
+    },
+    field: {
+      name: `Adress`,
+    },
+    onChange: function (item) {
+      Lampa.Storage.set("synologyUrl", item);
+      Lampa.Settings.update();
+    },
+  });
+  Lampa.SettingsApi.addParam({
+    component: "synology",
+    param: {
+      name: "synologyPort",
+      type: "input", //доступно select,input,trigger,title,static
+      //values: `${Lampa.Storage.get("transmissionPort")}`,
+      placeholder: '',
+      values: '',
+      default: ''
+    },
+    field: {
+      name: `Port`,
+    },
+    onChange: function (item) {
+      Lampa.Storage.set("synologyPort", item);
+      Lampa.Settings.update();
+    },
+  });
+  /* auth */
+  Lampa.SettingsApi.addParam({
+    component: "synology",
+    param: {
+      name: "synology_user",
+      type: "input", //доступно select,input,trigger,title,static
+      //values: `${Lampa.Storage.get("transmissionUser")}`,
+      placeholder: '',
+      values: '',
+      default: ''
+    },
+    field: {
+      name: `User`,
+    },
+    onChange: function (item) {
+      Lampa.Storage.set("synologyUser", item);
+      Lampa.Settings.update();
+    },
+  });
+  Lampa.SettingsApi.addParam({
+    component: "synology",
+    param: {
+      name: "synology_password",
+      type: "input", //доступно select,input,trigger,title,static
+      //values: `${Lampa.Storage.get("transmissionPass")}`,
+      placeholder: '',
+      values: '',
+      default: ''
+    },
+    field: {
+      name: `Password`,
+    },
+    onChange: function (item) {
+      Lampa.Storage.set("synologyPass", item);
+      Lampa.Settings.update();
+    },
+  });
+  Lampa.SettingsApi.addParam({
+    component: "synology",
+    param: {
+      name: "synology_path",
+      type: "input", //доступно select,input,trigger,title,static
+      //values: `${Lampa.Storage.get("transmissionPass")}`,
+      placeholder: '',
+      values: 'home',
+      default: 'home'
+    },
+    field: {
+      name: `Download path`,
+    },
+    onChange: function (item) {
+      Lampa.Storage.set("synologyPath", item);
       Lampa.Settings.update();
     },
   });
@@ -458,16 +639,19 @@ else {
     }
   });
 }
-/* qBittorent */
+
 Lampa.Listener.follow("torrent", function (e) {
   if (e.type === "onlong") {
     // Assuming 'e.element' contains the torrent data
     let selectedTorrent = e.element;
     let addQbittorrentItem = false;
     let addTransmissionItem = false;
+    let addSynologyItem = false;
     const originalSelectShow = Lampa.Select.show;
     // Override Select.show with custom functionality    
     Lampa.Select.show = function (options) {
+      //Logger
+      console.log(selectedTorrent);
       // Add the qBittorrent menu item
       if (Lampa.Storage.field("td_qBittorent") === true && !addQbittorrentItem) {
         addQbittorrentItem = true;
@@ -599,7 +783,48 @@ Lampa.Listener.follow("torrent", function (e) {
           },
         });
       }
-      /* Transmission BTN */
+      /* Add the Synology menu item */
+      if (Lampa.Storage.field("td_synology") === true && !addSynologyItem) {
+        addSynologyItem = true;
+        options.items.push({
+            title: `Synology`,            
+            onSelect: function (a) {
+              if (selectedTorrent) {
+                if (!selectedTorrent.MagnetUri) {
+                  Lampa.Parser.marnet(
+                    selectedTorrent,
+                    () => {
+                      Lampa.Noty.show("Magnet loaded");
+                    },
+                    (error) => {
+                      console.error("Error loading magnet:", error);
+                      Lampa.Noty.show("Error loading magnet:", error);
+                    }
+                  );
+                }
+                if (selectedTorrent.MagnetUri) {
+                  var xhr = new XMLHttpRequest();
+                  xhr.withCredentials = true;
+                  xhr.addEventListener("readystatechange", function() {
+                    if(this.readyState === 4) {
+                     Lampa.Noty.show(JSON.stringify(this));
+                      console.log(JSON.stringify(this));
+                    }
+                  });
+
+                  xhr.open("GET", `${Lampa.Storage.get("synologyProtocol") || "http://"}${Lampa.Storage.get("synologyUrl")}:${Lampa.Storage.get("synologyPort")}/webapi/auth.cgi?api=SYNO.API.Auth&version=3&method=login&account=${Lampa.Storage.get("synologyUser")}&passwd=${Lampa.Storage.get("synologyPass")}&format=sid`);
+                  xhr.send();
+                }
+                setTimeout(() => {
+                  Lampa.Select.close();
+                }, 10);
+              } else {
+                Lampa.Noty.show("Magnet link not found");
+              }
+            },
+          });
+      }
+      /* Add Transmission menu item */
       if (Lampa.Storage.field("td_transmission") === true && !addTransmissionItem) {
         addTransmissionItem = true;
         //splice(0, 0, transmission)
