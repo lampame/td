@@ -440,7 +440,7 @@ function add() {
       default: '/transmission/rpc'
     },
     field: {
-      name: `RPC Patch`,
+      name: `RPC Path`,
       description: "Изменение пути API. Не трогать без необходимости",
     },
     onChange: function (item) {
