@@ -428,6 +428,26 @@ function add() {
       Lampa.Settings.update();
     },
   });
+  /* RPC Path */
+  Lampa.SettingsApi.addParam({
+    component: "transmission",
+    param: {
+      name: "transmission_path",
+      type: "input", //доступно select,input,trigger,title,static
+      //values: `${Lampa.Storage.get("transmissionUrl")}`,
+      placeholder: '',
+      values: '/transmission/rpc',
+      default: '/transmission/rpc'
+    },
+    field: {
+      name: `RPC Patch`,
+      description: "Изменение пути API. Не трогать без необходимости",
+    },
+    onChange: function (item) {
+      Lampa.Storage.set("transmissionPath", item);
+      Lampa.Settings.update();
+    },
+  });
 }
 /* Если всё готово */
 if (window.appready) add();
@@ -623,7 +643,9 @@ Lampa.Listener.follow("torrent", function (e) {
                           "transmissionUrl"
                         )}:${Lampa.Storage.get(
                           "transmissionPort"
-                        )}/transmission/rpc`
+                        )}${Lampa.Storage.get(
+                          "transmissionPath"
+                        )}`
                       );
                       addXhr.setRequestHeader(
                         "X-Transmission-Session-Id",
@@ -662,7 +684,9 @@ Lampa.Listener.follow("torrent", function (e) {
                       "transmissionUrl"
                     )}:${Lampa.Storage.get(
                       "transmissionPort"
-                    )}/transmission/rpc`
+                    )}${Lampa.Storage.get(
+                          "transmissionPath"
+                        )}`
                   );
                   authXhr.setRequestHeader(
                     "Authorization",
