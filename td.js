@@ -18,7 +18,7 @@
     });
     if (!existingItem) {
       options.items.push(newItem);
-      typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && getStatus$1();
+      //typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && getStatus();
     }
   }
   function qBittorrentClient(selectedTorrent) {
@@ -135,7 +135,7 @@
     });
     if (!existingItem) {
       options.items.push(newItem);
-      typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && getStatus();
+      //typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && getStatus();
     }
   }
   function transmissionClient(selectedTorrent) {
@@ -212,7 +212,7 @@
     xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") || "" + ":" + Lampa.Storage.get("transmissionPass") || "")));
     xhr.send();
   }
-  var transmission = {
+  var Transmission = {
     client: client,
     getStatus: getStatus
   };
@@ -232,7 +232,7 @@
           }
           /* Transmission */
           if (Lampa.Storage.field("td_transmission") === true) {
-            transmission.client(selectedTorrent, options);
+            Transmission.client(selectedTorrent, options);
           }
           originalSelectShow.call(this, options);
         };
@@ -387,7 +387,7 @@
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_qBittorent") === true) {
-          typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
+          //typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
           //qBittorent.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="qBittorentgetStatus" class="settings-param__status wait"></div>');
@@ -537,7 +537,7 @@
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_transmission") === true) {
-          typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
+          //typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
           //transmission.getStatus()
           item.show();
           $(".settings-param__name", item).before('<div id="transmissionStatus" class="settings-param__status wait"></div>');
