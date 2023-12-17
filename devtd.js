@@ -224,6 +224,9 @@
         var selectedTorrent = e.element;
         /* @preserve */
         var originalSelectShow = Lampa.Select.show;
+        if (Lampa.Storage.field("td_qBittorent") === true) ;
+        /* Transmission */
+        if (Lampa.Storage.field("td_transmission") === true) ;
         // Override Select.show with custom functionality    
         Lampa.Select.show = function (options) {
           /* qBittorent */
@@ -387,7 +390,8 @@
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_qBittorent") === true) {
-          typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
+          //typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
+          qBittorent.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="qBittorentgetStatus" class="settings-param__status wait"></div>');
         } else item.hide();
@@ -536,7 +540,8 @@
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_transmission") === true) {
-          typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
+          //typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
+          transmission.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="transmissionStatus" class="settings-param__status wait"></div>');
         } else item.hide();
