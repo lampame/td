@@ -1,8 +1,36 @@
 (function () {
   'use strict';
 
+  function client$1(selectedTorrent, options) {
+    var newItem = {
+      title: '<p id="qBittorentgetStatusBtn">qBittorrent</p>',
+      onSelect: function onSelect() {
+        if (selectedTorrent) {
+          Lampa.Noty.show("fine");
+          qBittorrentClient(selectedTorrent);
+        } else {
+          Lampa.Noty.show("Magnet link not found");
+        }
+      }
+    };
+    var existingItem = options.items.find(function (item) {
+      return item.title === newItem.title;
+    });
+    if (!existingItem) {
+      options.items.push(newItem);
+      typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && getStatus$1();
+    }
+  }
   function qBittorrentClient(selectedTorrent) {
-    if (selectedTorrent) {
+    if (!selectedTorrent.MagnetUri) {
+      Lampa.Parser.marnet(selectedTorrent, function () {
+        Lampa.Noty.show("Magnet loaded");
+      }, function (error) {
+        console.error("Error loading magnet:", error);
+        Lampa.Noty.show("Error loading magnet:", error);
+      });
+    }
+    if (selectedTorrent.MagnetUri) {
       // Authentication request
       var authXhr = new XMLHttpRequest();
       authXhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl"), ":").concat(Lampa.Storage.get("qBittorentPort"), "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser"), "&password=").concat(Lampa.Storage.get("qBittorentPass")), true);
@@ -21,7 +49,8 @@
                 Lampa.Noty.show("Bad" + JSON.parse(listXhr.responseText));
                 if (listXhr.readyState === 4) {
                   var torrents = JSON.parse(listXhr.responseText);
-                  var lastAddedTorrent = torrents[0].hash;
+                  var lastAddedTorrent = torrents[0].hash; // Assuming the first one is the last added
+
                   // Set first/last piece priority
                   var firstXhr = new XMLHttpRequest();
                   firstXhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl"), ":").concat(Lampa.Storage.get("qBittorentPort"), "/api/v2/torrents/toggleFirstLastPiecePrio?hashes=").concat(lastAddedTorrent), true);
@@ -44,7 +73,7 @@
               listXhr.send();
             }
           };
-          var data = "urls=" + encodeURIComponent(selectedTorrent);
+          var data = "urls=" + encodeURIComponent(selectedTorrent.MagnetUri);
           addXhr.send(data);
         } else {
           Lampa.Noty.show("Authentication failed");
@@ -81,16 +110,44 @@
         }
       }
     });
-    statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "", ":").concat(Lampa.Storage.get("qBittorentPort") || "", "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "", "&password=").concat(Lampa.Storage.get("qBittorentPass") || ""));
+    statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl"), ":").concat(Lampa.Storage.get("qBittorentPort"), "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser"), "&password=").concat(Lampa.Storage.get("qBittorentPass")));
     statusXhr.send();
   }
   var qBittorent = {
-    qBittorrentClient: qBittorrentClient,
+    client: client$1,
     getStatus: getStatus$1
   };
 
+  function client(selectedTorrent, options) {
+    var newItem = {
+      title: '<p id="transmissionStatusBtn">Transmission</p>',
+      onSelect: function onSelect() {
+        if (selectedTorrent) {
+          Lampa.Noty.show("fine");
+          transmissionClient(selectedTorrent);
+        } else {
+          Lampa.Noty.show("Magnet link not found");
+        }
+      }
+    };
+    var existingItem = options.items.find(function (item) {
+      return item.title === newItem.title;
+    });
+    if (!existingItem) {
+      options.items.push(newItem);
+      typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && getStatus();
+    }
+  }
   function transmissionClient(selectedTorrent) {
-    if (selectedTorrent) {
+    if (!selectedTorrent.MagnetUri) {
+      Lampa.Parser.marnet(selectedTorrent, function () {
+        Lampa.Noty.show("Magnet loaded");
+      }, function (error) {
+        console.error("Error loading magnet:", error);
+        Lampa.Noty.show("Error loading magnet:", error);
+      });
+    }
+    if (selectedTorrent.MagnetUri) {
       // WARNING: For GET requests, body is set to null by browsers.
       var authXhr = new XMLHttpRequest();
       authXhr.withCredentials = false;
@@ -103,7 +160,7 @@
             method: "torrent-add",
             arguments: {
               paused: Lampa.Storage.get("transmissionAutostart"),
-              filename: selectedTorrent.split("&")[0]
+              filename: selectedTorrent.MagnetUri.split("&")[0]
             }
           });
           addXhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl"), ":").concat(Lampa.Storage.get("transmissionPort")).concat(Lampa.Storage.get("transmissionPath")));
@@ -151,53 +208,37 @@
         }
       }
     });
-    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "", ":").concat(Lampa.Storage.get("transmissionPort") || "").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
-    xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") || "" + ":" + Lampa.Storage.get("transmissionPass") || "")));
+    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl"), ":").concat(Lampa.Storage.get("transmissionPort")).concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+    xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
     xhr.send();
   }
   var transmission = {
-    transmissionClient: transmissionClient,
+    client: client,
     getStatus: getStatus
   };
 
   function downloader() {
-    function send2qBittorrent(magnetUri) {
-      //Lampa.Noty.show("Send to qBittorrent start");
-      qBittorent.qBittorrentClient(magnetUri);
-    }
-    function send2transmission(magnetUri) {
-      //Lampa.Noty.show("Send to transmission start");
-      transmission.transmissionClient(magnetUri);
-    }
-    Lampa.Listener.follow('torrent', function (e) {
-      if (e.type === 'onlong') {
+    Lampa.Listener.follow("torrent", function (e) {
+      if (e.type === "onlong") {
+        /* @preserve */
         var selectedTorrent = e.element;
-        var onSelectApp = function onSelectApp(a) {
-          if (!selectedTorrent.MagnetUri) {
-            Lampa.Parser.marnet(selectedTorrent, function () {
-              a.send2app(selectedTorrent.MagnetUri);
-            }, function (error) {
-              console.error('tmenu', "Error loading magnet:", error);
-              Lampa.Noty.show("Error loading magnet:", error);
-            });
-          } else {
-            a.send2app(selectedTorrent.MagnetUri);
+        /* @preserve */
+        var originalSelectShow = Lampa.Select.show;
+        if (Lampa.Storage.field("td_qBittorent") === true) ;
+        /* Transmission */
+        if (Lampa.Storage.field("td_transmission") === true) ;
+        // Override Select.show with custom functionality    
+        Lampa.Select.show = function (options) {
+          /* qBittorent */
+          if (Lampa.Storage.field("td_qBittorent") === true) {
+            qBittorent.client(selectedTorrent, options);
           }
+          /* Transmission */
+          if (Lampa.Storage.field("td_transmission") === true) {
+            transmission.client(selectedTorrent, options);
+          }
+          originalSelectShow.call(this, options);
         };
-        if (Lampa.Storage.field("td_qBittorent") === true) {
-          e.menu.push({
-            title: 'qBittorrent',
-            send2app: send2qBittorrent,
-            onSelect: onSelectApp
-          });
-        }
-        if (Lampa.Storage.field("td_transmission") === true) {
-          e.menu.push({
-            title: 'transmission',
-            send2app: send2transmission,
-            onSelect: onSelectApp
-          });
-        }
       }
     });
   }
@@ -500,7 +541,7 @@
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_transmission") === true) {
           //typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
-          //transmission.getStatus()
+          transmission.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="transmissionStatus" class="settings-param__status wait"></div>');
         } else item.hide();
