@@ -81,7 +81,7 @@
         }
       }
     });
-    statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || ""), "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "", "&password=").concat(Lampa.Storage.get("qBittorentPass") || ""));
+    statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "1", "&password=").concat(Lampa.Storage.get("qBittorentPass") || "1"));
     statusXhr.send();
   }
   var qBittorent = {
