@@ -81,7 +81,7 @@
         }
       }
     });
-    statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "", ":").concat(Lampa.Storage.get("qBittorentPort") || "", "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "", "&password=").concat(Lampa.Storage.get("qBittorentPass") || ""));
+    statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || ""), "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "", "&password=").concat(Lampa.Storage.get("qBittorentPass") || ""));
     statusXhr.send();
   }
   var qBittorent = {
@@ -151,7 +151,7 @@
         }
       }
     });
-    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "", ":").concat(Lampa.Storage.get("transmissionPort") || "").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "", ":").concat(parseInt(Lampa.Storage.get("transmissionPort") || "")).concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
     xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") || "" + ":" + Lampa.Storage.get("transmissionPass") || "")));
     xhr.send();
   }
@@ -185,15 +185,17 @@
           }
         };
         if (Lampa.Storage.field("td_qBittorent") === true) {
+          typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
           e.menu.push({
-            title: 'qBittorrent',
+            title: '<p id="qBittorentgetStatusBtn">qBittorrent</p>',
             send2app: send2qBittorrent,
             onSelect: onSelectApp
           });
         }
         if (Lampa.Storage.field("td_transmission") === true) {
+          typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
           e.menu.push({
-            title: 'transmission',
+            title: '<p id="transmissionStatusBtn">transmission</p>',
             send2app: send2transmission,
             onSelect: onSelectApp
           });
@@ -349,7 +351,7 @@
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_qBittorent") === true) {
-          //typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
+          typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
           //qBittorent.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="qBittorentgetStatus" class="settings-param__status wait"></div>');
@@ -424,7 +426,7 @@
         name: "Port"
       },
       onChange: function onChange(item) {
-        Lampa.Storage.set("qBittorentPort", item);
+        Lampa.Storage.set("qBittorentPort", parseInt(item.replace(/[^0-9]/g, "")));
         Lampa.Settings.update();
       }
     });
@@ -499,8 +501,7 @@
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_transmission") === true) {
-          //typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
-          //transmission.getStatus()
+          typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="transmissionStatus" class="settings-param__status wait"></div>');
         } else item.hide();
@@ -565,7 +566,6 @@
         name: "transmissionPort",
         type: "input",
         //доступно select,input,trigger,title,static
-        //values: `${Lampa.Storage.get("transmissionPort")}`,
         placeholder: '',
         values: '',
         "default": ''
@@ -574,7 +574,7 @@
         name: "Port"
       },
       onChange: function onChange(item) {
-        Lampa.Storage.set("transmissionPort", item);
+        Lampa.Storage.set("transmissionPort", parseInt(item.replace(/[^0-9]/g, "")));
         Lampa.Settings.update();
       }
     });
