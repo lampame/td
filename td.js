@@ -151,7 +151,7 @@
         }
       }
     });
-    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "", ":").concat(parseInt(Lampa.Storage.get("transmissionPort") || "")).concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("transmissionPort") || "9999")).concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
     xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
     xhr.send();
   }
