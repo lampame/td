@@ -2,56 +2,47 @@
   'use strict';
 
   function qBittorrentClient(selectedTorrent) {
-    if (selectedTorrent) {
-      // Authentication request
-      var authXhr = new XMLHttpRequest();
-      authXhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl"), ":").concat(Lampa.Storage.get("qBittorentPort"), "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser"), "&password=").concat(Lampa.Storage.get("qBittorentPass")), true);
-      authXhr.onreadystatechange = function () {
-        if (authXhr.readyState === 4) {
-          // Add torrent request
-          var addXhr = new XMLHttpRequest();
-          addXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl"), ":").concat(Lampa.Storage.get("qBittorentPort"), "/api/v2/torrents/add"), true);
-          addXhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-          addXhr.onreadystatechange = function () {
-            if (addXhr.readyState === 4) {
-              // Get torrent list to find the hash of the last added torrent
-              var listXhr = new XMLHttpRequest();
-              listXhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl"), ":").concat(Lampa.Storage.get("qBittorentPort"), "/api/v2/torrents/info?sort=added_on&reverse=true"), true);
-              listXhr.onreadystatechange = function () {
-                Lampa.Noty.show("Bad" + JSON.parse(listXhr.responseText));
-                if (listXhr.readyState === 4) {
-                  var torrents = JSON.parse(listXhr.responseText);
-                  var lastAddedTorrent = torrents[0].hash;
-                  // Set first/last piece priority
-                  var firstXhr = new XMLHttpRequest();
-                  firstXhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl"), ":").concat(Lampa.Storage.get("qBittorentPort"), "/api/v2/torrents/toggleFirstLastPiecePrio?hashes=").concat(lastAddedTorrent), true);
-                  firstXhr.onreadystatechange = function () {
-                    if (firstXhr.readyState === 4) {
-                      // Toggle sequential download
-                      var toggleXhr = new XMLHttpRequest();
-                      toggleXhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl"), ":").concat(Lampa.Storage.get("qBittorentPort"), "/api/v2/torrents/toggleSequentialDownload?hashes=").concat(lastAddedTorrent), true);
-                      toggleXhr.onreadystatechange = function () {
-                        if (toggleXhr.readyState === 4) {
-                          Lampa.Noty.show("Torrent is being downloaded in qBittorrent");
-                        }
-                      };
-                      toggleXhr.send();
-                    }
-                  };
-                  firstXhr.send();
-                }
-              };
-              listXhr.send();
-            }
-          };
-          var data = "urls=" + encodeURIComponent(selectedTorrent);
-          addXhr.send(data);
-        } else {
-          Lampa.Noty.show("Authentication failed");
-        }
-      };
-      authXhr.send();
+    if (!selectedTorrent) {
+      return;
     }
+    var protocol = Lampa.Storage.get("qBittorentProtocol") || "http://";
+    var url = Lampa.Storage.get("qBittorentUrl");
+    var port = Lampa.Storage.get("qBittorentPort");
+    var user = Lampa.Storage.get("qBittorentUser");
+    var pass = Lampa.Storage.get("qBittorentPass");
+
+    // Authentication request
+    var authXhr = new XMLHttpRequest();
+    authXhr.open("POST", "".concat(protocol).concat(url, ":").concat(port, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
+    authXhr.onreadystatechange = function () {
+      if (authXhr.readyState === 4) {
+        if (authXhr.status !== 200) {
+          Lampa.Noty.show("Authentication failed");
+          return;
+        }
+
+        // Add torrent request
+        var addXhr = new XMLHttpRequest();
+        addXhr.open("POST", "".concat(protocol).concat(url, ":").concat(port, "/api/v2/torrents/add"), true);
+        addXhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        addXhr.onreadystatechange = function () {
+          if (addXhr.readyState === 4) {
+            if (addXhr.status !== 200) {
+              Lampa.Noty.show("Failed to add torrent");
+              return;
+            }
+            if (addXhr.response === "Fails.") {
+              Lampa.Noty.show("Torrent already exists");
+              return;
+            }
+            Lampa.Noty.show("Torrent is being downloaded in qBittorrent");
+          }
+        };
+        var data = "urls=" + encodeURIComponent(selectedTorrent);
+        addXhr.send(data);
+      }
+    };
+    authXhr.send();
     setTimeout(function () {
       Lampa.Select.close();
     }, 10);
@@ -90,39 +81,28 @@
   };
 
   function transmissionClient(selectedTorrent) {
-    if (selectedTorrent) {
-      // WARNING: For GET requests, body is set to null by browsers.
-      var authXhr = new XMLHttpRequest();
-      authXhr.withCredentials = false;
-      authXhr.addEventListener("readystatechange", function () {
-        if (authXhr.readyState === 4 & authXhr.status === 409) {
-          var addXhr = new XMLHttpRequest();
-          Lampa.Noty.show("Login with status " + authXhr.status);
-          //Try add torrent
-          var data = JSON.stringify({
-            method: "torrent-add",
-            arguments: {
-              paused: Lampa.Storage.get("transmissionAutostart"),
-              filename: selectedTorrent.split("&")[0]
-            }
-          });
-          addXhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl"), ":").concat(Lampa.Storage.get("transmissionPort")).concat(Lampa.Storage.get("transmissionPath")));
-          addXhr.setRequestHeader("X-Transmission-Session-Id", this.getResponseHeader("X-Transmission-Session-Id"));
-          addXhr.setRequestHeader("Content-Type", "application/json");
-          addXhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
-          addXhr.send(data);
-          addXhr.addEventListener("readystatechange", function () {
-            if (addXhr.readyState === 4 & addXhr.status === 200) {
-              Lampa.Noty.show("Torrent add success");
-            } else if (addXhr.status != 200) {
-              Lampa.Noty.show("Something wrong " + addXhr.status);
-            }
-          });
+    if (selectedTorrent && Lampa.Storage.get("transmissionKey")) {
+      var data = JSON.stringify({
+        method: "torrent-add",
+        arguments: {
+          paused: true,
+          filename: selectedTorrent
         }
       });
-      authXhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl"), ":").concat(Lampa.Storage.get("transmissionPort")).concat(Lampa.Storage.get("transmissionPath")));
-      authXhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
-      authXhr.send();
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4 && this.status === 200) {
+          Lampa.Noty.show("Torrent add success");
+          console.log(this.responseText);
+        } else if (addXhr.status != 200) {
+          Lampa.Noty.show("Something wrong " + addXhr.status);
+        }
+      });
+      xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("transmissionPort") || "9999")).concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+      xhr.setRequestHeader("X-Transmission-Session-Id", Lampa.Storage.get("transmissionKey"));
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
+      xhr.send(data);
     }
     setTimeout(function () {
       Lampa.Select.close();
@@ -134,17 +114,18 @@
     xhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4) {
         if (this.status === 200 || this.status === 409) {
-          $('#transmissionStatus').removeClass('active error wait').addClass('active');
+          Lampa.Storage.set("transmissionKey", xhr.getResponseHeader("X-Transmission-Session-Id"));
+          $("#transmissionStatus").removeClass("active error wait").addClass("active");
           $("#transmissionStatusBtn").text(function (i, text) {
             return "🟢 " + text;
           });
         } else if (this.status === undefined) {
-          $('#transmissionStatus').removeClass('active error wait').addClass('error');
+          $("#transmissionStatus").removeClass("active error wait").addClass("error");
           $("#transmissionStatusBtn").text(function (i, text) {
             return "🔴 " + text;
           });
         } else {
-          $('#transmissionStatus').removeClass('active error wait').addClass('error');
+          $("#transmissionStatus").removeClass("active error wait").addClass("error");
           $("#transmissionStatusBtn").text(function (i, text) {
             return "🔴 " + text;
           });
