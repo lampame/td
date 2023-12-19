@@ -85,7 +85,7 @@
       var data = JSON.stringify({
         method: "torrent-add",
         arguments: {
-          paused: true,
+          paused: Lampa.Storage.get("transmissionAutostart"),
           filename: selectedTorrent
         }
       });
@@ -95,7 +95,7 @@
           Lampa.Noty.show("Torrent add success");
           console.log(this.responseText);
         } else if (addXhr.status != 200) {
-          Lampa.Noty.show("Something wrong " + addXhr.status);
+          Lampa.Noty.show("Something wrong with add torrent " + addXhr.status);
         }
       });
       xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("transmissionPort") || "9999")).concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
@@ -103,6 +103,8 @@
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
       xhr.send(data);
+    } else if (!Lampa.Storage.get("transmissionKey")) {
+      Lampa.Noty.show("Bad login");
     }
     setTimeout(function () {
       Lampa.Select.close();
