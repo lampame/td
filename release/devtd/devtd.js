@@ -659,7 +659,7 @@
   };
 
   Lampa.Platform.tv();
-  //Updater.runner();
+  /* Some function */
 
   /* Start inject menu */
   function add() {
