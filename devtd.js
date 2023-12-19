@@ -658,8 +658,37 @@
     setMenu: setMenu
   };
 
+  const tdUpdater = {
+      version: "0.0.3",
+      news: "Приветствую! Убедительная просьба перейти на public версияю. Поддержка этой версии будет остановлена. <br /> Небольшие доработки и добавление уведомлений о новой версии.<br />И конечно добавлено немного новых багов ;)",
+  };
+  function runner() {  
+      if (!Lampa.Storage.get("tdUpdater") || tdUpdater.version !== Lampa.Storage.get("tdUpdater").version) {
+          Lampa.Modal.open({
+              title: `Torrent downloader ${tdUpdater.version}`,
+              align: "center",
+              zIndex: 300,
+              html: $(`<div class="about">${tdUpdater.news}</div>`),
+              buttons: [
+                  {
+                      name: "Close",
+                      onSelect: function onSelect() {
+                          Lampa.Modal.close();
+                          $(".modal").remove();
+                          Lampa.Storage.set("tdUpdater", tdUpdater);
+                      },
+                  },
+              ],
+          });
+      }
+  }
+
+  var Updater = {
+      runner
+  };
+
   Lampa.Platform.tv();
-  /* Some function */
+  Updater.runner();
 
   /* Start inject menu */
   function add() {
