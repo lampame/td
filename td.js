@@ -116,6 +116,8 @@
     xhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4) {
         console.log('TD', this.getAllResponseHeaders());
+        console.log('TD', this.status);
+        console.log('TD', this);
         if (this.status === 200 || this.status === 409) {
           Lampa.Storage.set("transmissionKey", xhr.getResponseHeader("X-Transmission-Session-Id"));
           $("#transmissionStatus").removeClass("active error wait").addClass("active");
