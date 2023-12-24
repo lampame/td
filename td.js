@@ -104,7 +104,7 @@
       xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
       xhr.send(data);
     } else if (!Lampa.Storage.get("transmissionKey")) {
-      Lampa.Noty.show("Bad login");
+      Lampa.Noty.show("Bad login " + !Lampa.Storage.get("transmissionKey") + " ".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
     }
     setTimeout(function () {
       Lampa.Select.close();
