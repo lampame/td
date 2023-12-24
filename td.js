@@ -487,7 +487,7 @@
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_transmission") === true) {
-          typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
+          typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="transmissionStatus" class="settings-param__status wait"></div>');
         } else item.hide();
@@ -649,6 +649,7 @@
 
   Lampa.Platform.tv();
   //Updater.runner();
+  // Test
 
   /* Start inject menu */
   function add() {
