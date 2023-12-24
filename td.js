@@ -98,7 +98,7 @@
           Lampa.Noty.show("Something wrong with add torrent " + addXhr.status);
         }
       });
-      xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("transmissionPort") || "9999")).concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+      xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
       xhr.setRequestHeader("X-Transmission-Session-Id", Lampa.Storage.get("transmissionKey"));
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
@@ -134,7 +134,7 @@
         }
       }
     });
-    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("transmissionPort") || "9999")).concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
     xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
     xhr.send();
   }
@@ -503,8 +503,8 @@
         type: "static"
       },
       field: {
-        name: 'Настройка Transmission'
-        //description: "Настройка Transmission",
+        name: 'Настройка Transmission',
+        description: "\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C \u0430\u0434\u0440\u0435\u0441\u0430 - ".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc")
       }
     });
     Lampa.SettingsApi.addParam({
@@ -536,31 +536,34 @@
         "default": ''
       },
       field: {
-        name: "Adress"
+        name: "Adress:Port"
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("transmissionUrl", item);
         Lampa.Settings.update();
       }
     });
+    /*
     Lampa.SettingsApi.addParam({
       component: "transmission",
       param: {
         name: "transmissionPort",
-        type: "input",
-        //доступно select,input,trigger,title,static
+        type: "input", //доступно select,input,trigger,title,static
         placeholder: '',
         values: '',
-        "default": ''
+        default: ''
       },
       field: {
-        name: "Port"
+        name: `Port`,
       },
-      onChange: function onChange(item) {
+      onChange: function (item) {
+        
         Lampa.Storage.set("transmissionPort", parseInt(item.replace(/[^0-9]/g, "")));
         Lampa.Settings.update();
-      }
+     }
+     ,
     });
+    */
     Lampa.SettingsApi.addParam({
       component: "transmission",
       param: {
