@@ -75,9 +75,109 @@
     statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "1", "&password=").concat(Lampa.Storage.get("qBittorentPass") || "1"));
     statusXhr.send();
   }
+  function qPanels() {
+    function tabels(response) {
+      // Function implementation
+      // Получить элемент, в который нужно вставить таблицу
+      var parentElement = document.getElementById("tdStatus");
+      // Создать таблицу
+      var table = document.createElement("table");
+      table.id = "tdStatus table";
+      // Создать заголовок таблицы
+      var headerRow = table.insertRow();
+      var headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачено", "Отдано"];
+      headerCells.forEach(function (headerCell) {
+        var th = document.createElement("th");
+        th.id = "header";
+        th.textContent = headerCell;
+        headerRow.appendChild(th);
+      });
+
+      // Добавить строки с данными из переменной response
+      if (response && response.length > 0) {
+        response.forEach(function (item) {
+          var row = table.insertRow();
+          row.id = "td_panel row";
+          // Создать ячейки для каждой строки
+          var nameCell = row.insertCell();
+          nameCell.textContent = item.name;
+          var stateCell = row.insertCell();
+          if (item.state === "pausedDL") {
+            stateCell.classList.add("simple-button", "selector", "tdAction");
+            stateCell.textContent = Lampa.Lang.translate(item.state);
+            stateCell.on("hover:enter", function () {
+              Lampa.Noty.show("Torrent resume");
+            });
+          } else if (item.state === "downloading") {
+            stateCell.classList.add("simple-button", "selector", "tdAction");
+            stateCell.textContent = Lampa.Lang.translate(item.state);
+            stateCell.on("hover:enter", function () {
+              Lampa.Noty.show("Torrent paused");
+            });
+          }
+          var progressCell = row.insertCell();
+          progressCell.id = "percent";
+          progressCell.textContent = formatPercent(item.progress);
+          var sizeCell = row.insertCell();
+          sizeCell.textContent = formatBytes(item.size);
+          var downloadedCell = row.insertCell();
+          downloadedCell.textContent = formatBytes(item.downloaded);
+          var uploadedCell = row.insertCell();
+          uploadedCell.textContent = formatBytes(item.uploaded);
+        });
+      } else {
+        // Если ответ пустой, добавить строку с сообщением
+        var emptyRow = table.insertRow();
+        var emptyCell = emptyRow.insertCell();
+        emptyCell.colSpan = headerCells.length;
+        emptyCell.textContent = "Данные не найдены";
+      }
+      var footer = document.createElement("div");
+      footer.classList.add("simple-button", "selector", "tdReload");
+      footer.textContent = "Reload";
+      footer.on("hover:enter", function () {
+        location.reload();
+        Lampa.Noty.show("Table reload");
+      });
+      // Вставить созданную таблицу в родительский элемент
+      parentElement.appendChild(table);
+      parentElement.appendChild(footer);
+      function formatPercent(percent) {
+        // Округлить процент до двух знаков после запятой
+        percent = percent * 100;
+        percent = Number(percent.toFixed(1));
+
+        // Добавить процентный знак
+        percent = percent + "%";
+        return percent;
+      }
+      function formatBytes(bytes) {
+        if (bytes >= 1073741824) {
+          return (bytes / 1073741824).toFixed(2) + " GB";
+        } else if (bytes >= 1048576) {
+          return (bytes / 1048576).toFixed(2) + " MB";
+        } else if (bytes >= 1024) {
+          return (bytes / 1024).toFixed(2) + " KB";
+        } else {
+          return bytes + " B";
+        }
+      }
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
+    xhr.addEventListener("readystatechange", function () {
+      if (this.readyState === 4) {
+        //console.log(JSON.parse(this.responseText));
+        return tabels(JSON.parse(this.responseText));
+      }
+    });
+    xhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/info?limit=10"));
+    xhr.send();
+  }
   var qBittorent = {
     qBittorrentClient: qBittorrentClient,
-    getStatus: getStatus$1
+    getStatus: getStatus$1,
+    qPanels: qPanels
   };
 
   function transmissionClient(selectedTorrent) {
@@ -192,6 +292,83 @@
   var Client = {
     downloader: downloader
   };
+
+  function Panels() {
+    var last;
+    var html = document.createElement("div");
+    html.id = "tdPanel";
+    /* Add CSS */
+    var cssUrl = "https://lampame.github.io/td/tdPanel.css";
+
+    // Подключить CSS-файл
+    fetch(cssUrl).then(function (response) {
+      return response.text();
+    }).then(function (css) {
+      // Добавить CSS в документ
+      var style = document.createElement("style");
+      style.innerHTML = css;
+      document.head.appendChild(style);
+    });
+    this.create = function () {
+      this.build();
+      return this.render();
+    };
+    this.build = function () {
+      var tdPanel = html.appendChild(Lampa.Template.js("td_panel_page"));
+      tdPanel.innerHTML = "<div id='tdStatus'></div>";
+      if (Lampa.Storage.field("td_qBittorent") === true) {
+        qBittorent.qPanels();
+      } else {
+        tdPanel.innerHTML = "<div id='Error'><h2>Client not found</h2></div>";
+      }
+      //this.tdClient("qBittorent");
+      this.display();
+      Lampa.Layer.update(html);
+      this.activity.loader(false);
+    };
+    this.display = function () {
+      this.activity.toggle();
+    };
+    this.background = function () {
+      Lampa.Background.immediately("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAZCAYAAABD2GxlAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAHASURBVHgBlZaLrsMgDENXxAf3/9XHFdXNZLm2YZHQymPk4CS0277v9+ffrut62nEcn/M8nzb69cxj6le1+75f/RqrZ9fatm3F9wwMR7yhawilNke4Gis/7j9srQbdaVFBnkcQ1WrfgmIIBcTrvgqqsKiTzvpOQbUnAykVW4VVqZXyyDllYFSKx9QaVrO7nGJIB63g+FAq/xhcHWBYdwCsmAtvFZUKE0MlVZWCT4idOlyhTp3K35R/6Nzlq0uBnsKWlEzgSh1VGJxv6rmpXMO7EK+XWUPnDFRWqitQFeY2UyZVryuWlI8ulLgGf19FooAUwC9gCWLcwzWPb7Wa60qdlZxjx6ooUuUqVQsK+y1VoAJyBeJAVsLJeYmg/RIXdG2kPhwYPBUQQyYF0XC8lwP3MTCrYAXB88556peCbUUZV7WccwkUQfCZC4PXdA5hKhSVhythZqjZM0J39w5m8BRadKAcrsIpNZsLIYdOqcZ9hExhZ1MH+QL+ciFzXzmYhZr/M6yUUwp2dp5U4naZDwAF5JRSefdScJZ3SkU0nl8xpaAy+7ml1EqvMXSs1HRrZ9bc3eZUSXmGa/mdyjbmqyX7A9RaYQa9IRJ0AAAAAElFTkSuQmCC");
+    };
+    this.start = function () {
+      if (Lampa.Activity.active() && Lampa.Activity.active().activity !== this.activity) return;
+      this.background();
+      Lampa.Controller.add("content", {
+        link: this,
+        invisible: true,
+        toggle: function toggle() {
+          Lampa.Controller.collectionSet(html);
+          Lampa.Controller.collectionFocus(last, html);
+        },
+        left: function left() {
+          if (Navigator.canmove("left")) Navigator.move("left");else Lampa.Controller.toggle("menu");
+        },
+        right: function right() {
+          Navigator.move("right");
+        },
+        up: function up() {
+          if (Navigator.canmove("up")) Navigator.move("up");else Lampa.Controller.toggle("head");
+        },
+        down: function down() {
+          Navigator.move("down");
+        },
+        back: function back() {
+          Lampa.Activity.backward();
+        }
+      });
+      Lampa.Controller.toggle("content");
+    };
+    this.pause = function () {};
+    this.stop = function () {};
+    this.render = function () {
+      return html;
+    };
+    this.destroy = function () {
+      html.remove();
+    };
+  }
 
   function setMenu() {
     //Создание пункта меню
@@ -649,22 +826,59 @@
 
   Lampa.Platform.tv();
   //Updater.runner();
-  // Test
-
-  /* Start inject menu */
-  function add() {
-    Menu.setMenu();
-  }
-  /* Add menu */
-  if (window.appready) add();else {
-    Lampa.Listener.follow("app", function (e) {
-      if (e.type == "ready") {
-        add();
-      }
-    });
-  }
 
   /* Add client */
   Client.downloader();
+
+  /* init plugin */
+  function startPlugin() {
+    window.plugin_td_ready = true;
+    Lampa.Lang.add({
+      td_panel: {
+        ru: "TD Panel",
+        en: "TD Panel",
+        uk: "TD Panel"
+      },
+      pausedDL: {
+        ru: "Resume",
+        en: "Resume",
+        uk: "Resume"
+      },
+      downloading: {
+        ru: "Pause",
+        en: "Pause",
+        uk: "Pause"
+      }
+    });
+    var manifest = {
+      type: "other",
+      version: "0.0.1",
+      name: Lampa.Lang.translate("td_panel"),
+      description: "",
+      component: "td"
+    };
+    Lampa.Manifest.plugins = manifest;
+    Lampa.Template.add("td_panel_page", "<div class='td_panel'></div>");
+    function add() {
+      Menu.setMenu();
+      var button = $('<li class="menu__item selector">\n            <div class="menu__ico">\n                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 48 48" width="48px" height="48px"><path d="M 23.501953 4.125 C 12.485953 4.125 3.5019531 13.11 3.5019531 24.125 C 3.5019531 32.932677 9.2467538 40.435277 17.179688 43.091797 L 17.146484 42.996094 L 7 16 L 15 14 C 17.573 20.519 20.825516 32.721688 27.728516 30.929688 C 35.781516 28.948688 28.615 16.981172 27 12.076172 L 34 11 C 38.025862 19.563024 39.693648 25.901226 43.175781 27.089844 C 43.191423 27.095188 43.235077 27.103922 43.275391 27.113281 C 43.422576 26.137952 43.501953 25.140294 43.501953 24.125 C 43.501953 13.11 34.517953 4.125 23.501953 4.125 z M 34.904297 29.314453 C 34.250297 34.648453 28.811359 37.069578 21.943359 35.517578 L 26.316406 43.763672 L 26.392578 43.914062 C 33.176993 42.923925 38.872645 38.505764 41.660156 32.484375 C 41.603665 32.485465 41.546284 32.486418 41.529297 32.486328 C 38.928405 32.472567 36.607552 31.572967 34.904297 29.314453 z"></path></svg>\n            </div>\n            <div class="menu__text">'.concat(manifest.name, "</div>\n        </li>"));
+      button.on("hover:enter", function () {
+        Lampa.Activity.push({
+          url: "",
+          title: manifest.name,
+          component: manifest.component,
+          page: 1
+        });
+      });
+      $(".menu .menu__list").eq(0).append(button);
+    }
+    Lampa.Component.add(manifest.component, Panels);
+    if (window.appready) add();else {
+      Lampa.Listener.follow("app", function (e) {
+        if (e.type == "ready") add();
+      });
+    }
+  }
+  if (!window.plugin_td_ready) startPlugin();
 
 })();
