@@ -1,0 +1,79 @@
+#error h2 {
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5%;
+}
+
+#tdStatus table {
+  width: 100%; /* Ширина таблицы занимает 100% ширины родительского контейнера */
+  border-collapse: collapse; /* Убираем промежутки между ячейками */
+  margin-top: 1%;
+  margin-left: 1%;
+}
+
+#tdStatus table th,
+#tdStatus table td {
+  padding: 10px; /* Отступы внутри ячеек */
+  text-align: left; /* Выравнивание текста в ячейках по левому краю */
+  border: 1px solid #000; /* Границы ячеек */
+}
+
+#tdStatus table th {
+  background-color: #ffffff; /* Цвет фона заголовков */
+  color: #000;
+}
+.simple-button.selector.tdReload {
+  margin: 2% auto;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.simple-button.selector.tdAction {
+  margin: 2% auto;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* Медиа-запросы для резиновой верстки */
+@media screen and (max-width: 600px) {
+  #tdStatus table {
+    width: 100%; /* Ширина таблицы занимает 100% ширины родительского контейнера */
+  }
+  
+  #tdStatus table th,
+  #tdStatus table td {
+    display: block; /* Превращаем ячейки в блочные элементы */
+    width: 100%; /* Ширина блочных элементов занимает 100% ширины родительского контейнера */
+    box-sizing: border-box; /* Учитываем границы в общей ширине элементов */
+  }
+}
+
+#percent {
+  position: relative;
+  padding: 0;
+}
+
+#percent::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.5s ease-in-out;
+}
+
+#percent::after {
+  content: attr(data-percent);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: #fff;
+}
