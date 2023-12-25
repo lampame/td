@@ -55,16 +55,19 @@
     statusXhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4) {
         if (this.status === 200) {
+          console.log("TD", "Status " + this.status);
           $('#qBittorentgetStatus').removeClass('active error wait').addClass('active');
           $("#qBittorentgetStatusBtn").text(function (i, text) {
             return "🟢 " + text;
           });
         } else if (this.status === undefined) {
+          console.log("TD", "Status - undefined");
           $('#qBittorentgetStatus').removeClass('active error wait').addClass('error');
           $("#qBittorentgetStatusBtn").text(function (i, text) {
             return "🔴 " + text;
           });
         } else {
+          console.log("TD", "Status " + this.status);
           $('#qBittorentgetStatus').removeClass('active error wait').addClass('error');
           $("#qBittorentgetStatusBtn").text(function (i, text) {
             return "🔴 " + text;
@@ -76,6 +79,41 @@
     statusXhr.send();
   }
   function qPanels() {
+    var protocol = Lampa.Storage.get("qBittorentProtocol") || "http://";
+    var url = Lampa.Storage.get("qBittorentUrl");
+    var port = Lampa.Storage.get("qBittorentPort");
+    var user = Lampa.Storage.get("qBittorentUser");
+    var pass = Lampa.Storage.get("qBittorentPass");
+    function action(action, item) {
+      var authXhr = new XMLHttpRequest();
+      authXhr.open("POST", "".concat(protocol).concat(url, ":").concat(port, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
+      authXhr.onreadystatechange = function () {
+        if (authXhr.readyState === 4) {
+          if (authXhr.status !== 200) {
+            Lampa.Noty.show("Authentication failed");
+            return;
+          }
+          if (authXhr.status === 200) {
+            var data = "hashes=".concat(item.hash);
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = false;
+            xhr.addEventListener("readystatechange", function () {
+              if (this.readyState === 4 && this.status === 200) {
+                console.log(this.responseText);
+                Lampa.Noty.show("Torrent " + item.name + " " + action);
+              } else {
+                console.log("TD", this.status.text);
+                Lampa.Noty.show("Error " + this.status);
+              }
+            });
+            xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/").concat(action, "?hashes=").concat(item.hash));
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(data);
+          }
+        }
+      };
+      authXhr.send();
+    }
     function tabels(response) {
       // Function implementation
       // Получить элемент, в который нужно вставить таблицу
@@ -106,37 +144,13 @@
             stateCell.classList.add("simple-button", "selector", "tdAction");
             stateCell.textContent = Lampa.Lang.translate(item.state);
             stateCell.on("hover:enter", function () {
-              var xhr = new XMLHttpRequest();
-              xhr.addEventListener("readystatechange", function () {
-                if (this.readyState === 4 && this.status === 200) {
-                  console.log(this.responseText);
-                  Lampa.Noty.show("Torrent resume");
-                } else {
-                  console.log("TD", this.status.text);
-                  Lampa.Noty.show("Error " + this.status);
-                }
-              });
-              xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/resume?hashes=").concat(item.hash));
-              xhr.setRequestHeader("Content-Type", "application/json");
-              xhr.send();
+              action("resume", item);
             });
           } else if (item.state === "downloading") {
             stateCell.classList.add("simple-button", "selector", "tdAction");
             stateCell.textContent = Lampa.Lang.translate(item.state);
             stateCell.on("hover:enter", function () {
-              var xhr = new XMLHttpRequest();
-              xhr.addEventListener("readystatechange", function () {
-                if (this.readyState === 4 && this.status === 200) {
-                  console.log(this.responseText);
-                  Lampa.Noty.show("Torrent resume");
-                } else {
-                  console.log("TD", this.status.text);
-                  Lampa.Noty.show("Error " + this.status);
-                }
-              });
-              xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/pause?hashes=").concat(item.hash));
-              xhr.setRequestHeader("Content-Type", "application/json");
-              xhr.send();
+              action("pause", item);
             });
           }
           var progressCell = row.insertCell();
@@ -158,7 +172,7 @@
       }
       var footer = document.createElement("div");
       footer.classList.add("simple-button", "selector", "tdReload");
-      footer.textContent = "Reload";
+      footer.textContent = "Reload Lampa";
       footer.on("hover:enter", function () {
         location.reload();
         Lampa.Noty.show("Table reload");
@@ -558,8 +572,8 @@
         type: "static"
       },
       field: {
-        name: 'Настройка qBittorent'
-        //description: "Настройка qBittorent",
+        name: 'Настройка qBittorent',
+        description: "\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C \u0430\u0434\u0440\u0435\u0441\u0430 - ".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(Lampa.Storage.get("qBittorentPort") || "9090")
       }
     });
     Lampa.SettingsApi.addParam({
