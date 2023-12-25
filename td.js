@@ -106,13 +106,37 @@
             stateCell.classList.add("simple-button", "selector", "tdAction");
             stateCell.textContent = Lampa.Lang.translate(item.state);
             stateCell.on("hover:enter", function () {
-              Lampa.Noty.show("Torrent resume");
+              var xhr = new XMLHttpRequest();
+              xhr.addEventListener("readystatechange", function () {
+                if (this.readyState === 4 && this.status === 200) {
+                  console.log(this.responseText);
+                  Lampa.Noty.show("Torrent resume");
+                } else {
+                  console.log("TD", this.status.text);
+                  Lampa.Noty.show("Error " + this.status);
+                }
+              });
+              xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/resume?hashes=").concat(item.hash));
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.send();
             });
           } else if (item.state === "downloading") {
             stateCell.classList.add("simple-button", "selector", "tdAction");
             stateCell.textContent = Lampa.Lang.translate(item.state);
             stateCell.on("hover:enter", function () {
-              Lampa.Noty.show("Torrent paused");
+              var xhr = new XMLHttpRequest();
+              xhr.addEventListener("readystatechange", function () {
+                if (this.readyState === 4 && this.status === 200) {
+                  console.log(this.responseText);
+                  Lampa.Noty.show("Torrent resume");
+                } else {
+                  console.log("TD", this.status.text);
+                  Lampa.Noty.show("Error " + this.status);
+                }
+              });
+              xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/pause?hashes=").concat(item.hash));
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.send();
             });
           }
           var progressCell = row.insertCell();
