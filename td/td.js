@@ -421,8 +421,10 @@
     xhr.withCredentials = false;
     xhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4 && this.status === 200) {
+        console.log("TD", JSON.parse(this.responseText).arguments.torrents);
         return tabels(JSON.parse(this.responseText).arguments.torrents);
       } else if (this.readyState === 4 && this.status != 200) {
+        console.log("TD", JSON.parse(this));
         return error();
       }
     });
