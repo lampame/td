@@ -357,7 +357,7 @@
           }
           var progressCell = row.insertCell();
           progressCell.id = "percent";
-          progressCell.textContent = formatPercent(item.percentComplete);
+          progressCell.textContent = formatPercent(item.percentDone);
           var sizeCell = row.insertCell();
           sizeCell.textContent = formatBytes(item.totalSize);
           var downloadedCell = row.insertCell();
@@ -414,7 +414,7 @@
     var data = JSON.stringify({
       "method": "torrent-get",
       "arguments": {
-        "fields": ["status", "totalSize", "percentComplete", "name", "uploadedEver", "downloadedEver", "id"]
+        "fields": ["status", "totalSize", "percentDone", "name", "uploadedEver", "downloadedEver", "id"]
       }
     });
     var xhr = new XMLHttpRequest();
