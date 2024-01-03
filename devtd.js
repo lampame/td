@@ -1,8 +1,7 @@
 (function () {
 	'use strict';
 
-	var script = document.createElement('script');
-	script.src = 'https://lampame.github.io/td/td/td.js';
-	document.head.appendChild(script);
+	var hash = Lampa.Utils.hash(111);
+	Lampa.Utils.putScriptAsync('https://lampame.github.io/td/td/td.js', function () { });
 
 })();
