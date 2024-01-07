@@ -7,13 +7,17 @@
     }
     var protocol = Lampa.Storage.get("qBittorentProtocol") || "http://";
     var url = Lampa.Storage.get("qBittorentUrl");
-    var port = Lampa.Storage.get("qBittorentPort");
+    //const port = Lampa.Storage.get("qBittorentPort");
     var user = Lampa.Storage.get("qBittorentUser");
     var pass = Lampa.Storage.get("qBittorentPass");
+    var sd = Lampa.Storage.get("qBittorentSequentialDownload");
+    var flpp = Lampa.Storage.get("qBittorentfirstLastPiecePrio");
+    Lampa.Storage.get("qBittorentM");
+    Lampa.Storage.get("qBittorentTV");
 
     // Authentication request
     var authXhr = new XMLHttpRequest();
-    authXhr.open("POST", "".concat(protocol).concat(url, ":").concat(port, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
+    authXhr.open("POST", "".concat(protocol).concat(url, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
     authXhr.onreadystatechange = function () {
       if (authXhr.readyState === 4) {
         if (authXhr.status !== 200) {
@@ -23,7 +27,7 @@
 
         // Add torrent request
         var addXhr = new XMLHttpRequest();
-        addXhr.open("POST", "".concat(protocol).concat(url, ":").concat(port, "/api/v2/torrents/add"), true);
+        addXhr.open("POST", "".concat(protocol).concat(url, "/api/v2/torrents/add"), true);
         addXhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         addXhr.onreadystatechange = function () {
           if (addXhr.readyState === 4) {
@@ -38,7 +42,9 @@
             Lampa.Noty.show("Torrent is being downloaded in qBittorrent");
           }
         };
-        var data = "urls=" + encodeURIComponent(selectedTorrent);
+
+        //const data = "urls=" + encodeURIComponent(selectedTorrent);
+        var data = "urls=".concat(encodeURIComponent(selectedTorrent), "&sequentialDownload=").concat(sd ? "true" : "false", "&firstLastPiecePrio=").concat(flpp ? "true" : "false");
         addXhr.send(data);
       }
     };
@@ -73,18 +79,17 @@
         }
       }
     });
-    statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "1", "&password=").concat(Lampa.Storage.get("qBittorentPass") || "1"));
+    statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "1", "&password=").concat(Lampa.Storage.get("qBittorentPass") || "1"));
     statusXhr.send();
   }
   function qPanels$2() {
     var protocol = Lampa.Storage.get("qBittorentProtocol") || "http://";
     var url = Lampa.Storage.get("qBittorentUrl");
-    var port = Lampa.Storage.get("qBittorentPort");
     var user = Lampa.Storage.get("qBittorentUser");
     var pass = Lampa.Storage.get("qBittorentPass");
     function action(action, item) {
       var authXhr = new XMLHttpRequest();
-      authXhr.open("POST", "".concat(protocol).concat(url, ":").concat(port, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
+      authXhr.open("POST", "".concat(protocol).concat(url, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
       authXhr.onreadystatechange = function () {
         if (authXhr.readyState === 4) {
           if (authXhr.status !== 200) {
@@ -104,7 +109,8 @@
                 Lampa.Noty.show("Error " + this.status);
               }
             });
-            _xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/").concat(action, "?hashes=").concat(item.hash));
+            _xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/torrents/").concat(action, "?hashes=").concat(item.hash));
+            //xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":"), "/api/v2/torrents/").concat(action, "?hashes=").concat(item.hash));
             _xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             _xhr.send(data);
           }
@@ -216,7 +222,8 @@
         return error();
       }
     });
-    xhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/info?limit=10"));
+    xhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/torrents/info?limit=10"));
+    //xhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/info?limit=10"));
     xhr.send();
   }
   var qBittorent = {
@@ -639,6 +646,7 @@
     }
     Lampa.Listener.follow('torrent', function (e) {
       if (e.type === 'onlong') {
+        console.log("TDDev", e);
         var selectedTorrent = e.element;
         var onSelectApp = function onSelectApp(a) {
           if (!selectedTorrent.MagnetUri) {
@@ -653,7 +661,7 @@
           }
         };
         if (Lampa.Storage.field("td_qBittorent") === true) {
-          typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
+          typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
           e.menu.push({
             title: '<p id="qBittorentgetStatusBtn">qBittorrent</p>',
             send2app: send2qBittorrent,
@@ -661,7 +669,7 @@
           });
         }
         if (Lampa.Storage.field("td_transmission") === true) {
-          typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionPort") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
+          typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
           e.menu.push({
             title: '<p id="transmissionStatusBtn">transmission</p>',
             send2app: send2transmission,
@@ -846,8 +854,22 @@
         "default": true
       },
       field: {
-        name: "\u041F\u0430\u0440\u0441\u0435\u0440 - ".concat(Lampa.Storage.get("parser_use") ? "🟢" : "🔴"),
+        name: "<p style=\"color:".concat(Lampa.Storage.get("parser_use") ? "green" : "red", "\">\u041F\u0430\u0440\u0441\u0435\u0440</p>"),
+        //name: `Парсер`, ${Lampa.Storage.get("parser_use") ? "🟢" : "🔴"}
         description: "Для корректной работы должен быть активирован парсер"
+      },
+      onRender: function onRender(item) {
+        if (Lampa.Storage.field("parser_use") === true) {
+          //qBittorent.getStatus();
+          item.show();
+          $(".settings-param__name", item).before('<div id="parser_useStatus" class="settings-param__status wait"></div>');
+        } else item.hide();
+        item.on("hover:enter", function () {
+          Lampa.Settings.create("qBittorent");
+          Lampa.Controller.enabled().controller.back = function () {
+            Lampa.Settings.create("torrentDownloader");
+          };
+        });
       }
     });
     Lampa.SettingsApi.addParam({
@@ -932,7 +954,7 @@
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_qBittorent") === true) {
-          typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPort") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
+          typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
           //qBittorent.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="qBittorentgetStatus" class="settings-param__status wait"></div>');
@@ -953,7 +975,7 @@
       },
       field: {
         name: 'Настройка qBittorent',
-        description: "\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C \u0430\u0434\u0440\u0435\u0441\u0430 - ".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(Lampa.Storage.get("qBittorentPort") || "9090")
+        description: "\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C \u0430\u0434\u0440\u0435\u0441\u0430 - ".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1:9090")
       }
     });
     Lampa.SettingsApi.addParam({
@@ -992,25 +1014,26 @@
         Lampa.Settings.update();
       }
     });
+    /*
     Lampa.SettingsApi.addParam({
       component: "qBittorent",
       param: {
         name: "qBittorentPort",
-        type: "input",
-        //доступно select,input,trigger,title,static
+        type: "input", //доступно select,input,trigger,title,static
         //values: `${Lampa.Storage.get("qBittorentPort")}`,
         placeholder: '',
         values: '',
-        "default": ''
+        default: ''
       },
       field: {
-        name: "Port"
+        name: `Port`,
       },
-      onChange: function onChange(item) {
+      onChange: function (item) {
         Lampa.Storage.set("qBittorentPort", parseInt(item.replace(/[^0-9]/g, "")));
         Lampa.Settings.update();
-      }
+      },
     });
+    */
     Lampa.SettingsApi.addParam({
       component: "qBittorent",
       param: {
@@ -1049,7 +1072,68 @@
         Lampa.Settings.update();
       }
     });
-
+    Lampa.SettingsApi.addParam({
+      component: "qBittorent",
+      param: {
+        name: "qBittorentSequentialDownload",
+        type: "trigger",
+        //доступно select,input,trigger,title,static
+        "default": false
+      },
+      field: {
+        name: "Sequential Download",
+        description: ""
+      },
+      onChange: function onChange(value) {
+        if (value == "true") Lampa.Storage.set("qBittorentSequentialDownload", true);else Lampa.Storage.set("qBittorentSequentialDownload", false);
+        Lampa.Settings.update();
+      }
+    });
+    Lampa.SettingsApi.addParam({
+      component: "qBittorent",
+      param: {
+        name: "qBittorentfirstLastPiecePrio",
+        type: "trigger",
+        //доступно select,input,trigger,title,static
+        "default": false
+      },
+      field: {
+        name: "Prioritize download first last piece",
+        description: ""
+      },
+      onChange: function onChange(value) {
+        if (value == "true") Lampa.Storage.set("qBittorentfirstLastPiecePrio", true);else Lampa.Storage.set("qBittorentfirstLastPiecePrio", false);
+        Lampa.Settings.update();
+      }
+    });
+    Lampa.SettingsApi.addParam({
+      component: "qBittorent",
+      param: {
+        name: "qBittorentM",
+        type: "input" //доступно select,input,trigger,title,static
+      },
+      field: {
+        name: "Movie category"
+      },
+      onChange: function onChange(item) {
+        Lampa.Storage.set("qBittorentMqBittorentM", item);
+        Lampa.Settings.update();
+      }
+    });
+    Lampa.SettingsApi.addParam({
+      component: "qBittorent",
+      param: {
+        name: "qBittorentTV",
+        type: "input" //доступно select,input,trigger,title,static
+      },
+      field: {
+        name: "TV category"
+      },
+      onChange: function onChange(item) {
+        Lampa.Storage.set("qBittorentTV", item);
+        Lampa.Settings.update();
+      }
+    });
     /* Transmission */
     Lampa.SettingsApi.addParam({
       component: "torrentDownloader",
