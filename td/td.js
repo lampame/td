@@ -1106,34 +1106,6 @@
         Lampa.Settings.update();
       }
     });
-    Lampa.SettingsApi.addParam({
-      component: "qBittorent",
-      param: {
-        name: "qBittorentM",
-        type: "input" //доступно select,input,trigger,title,static
-      },
-      field: {
-        name: "Movie category"
-      },
-      onChange: function onChange(item) {
-        Lampa.Storage.set("qBittorentMqBittorentM", item);
-        Lampa.Settings.update();
-      }
-    });
-    Lampa.SettingsApi.addParam({
-      component: "qBittorent",
-      param: {
-        name: "qBittorentTV",
-        type: "input" //доступно select,input,trigger,title,static
-      },
-      field: {
-        name: "TV category"
-      },
-      onChange: function onChange(item) {
-        Lampa.Storage.set("qBittorentTV", item);
-        Lampa.Settings.update();
-      }
-    });
     /* Transmission */
     Lampa.SettingsApi.addParam({
       component: "torrentDownloader",
