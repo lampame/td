@@ -854,7 +854,7 @@
         "default": true
       },
       field: {
-        name: "<p style=\"color:".concat(Lampa.Storage.get("parser_use") ? "green" : "red", "\">\u041F\u0430\u0440\u0441\u0435\u0440</p>"),
+        name: "<p style=\"color:".concat(Lampa.Storage.get("parser_use") === true ? "green" : "red", "\">\u041F\u0430\u0440\u0441\u0435\u0440</p>"),
         //name: `Парсер`, ${Lampa.Storage.get("parser_use") ? "🟢" : "🔴"}
         description: "Для корректной работы должен быть активирован парсер"
       },
