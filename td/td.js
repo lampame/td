@@ -857,19 +857,6 @@
         name: "<p style=\"color:".concat(Lampa.Storage.get("parser_use") === true ? "green" : "red", "\">\u041F\u0430\u0440\u0441\u0435\u0440</p>"),
         //name: `Парсер`, ${Lampa.Storage.get("parser_use") ? "🟢" : "🔴"}
         description: "Для корректной работы должен быть активирован парсер"
-      },
-      onRender: function onRender(item) {
-        if (Lampa.Storage.field("parser_use") === true) {
-          //qBittorent.getStatus();
-          item.show();
-          $(".settings-param__name", item).before('<div id="parser_useStatus" class="settings-param__status wait"></div>');
-        } else item.hide();
-        item.on("hover:enter", function () {
-          Lampa.Settings.create("qBittorent");
-          Lampa.Controller.enabled().controller.back = function () {
-            Lampa.Settings.create("torrentDownloader");
-          };
-        });
       }
     });
     Lampa.SettingsApi.addParam({
