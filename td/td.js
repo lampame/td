@@ -12,8 +12,6 @@
     var pass = Lampa.Storage.get("qBittorentPass");
     var sd = Lampa.Storage.get("qBittorentSequentialDownload");
     var flpp = Lampa.Storage.get("qBittorentfirstLastPiecePrio");
-    Lampa.Storage.get("qBittorentM");
-    Lampa.Storage.get("qBittorentTV");
 
     // Authentication request
     var authXhr = new XMLHttpRequest();
@@ -44,7 +42,9 @@
         };
 
         //const data = "urls=" + encodeURIComponent(selectedTorrent);
-        var data = "urls=".concat(encodeURIComponent(selectedTorrent), "&sequentialDownload=").concat(sd ? "true" : "false", "&firstLastPiecePrio=").concat(flpp ? "true" : "false");
+        var categoryDesc = selectedTorrent.CategoryDesc;
+        var categoryParam = categoryDesc ? Lampa.Storage.get("qBittorent".concat(categoryDesc)) : '';
+        var data = "urls=".concat(encodeURIComponent(selectedTorrent.MagnetUri), "&sequentialDownload=").concat(sd ? "true" : "false", "&firstLastPiecePrio=").concat(flpp ? "true" : "false", "&category=").concat(categoryParam);
         addXhr.send(data);
       }
     };
@@ -238,7 +238,7 @@
         method: "torrent-add",
         arguments: {
           paused: Lampa.Storage.get("transmissionAutostart"),
-          filename: selectedTorrent
+          filename: selectedTorrent.MagnetUri
         }
       });
       var xhr = new XMLHttpRequest();
@@ -455,7 +455,7 @@
       "jsonrpc": "2.0",
       "id": "qwer",
       "method": "aria2.addUri",
-      "params": [[selectedTorrent]]
+      "params": [[selectedTorrent.MagnetUri]]
     });
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = false;
@@ -635,14 +635,14 @@
   };
 
   function downloader() {
-    function send2qBittorrent(magnetUri) {
-      qBittorent.qBittorrentClient(magnetUri);
+    function send2qBittorrent(selectedTorrent) {
+      qBittorent.qBittorrentClient(selectedTorrent);
     }
-    function send2aria2(magnetUri) {
-      pAria2.aria2Client(magnetUri);
+    function send2aria2(selectedTorrent) {
+      pAria2.aria2Client(selectedTorrent);
     }
-    function send2transmission(magnetUri) {
-      transmission.transmissionClient(magnetUri);
+    function send2transmission(selectedTorrent) {
+      transmission.transmissionClient(selectedTorrent);
     }
     Lampa.Listener.follow('torrent', function (e) {
       if (e.type === 'onlong') {
@@ -651,13 +651,13 @@
         var onSelectApp = function onSelectApp(a) {
           if (!selectedTorrent.MagnetUri) {
             Lampa.Parser.marnet(selectedTorrent, function () {
-              a.send2app(selectedTorrent.MagnetUri);
+              a.send2app(selectedTorrent);
             }, function (error) {
               console.error('tmenu', "Error loading magnet:", error);
               Lampa.Noty.show("Error loading magnet:", error);
             });
           } else {
-            a.send2app(selectedTorrent.MagnetUri);
+            a.send2app(selectedTorrent);
           }
         };
         if (Lampa.Storage.field("td_qBittorent") === true) {
@@ -780,6 +780,7 @@
     });
     /* Menu */
     Lampa.Settings.listener.follow("open", function (e) {
+      console.log(e);
       /* qBitt */
       if (e.name == "main") {
         if (Lampa.Settings.main().render().find('[data-component="qBittorent"]').length == 0) {
@@ -791,6 +792,16 @@
         Lampa.Settings.main().update();
         Lampa.Settings.main().render().find('[data-component="qBittorent"]').addClass("hide");
       }
+      if (e.name == "qBittorent") {
+        if (Lampa.Settings.main().render().find('[data-component="qBittorentTwiks"]').length == 0) {
+          Lampa.SettingsApi.addComponent({
+            component: "qBittorentTwiks",
+            name: "qBittorentTwiks"
+          });
+        }
+        Lampa.Settings.main().update();
+        Lampa.Settings.main().render().find('[data-component="qBittorentTwiks"]').addClass("hide");
+      }
       /* Transmission */
       if (e.name == "main") {
         if (Lampa.Settings.main().render().find('[data-component="transmission"]').length == 0) {
@@ -801,6 +812,16 @@
         }
         Lampa.Settings.main().update();
         Lampa.Settings.main().render().find('[data-component="transmission"]').addClass("hide");
+      }
+      if (e.name == "transmission") {
+        if (Lampa.Settings.main().render().find('[data-component="transmissionTwiks"]').length == 0) {
+          Lampa.SettingsApi.addComponent({
+            component: "transmissionTwiks",
+            name: "transmissionTwiks"
+          });
+        }
+        Lampa.Settings.main().update();
+        Lampa.Settings.main().render().find('[data-component="transmissionTwiks"]').addClass("hide");
       }
       /* Aria2 */
       if (e.name == "main") {
@@ -1001,33 +1022,12 @@
         Lampa.Settings.update();
       }
     });
-    /*
-    Lampa.SettingsApi.addParam({
-      component: "qBittorent",
-      param: {
-        name: "qBittorentPort",
-        type: "input", //доступно select,input,trigger,title,static
-        //values: `${Lampa.Storage.get("qBittorentPort")}`,
-        placeholder: '',
-        values: '',
-        default: ''
-      },
-      field: {
-        name: `Port`,
-      },
-      onChange: function (item) {
-        Lampa.Storage.set("qBittorentPort", parseInt(item.replace(/[^0-9]/g, "")));
-        Lampa.Settings.update();
-      },
-    });
-    */
     Lampa.SettingsApi.addParam({
       component: "qBittorent",
       param: {
         name: "qBittorentUser",
         type: "input",
         //доступно select,input,trigger,title,static
-        //values: `${Lampa.Storage.get("qBittorentUser")}`,
         placeholder: '',
         values: '',
         "default": ''
@@ -1059,8 +1059,32 @@
         Lampa.Settings.update();
       }
     });
+    /* Try add sub menu */
     Lampa.SettingsApi.addParam({
-      component: "qBittorent",
+      component: 'qBittorent',
+      param: {
+        type: 'button',
+        name: "qBittorentTwiks"
+      },
+      field: {
+        name: "qBittorentTwiks"
+      },
+      onRender: function onRender(item) {
+        item.show();
+        var paramNameElement = $(".settings-param__name", item);
+        paramNameElement.before('<div class="settings-param__status"></div>');
+        item.on("hover:enter", function () {
+          Lampa.Settings.create("qBittorentTwiks");
+          var enabledController = Lampa.Controller.enabled();
+          enabledController.controller.back = function () {
+            Lampa.Settings.create("qBittorent");
+          };
+        });
+      }
+    });
+    /* End */
+    Lampa.SettingsApi.addParam({
+      component: "qBittorentTwiks",
       param: {
         name: "qBittorentSequentialDownload",
         type: "trigger",
@@ -1077,7 +1101,7 @@
       }
     });
     Lampa.SettingsApi.addParam({
-      component: "qBittorent",
+      component: "qBittorentTwiks",
       param: {
         name: "qBittorentfirstLastPiecePrio",
         type: "trigger",
@@ -1090,6 +1114,44 @@
       },
       onChange: function onChange(value) {
         if (value == "true") Lampa.Storage.set("qBittorentfirstLastPiecePrio", true);else Lampa.Storage.set("qBittorentfirstLastPiecePrio", false);
+        Lampa.Settings.update();
+      }
+    });
+    Lampa.SettingsApi.addParam({
+      component: "qBittorentTwiks",
+      param: {
+        name: "qBittorentMovies",
+        type: "input",
+        //доступно select,input,trigger,title,static
+        //values: `${Lampa.Storage.get("qBittorentPass")}`,
+        placeholder: '',
+        values: '',
+        "default": ''
+      },
+      field: {
+        name: "Category 4 Movies"
+      },
+      onChange: function onChange(item) {
+        Lampa.Storage.set("qBittorentMovies", item);
+        Lampa.Settings.update();
+      }
+    });
+    Lampa.SettingsApi.addParam({
+      component: "qBittorentTwiks",
+      param: {
+        name: "qBittorentTV",
+        type: "input",
+        //доступно select,input,trigger,title,static
+        //values: `${Lampa.Storage.get("qBittorentPass")}`,
+        placeholder: '',
+        values: '',
+        "default": ''
+      },
+      field: {
+        name: "Category 4 TVShow"
+      },
+      onChange: function onChange(item) {
+        Lampa.Storage.set("qBittorentTV", item);
         Lampa.Settings.update();
       }
     });
@@ -1222,8 +1284,32 @@
         Lampa.Settings.update();
       }
     });
+    /* Try add sub menu */
     Lampa.SettingsApi.addParam({
-      component: "transmission",
+      component: 'transmission',
+      param: {
+        type: 'button',
+        name: "transmissionTwiks"
+      },
+      field: {
+        name: "transmissionTwiks"
+      },
+      onRender: function onRender(item) {
+        item.show();
+        var paramNameElement = $(".settings-param__name", item);
+        paramNameElement.before('<div class="settings-param__status"></div>');
+        item.on("hover:enter", function () {
+          Lampa.Settings.create("transmissionTwiks");
+          var enabledController = Lampa.Controller.enabled();
+          enabledController.controller.back = function () {
+            Lampa.Settings.create("transmission");
+          };
+        });
+      }
+    });
+    /* End */
+    Lampa.SettingsApi.addParam({
+      component: "transmissionTwiks",
       param: {
         name: "transmissionAutostart",
         type: "trigger",
@@ -1240,7 +1326,7 @@
       }
     });
     Lampa.SettingsApi.addParam({
-      component: "transmission",
+      component: "transmissionTwiks",
       param: {
         name: "transmissionPath",
         type: "input",
