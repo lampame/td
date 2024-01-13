@@ -19,7 +19,7 @@
     authXhr.onreadystatechange = function () {
       if (authXhr.readyState === 4) {
         if (authXhr.status !== 200) {
-          Lampa.Noty.show("Authentication failed");
+          Lampa.Noty.show(Lampa.Lang.translate('tdAuthError'));
           return;
         }
 
@@ -30,14 +30,17 @@
         addXhr.onreadystatechange = function () {
           if (addXhr.readyState === 4) {
             if (addXhr.status !== 200) {
-              Lampa.Noty.show("Failed to add torrent");
+              console.log("TD", addXhr);
+              Lampa.Noty.show(Lampa.Lang.translate('tdAddError'));
               return;
             }
             if (addXhr.response === "Fails.") {
-              Lampa.Noty.show("Torrent already exists");
+              console.log("TD", addXhr);
+              Lampa.Noty.show(Lampa.Lang.translate('tdExist'));
               return;
             }
-            Lampa.Noty.show("Torrent is being downloaded in qBittorrent");
+            console.log("TD", addXhr.status);
+            Lampa.Noty.show(Lampa.Lang.translate('tdAdded'));
           }
         };
 
@@ -93,7 +96,8 @@
       authXhr.onreadystatechange = function () {
         if (authXhr.readyState === 4) {
           if (authXhr.status !== 200) {
-            Lampa.Noty.show("Authentication failed");
+            console.log("TD", authXhr);
+            Lampa.Noty.show(Lampa.Lang.translate('tdAuthError'));
             return;
           }
           if (authXhr.status === 200) {
@@ -102,15 +106,14 @@
             _xhr.withCredentials = false;
             _xhr.addEventListener("readystatechange", function () {
               if (this.readyState === 4 && this.status === 200) {
-                console.log(this.responseText);
-                Lampa.Noty.show("Torrent " + item.name + " " + action);
+                console.log("TD", this.responseText);
+                Lampa.Noty.show(Lampa.Lang.translate('tdAction') + item.name + " " + action);
               } else {
-                console.log("TD", this.status.text);
-                Lampa.Noty.show("Error " + this.status);
+                console.log("TD", this);
+                Lampa.Noty.show(Lampa.Lang.translate('tdError') + this.status);
               }
             });
             _xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/torrents/").concat(action, "?hashes=").concat(item.hash));
-            //xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":"), "/api/v2/torrents/").concat(action, "?hashes=").concat(item.hash));
             _xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             _xhr.send(data);
           }
@@ -127,7 +130,8 @@
       table.id = "tdStatus table";
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
-      var headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
+      //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
+      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelAction'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelDownloaded'), Lampa.Lang.translate('tdPanelUploaded')];
       headerCells.forEach(function (headerCell) {
         var th = document.createElement("th");
         th.id = "header";
@@ -147,13 +151,13 @@
           var stateCell = row.insertCell();
           if (item.state === "pausedDL") {
             stateCell.classList.add("simple-button", "selector", "tdAction");
-            stateCell.textContent = Lampa.Lang.translate(item.state);
+            stateCell.textContent = Lampa.Lang.translate('tdPanelPaused');
             stateCell.on("hover:enter", function () {
               action("resume", item);
             });
           } else if (item.state === "downloading") {
             stateCell.classList.add("simple-button", "selector", "tdAction");
-            stateCell.textContent = Lampa.Lang.translate(item.state);
+            stateCell.textContent = Lampa.Lang.translate('tdPanelDownloading');
             stateCell.on("hover:enter", function () {
               action("pause", item);
             });
@@ -173,14 +177,14 @@
         var emptyRow = table.insertRow();
         var emptyCell = emptyRow.insertCell();
         emptyCell.colSpan = headerCells.length;
-        emptyCell.textContent = "Данные не найдены";
+        emptyCell.textContent = Lampa.Lang.translate('tdPanelDataError');
       }
       var footer = document.createElement("div");
       footer.classList.add("simple-button", "selector", "tdReload");
-      footer.textContent = "Reload Lampa";
+      footer.textContent = Lampa.Lang.translate('tdPanelReload');
       footer.on("hover:enter", function () {
         location.reload();
-        Lampa.Noty.show("Table reload");
+        Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
       });
       // Вставить созданную таблицу в родительский элемент
       parentElement.appendChild(table);
@@ -209,16 +213,16 @@
     function error() {
       var tdPanel = document.getElementById("tdStatus");
       var error = document.createElement("div");
-      error.innerHTML = "<div id='Error'><h2>Data not found</h2></div>";
+      error.innerHTML = "<div id='Error'><h2>".concat(Lampa.Lang.translate('tdPanelDataError'), "</h2></div>");
       tdPanel.appendChild(error);
     }
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = false;
     xhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4 && this.status === 200) {
-        //console.log(JSON.parse(this.responseText));
         return tabels(JSON.parse(this.responseText));
       } else if (this.readyState === 4 && this.status != 200) {
+        console.log("TD", this);
         return error();
       }
     });
@@ -244,10 +248,11 @@
       var xhr = new XMLHttpRequest();
       xhr.addEventListener("readystatechange", function () {
         if (this.readyState === 4 && this.status === 200) {
-          Lampa.Noty.show("Torrent add success");
-          console.log(this.responseText);
+          Lampa.Noty.show(Lampa.Lang.translate('tdAdded'));
+          console.log("TD", this.responseText);
         } else if (addXhr.status != 200) {
-          Lampa.Noty.show("Something wrong with add torrent " + addXhr.status);
+          console.log("TD", addXhr);
+          Lampa.Noty.show(Lampa.Lang.translate('tdError') + addXhr.status);
         }
       });
       xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
@@ -256,7 +261,7 @@
       xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
       xhr.send(data);
     } else if (!Lampa.Storage.get("transmissionKey")) {
-      Lampa.Noty.show("Bad login " + !Lampa.Storage.get("transmissionKey") + " ".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+      Lampa.Noty.show(Lampa.Lang.translate('tdAuthError') + !Lampa.Storage.get("transmissionKey") + " ".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
     }
     setTimeout(function () {
       Lampa.Select.close();
@@ -310,11 +315,10 @@
       xhr.withCredentials = false;
       xhr.addEventListener("readystatechange", function () {
         if (this.readyState === 4 && this.status === 200) {
-          console.log(this.responseText);
-          Lampa.Noty.show("Torrent " + item.name + " " + action);
+          Lampa.Noty.show(Lampa.Lang.translate('tdAction') + item.name + " " + action);
         } else {
           console.log("TD", this.status.text);
-          Lampa.Noty.show("Error " + this.status);
+          Lampa.Noty.show(Lampa.Lang.translate('tdError') + this.status);
         }
       });
       xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
@@ -331,7 +335,8 @@
       table.id = "tdStatus table";
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
-      var headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
+      //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
+      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelAction'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelDownloaded'), Lampa.Lang.translate('tdPanelUploaded')];
       headerCells.forEach(function (headerCell) {
         var th = document.createElement("th");
         th.id = "header";
@@ -351,13 +356,13 @@
           var stateCell = row.insertCell();
           if (item.status === 0) {
             stateCell.classList.add("simple-button", "selector", "tdAction");
-            stateCell.textContent = Lampa.Lang.translate("pausedDL");
+            stateCell.textContent = Lampa.Lang.translate('tdPanelPaused');
             stateCell.on("hover:enter", function () {
               action("torrent-start", item.id);
             });
           } else if (item.status === 4) {
             stateCell.classList.add("simple-button", "selector", "tdAction");
-            stateCell.textContent = Lampa.Lang.translate("downloading");
+            stateCell.textContent = Lampa.Lang.translate('tdPanelDownloading');
             stateCell.on("hover:enter", function () {
               action("torrent-stop", item.id);
             });
@@ -377,14 +382,14 @@
         var emptyRow = table.insertRow();
         var emptyCell = emptyRow.insertCell();
         emptyCell.colSpan = headerCells.length;
-        emptyCell.textContent = "Данные не найдены";
+        emptyCell.textContent = Lampa.Lang.translate('tdPanelDataError');
       }
       var footer = document.createElement("div");
       footer.classList.add("simple-button", "selector", "tdReload");
-      footer.textContent = "Reload Lampa";
+      footer.textContent = Lampa.Lang.translate('tdPanelReload');
       footer.on("hover:enter", function () {
         location.reload();
-        Lampa.Noty.show("Table reload");
+        Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
       });
       // Вставить созданную таблицу в родительский элемент
       parentElement.appendChild(table);
@@ -413,7 +418,7 @@
     function error() {
       var tdPanel = document.getElementById("tdStatus");
       var error = document.createElement("div");
-      error.innerHTML = "<div id='Error'><h2>Data not found</h2></div>";
+      error.innerHTML = "<div id='Error'><h2>".concat(Lampa.Lang.translate('tdPanelDataError'), "</h2></div>");
       tdPanel.appendChild(error);
     }
 
@@ -462,10 +467,10 @@
     xhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4) {
         if (xhr.status !== 200) {
-          Lampa.Noty.show("Failed to add torrent");
+          Lampa.Noty.show(Lampa.Lang.translate('tdAddError'));
           return;
         }
-        Lampa.Noty.show("Torrent is being downloaded in aria2");
+        Lampa.Noty.show(Lampa.Lang.translate('tdAdded'));
         console.log("TD", this);
       }
     });
@@ -540,7 +545,7 @@
       footer.textContent = "Reload Lampa";
       footer.on("hover:enter", function () {
         location.reload();
-        Lampa.Noty.show("Table reload");
+        Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
       });
       // Вставить созданную таблицу в родительский элемент
       parentElement.appendChild(table);
@@ -583,7 +588,7 @@
     xhr.withCredentials = false;
     xhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4) {
-        console.log(this.responseText);
+        console.log("TD", this.responseText);
         return tabels(JSON.parse(this.responseText));
       } else if (this.readyState === 4 && this.status != 200) {
         return error();
@@ -646,7 +651,6 @@
     }
     Lampa.Listener.follow('torrent', function (e) {
       if (e.type === 'onlong') {
-        console.log("TDDev", e);
         var selectedTorrent = e.element;
         var onSelectApp = function onSelectApp(a) {
           if (!selectedTorrent.MagnetUri) {
@@ -654,7 +658,7 @@
               a.send2app(selectedTorrent);
             }, function (error) {
               console.error('tmenu', "Error loading magnet:", error);
-              Lampa.Noty.show("Error loading magnet:", error);
+              Lampa.Noty.show(Lampa.Lang.translate('tdMagnetError'), error);
             });
           } else {
             a.send2app(selectedTorrent);
@@ -710,9 +714,9 @@
         //pAria2.qPanels();
         tdPanel.innerHTML = "<div id='Error'><h2>We apologize, Aria2 is not supported yet :(</h2></div>";
       } else if (Lampa.Storage.field("td_transmission") === true && Lampa.Storage.field("td_qBittorent") === true && Lampa.Storage.field("td_aria2") === true) {
-        tdPanel.innerHTML = "<div id='Error'><h2>Воу воу</h2><br /><p class='more-clients'>Включено 2 и больше торрент клиента, я пока не такой крутой! Выключи кого-то</p></div>";
+        tdPanel.innerHTML = "<div id='Error'><h2>Alert!</h2><br /><p class='more-clients'>".concat(Lampa.Lang.translate('tdInfoDesc'), "</p></div>");
       } else {
-        tdPanel.innerHTML = "<div id='Error'><h2>Client not found</h2></div>";
+        tdPanel.innerHTML = "<div id='Error'><h2>".concat(Lampa.Lang.translate('tdPanelCOff'), "</h2></div>");
       }
       this.display();
       Lampa.Layer.update(html);
@@ -774,40 +778,38 @@
     //Создание пункта меню
     Lampa.SettingsApi.addComponent({
       component: "torrentDownloader",
-      name: "Torrent downloader",
-      //Задаём название меню
-      icon: '<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M150 250L350 50V250H150Z" fill="white"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M350 50L150 250H350V50ZM400 50V300H356V435C356 446.67 360.636 457.861 368.887 466.113C377.139 474.364 388.33 479 400 479C412.195 477.526 423.422 471.614 431.537 462.393C439.652 453.171 444.089 441.284 444 429V300H513V560C500.798 557.619 489.218 552.75 478.981 545.696C468.744 538.642 460.07 529.554 453.5 519C439.162 528.333 422.669 533.832 405.598 534.97C388.527 536.108 371.45 532.847 356 525.5V650H286.5V300H150V750H650V50H400Z" fill="white"/> </svg>'
+      name: 'Torrent downloader',
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 48 48" width="48px" height="48px"><path d="M 23.501953 4.125 C 12.485953 4.125 3.5019531 13.11 3.5019531 24.125 C 3.5019531 32.932677 9.2467538 40.435277 17.179688 43.091797 L 17.146484 42.996094 L 7 16 L 15 14 C 17.573 20.519 20.825516 32.721688 27.728516 30.929688 C 35.781516 28.948688 28.615 16.981172 27 12.076172 L 34 11 C 38.025862 19.563024 39.693648 25.901226 43.175781 27.089844 C 43.191423 27.095188 43.235077 27.103922 43.275391 27.113281 C 43.422576 26.137952 43.501953 25.140294 43.501953 24.125 C 43.501953 13.11 34.517953 4.125 23.501953 4.125 z M 34.904297 29.314453 C 34.250297 34.648453 28.811359 37.069578 21.943359 35.517578 L 26.316406 43.763672 L 26.392578 43.914062 C 33.176993 42.923925 38.872645 38.505764 41.660156 32.484375 C 41.603665 32.485465 41.546284 32.486418 41.529297 32.486328 C 38.928405 32.472567 36.607552 31.572967 34.904297 29.314453 z"></path></svg>'
     });
     /* Menu */
     Lampa.Settings.listener.follow("open", function (e) {
-      console.log(e);
       /* qBitt */
       if (e.name == "main") {
         if (Lampa.Settings.main().render().find('[data-component="qBittorent"]').length == 0) {
           Lampa.SettingsApi.addComponent({
             component: "qBittorent",
-            name: "qBittorent"
+            name: Lampa.Lang.translate('qBittorent')
           });
         }
         Lampa.Settings.main().update();
         Lampa.Settings.main().render().find('[data-component="qBittorent"]').addClass("hide");
       }
       if (e.name == "qBittorent") {
-        if (Lampa.Settings.main().render().find('[data-component="qBittorentTwiks"]').length == 0) {
+        if (Lampa.Settings.main().render().find('[data-component="qBittorentTweak"]').length == 0) {
           Lampa.SettingsApi.addComponent({
-            component: "qBittorentTwiks",
-            name: "qBittorentTwiks"
+            component: "qBittorentTweak",
+            name: Lampa.Lang.translate('tweak')
           });
         }
         Lampa.Settings.main().update();
-        Lampa.Settings.main().render().find('[data-component="qBittorentTwiks"]').addClass("hide");
+        Lampa.Settings.main().render().find('[data-component="qBittorentTweak"]').addClass("hide");
       }
       /* Transmission */
       if (e.name == "main") {
         if (Lampa.Settings.main().render().find('[data-component="transmission"]').length == 0) {
           Lampa.SettingsApi.addComponent({
             component: "transmission",
-            name: "transmission"
+            name: Lampa.Lang.translate('transmission')
           });
         }
         Lampa.Settings.main().update();
@@ -817,7 +819,7 @@
         if (Lampa.Settings.main().render().find('[data-component="transmissionTwiks"]').length == 0) {
           Lampa.SettingsApi.addComponent({
             component: "transmissionTwiks",
-            name: "transmissionTwiks"
+            name: Lampa.Lang.translate('tweak')
           });
         }
         Lampa.Settings.main().update();
@@ -828,7 +830,7 @@
         if (Lampa.Settings.main().render().find('[data-component="aria2"]').length == 0) {
           Lampa.SettingsApi.addComponent({
             component: "aria2",
-            name: "aria2"
+            name: Lampa.Lang.translate('aria2')
           });
         }
         Lampa.Settings.main().update();
@@ -850,7 +852,7 @@
         if (Lampa.Settings.main().render().find('[data-component="td_info"]').length == 0) {
           Lampa.SettingsApi.addComponent({
             component: "td_info",
-            name: "td_info"
+            name: Lampa.Lang.translate('tdInfo')
           });
         }
         Lampa.Settings.main().update();
@@ -875,9 +877,8 @@
         "default": true
       },
       field: {
-        name: "<p style=\"color:".concat(Lampa.Storage.get("parser_use") === true ? "green" : "red", "\">\u041F\u0430\u0440\u0441\u0435\u0440</p>"),
-        //name: `Парсер`, ${Lampa.Storage.get("parser_use") ? "🟢" : "🔴"}
-        description: "Для корректной работы должен быть активирован парсер"
+        name: "<p style=\"color:".concat(Lampa.Storage.get("parser_use") === true ? "green" : "red", "\">").concat(Lampa.Lang.translate('tdDependencies'), "</p>"),
+        description: Lampa.Lang.translate('tdDependenciesDesc')
       }
     });
     Lampa.SettingsApi.addParam({
@@ -888,8 +889,7 @@
         "default": true
       },
       field: {
-        name: "О плагине",
-        description: "Информация"
+        name: Lampa.Lang.translate('tdInfo')
       },
       onRender: function onRender(item) {
         item.show();
@@ -914,7 +914,7 @@
       },
       field: {
         name: "<img src=\"https://cdn.glitch.global/d9956867-398e-4a85-9c42-31911adc9981/groupLTD.jpg?v=1702216657917\" alt=\"GroupLTD\" width=\"100%\" height=\"auto\">",
-        description: "Группа плагина Torrent downloader"
+        description: Lampa.Lang.translate('tdInfoGr')
       }
     });
     Lampa.SettingsApi.addParam({
@@ -924,8 +924,8 @@
         type: "static"
       },
       field: {
-        name: "<b>Описание</b>",
-        description: "\u041F\u043B\u0430\u0433\u0438\u043D \u0441\u043B\u0443\u0436\u0438\u0442 \u0434\u043B\u044F \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438 \u0442\u043E\u0440\u0440\u0435\u043D\u0442\u043E\u0432 \u0441\u0440\u0435\u0434\u0441\u0442\u0432\u0430\u043C\u0438 Torrent \u043A\u043B\u0438\u0435\u043D\u0442\u043E\u0432. \u0412\u044B\u0437\u044B\u0432\u0430\u0435\u0442\u0441\u044F \u0447\u0435\u0440\u0435\u0437 \u043A\u043E\u043D\u0442\u0435\u043A\u0441\u0442\u043D\u043E\u0435 \u043C\u0435\u043D\u044E \u043D\u0430 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0439 \u0440\u0430\u0437\u0434\u0430\u0447\u0435<br>\u041E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0437\u0430\u0432\u0438\u0441\u0438\u043C\u043E\u0441\u0442\u0438 - \u0410\u043A\u0442\u0438\u0432\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\u0430\u0440\u0441\u0435\u0440 \u0434\u043B\u044F \u0442\u043E\u0440\u0440\u0435\u043D\u0442\u043E\u0432. Torrserver \u041D\u0415 \u0422\u0420\u0415\u0411\u0423\u0415\u0422\u0421\u042F<br>\u041F\u043E\u0436\u0435\u043B\u0430\u043D\u0438\u044F \u043F\u043E \u043A\u043B\u0438\u0435\u043D\u0442\u0430\u043C \u043F\u0440\u0438\u043D\u0438\u043C\u0430\u044E\u0442\u0441\u044F \u0432 \u0447\u0430\u0442\u0435 \u043F\u043B\u0430\u0433\u0438\u043D\u0430"
+        name: "<b>Info</b>",
+        description: Lampa.Lang.translate('tdInfoDesc')
       }
     });
     /* Synalogy */
@@ -957,8 +957,8 @@
         "default": true
       },
       field: {
-        name: "qBittorent",
-        description: "Настройка сервера"
+        name: Lampa.Lang.translate('qBittorent'),
+        description: Lampa.Lang.translate('tdConfig')
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_qBittorent") === true) {
@@ -982,8 +982,8 @@
         type: "static"
       },
       field: {
-        name: 'Настройка qBittorent',
-        description: "\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C \u0430\u0434\u0440\u0435\u0441\u0430 - ".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1:9090")
+        name: Lampa.Lang.translate('tdConfig')
+        //description: `Контроль адреса - ${Lampa.Storage.get("qBittorentProtocol") || "http://"}${Lampa.Storage.get("qBittorentUrl") || "127.0.0.1:9090"}`,
       }
     });
     Lampa.SettingsApi.addParam({
@@ -995,7 +995,7 @@
         "default": false
       },
       field: {
-        name: "Use HTTPS",
+        name: Lampa.Lang.translate('clientSSL'),
         description: ""
       },
       onChange: function onChange(value) {
@@ -1015,7 +1015,7 @@
         "default": ''
       },
       field: {
-        name: "Adress"
+        name: Lampa.Lang.translate('clientAddress')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("qBittorentUrl", item);
@@ -1033,7 +1033,7 @@
         "default": ''
       },
       field: {
-        name: "User"
+        name: Lampa.Lang.translate('clientUser')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("qBittorentUser", item);
@@ -1052,7 +1052,7 @@
         "default": ''
       },
       field: {
-        name: "Password"
+        name: Lampa.Lang.translate('clientPassword')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("qBittorentPass", item);
@@ -1064,17 +1064,17 @@
       component: 'qBittorent',
       param: {
         type: 'button',
-        name: "qBittorentTwiks"
+        name: "qBittorentTweak"
       },
       field: {
-        name: "qBittorentTwiks"
+        name: Lampa.Lang.translate('tweak')
       },
       onRender: function onRender(item) {
         item.show();
         var paramNameElement = $(".settings-param__name", item);
         paramNameElement.before('<div class="settings-param__status"></div>');
         item.on("hover:enter", function () {
-          Lampa.Settings.create("qBittorentTwiks");
+          Lampa.Settings.create("qBittorentTweak");
           var enabledController = Lampa.Controller.enabled();
           enabledController.controller.back = function () {
             Lampa.Settings.create("qBittorent");
@@ -1084,7 +1084,7 @@
     });
     /* End */
     Lampa.SettingsApi.addParam({
-      component: "qBittorentTwiks",
+      component: "qBittorentTweak",
       param: {
         name: "qBittorentSequentialDownload",
         type: "trigger",
@@ -1092,7 +1092,7 @@
         "default": false
       },
       field: {
-        name: "Sequential Download",
+        name: Lampa.Lang.translate('qBittorentSD'),
         description: ""
       },
       onChange: function onChange(value) {
@@ -1101,7 +1101,7 @@
       }
     });
     Lampa.SettingsApi.addParam({
-      component: "qBittorentTwiks",
+      component: "qBittorentTweak",
       param: {
         name: "qBittorentfirstLastPiecePrio",
         type: "trigger",
@@ -1109,7 +1109,7 @@
         "default": false
       },
       field: {
-        name: "Prioritize download first last piece",
+        name: Lampa.Lang.translate('qBittorentPDFLP'),
         description: ""
       },
       onChange: function onChange(value) {
@@ -1118,7 +1118,7 @@
       }
     });
     Lampa.SettingsApi.addParam({
-      component: "qBittorentTwiks",
+      component: "qBittorentTweak",
       param: {
         name: "qBittorentMovies",
         type: "input",
@@ -1129,7 +1129,7 @@
         "default": ''
       },
       field: {
-        name: "Category 4 Movies"
+        name: Lampa.Lang.translate('qBittorentCM')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("qBittorentMovies", item);
@@ -1137,7 +1137,7 @@
       }
     });
     Lampa.SettingsApi.addParam({
-      component: "qBittorentTwiks",
+      component: "qBittorentTweak",
       param: {
         name: "qBittorentTV",
         type: "input",
@@ -1148,7 +1148,7 @@
         "default": ''
       },
       field: {
-        name: "Category 4 TVShow"
+        name: Lampa.Lang.translate('qBittorentCS')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("qBittorentTV", item);
@@ -1165,7 +1165,7 @@
         "default": false
       },
       field: {
-        name: "Transmission",
+        name: Lampa.Lang.translate('transmission'),
         description: ""
       },
       onChange: function onChange(value) {
@@ -1182,8 +1182,8 @@
         "default": true
       },
       field: {
-        name: "transmission",
-        description: "Настройка сервера"
+        name: Lampa.Lang.translate('transmission'),
+        description: Lampa.Lang.translate('tdConfig')
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_transmission") === true) {
@@ -1206,8 +1206,8 @@
         type: "static"
       },
       field: {
-        name: 'Настройка Transmission',
-        description: "\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C \u0430\u0434\u0440\u0435\u0441\u0430 - ".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc")
+        name: Lampa.Lang.translate('tdConfig')
+        //description: `Контроль адреса - ${Lampa.Storage.get("transmissionProtocol") || "http://"}${Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001"}${Lampa.Storage.get("transmissionPath") || "/transmission/rpc"}`,
       }
     });
     Lampa.SettingsApi.addParam({
@@ -1219,7 +1219,7 @@
         "default": false
       },
       field: {
-        name: "Use HTTPS",
+        name: Lampa.Lang.translate('clientSSL'),
         description: ""
       },
       onChange: function onChange(value) {
@@ -1239,7 +1239,7 @@
         "default": ''
       },
       field: {
-        name: "Adress:Port"
+        name: Lampa.Lang.translate('clientAddress')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("transmissionUrl", item);
@@ -1258,7 +1258,7 @@
         "default": ''
       },
       field: {
-        name: "User"
+        name: Lampa.Lang.translate('clientUser')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("transmissionUser", item);
@@ -1277,7 +1277,7 @@
         "default": ''
       },
       field: {
-        name: "Password"
+        name: Lampa.Lang.translate('clientPassword')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("transmissionPass", item);
@@ -1292,7 +1292,7 @@
         name: "transmissionTwiks"
       },
       field: {
-        name: "transmissionTwiks"
+        name: Lampa.Lang.translate('tweak')
       },
       onRender: function onRender(item) {
         item.show();
@@ -1317,8 +1317,8 @@
         "default": true
       },
       field: {
-        name: "Autostop",
-        description: "Все торренты добавляются на паузе"
+        name: Lampa.Lang.translate('transmissionAutostop'),
+        description: Lampa.Lang.translate('transmissionAutostopDescription')
       },
       onChange: function onChange(value) {
         if (value == "true") Lampa.Storage.set("transmissionAutostart", true);else Lampa.Storage.set("transmissionAutostart", false);
@@ -1337,8 +1337,8 @@
         "default": '/transmission/rpc'
       },
       field: {
-        name: "RPC Path",
-        description: "Изменение пути API. Не трогать без необходимости"
+        name: Lampa.Lang.translate('transmissionRPCRoute'),
+        description: Lampa.Lang.translate('transmissionRPCRouteDescription')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("transmissionPath", item);
@@ -1347,7 +1347,6 @@
     });
 
     /* Aria 2 */
-    //pAria2.config();
     Lampa.SettingsApi.addParam({
       component: "torrentDownloader",
       param: {
@@ -1357,7 +1356,7 @@
         "default": false
       },
       field: {
-        name: "Aria2",
+        name: Lampa.Lang.translate('aria2'),
         description: ""
       },
       onChange: function onChange(value) {
@@ -1374,8 +1373,8 @@
         "default": true
       },
       field: {
-        name: "aria2",
-        description: "Настройка сервера"
+        name: Lampa.Lang.translate('aria2'),
+        description: Lampa.Lang.translate('tdConfig')
       },
       onRender: function onRender(item) {
         if (Lampa.Storage.field("td_aria2") === true) {
@@ -1398,8 +1397,8 @@
         type: "static"
       },
       field: {
-        name: 'Настройка Aria2',
-        description: "\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C \u0430\u0434\u0440\u0435\u0441\u0430 - ".concat(Lampa.Storage.get("aria2Protocol") || "http://").concat(Lampa.Storage.get("aria2Url") || "127.0.0.1:9001").concat(Lampa.Storage.get("aria2Path") || "/rpc")
+        name: Lampa.Lang.translate('tdConfig')
+        //description: `Контроль адреса - ${Lampa.Storage.get("aria2Protocol") || "http://"}${Lampa.Storage.get("aria2Url") || "127.0.0.1:9001"}${Lampa.Storage.get("aria2Path") || "/rpc"}`,
       }
     });
     Lampa.SettingsApi.addParam({
@@ -1411,7 +1410,7 @@
         "default": false
       },
       field: {
-        name: "Use HTTPS",
+        name: Lampa.Lang.translate('clientSSL'),
         description: ""
       },
       onChange: function onChange(value) {
@@ -1430,7 +1429,7 @@
         "default": ''
       },
       field: {
-        name: "Adress:Port"
+        name: Lampa.Lang.translate('clientAddress')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("aria2Url", item);
@@ -1448,8 +1447,8 @@
         "default": '/jsonrpc'
       },
       field: {
-        name: "RPC Path",
-        description: "Изменение пути API. Не трогать без необходимости"
+        name: Lampa.Lang.translate('aria2RPCRoute'),
+        description: Lampa.Lang.translate('aria2RPCRouteDescription')
       },
       onChange: function onChange(item) {
         Lampa.Storage.set("aria2Path", item);
@@ -1461,6 +1460,301 @@
     setMenu: setMenu
   };
 
+  function value() {
+    /* Panel */
+    Lampa.Lang.add({
+      /* Main */
+      tdDependencies: {
+        ru: "Парсер",
+        en: "Parser",
+        uk: "Парсер",
+        zh: "解析器" // Chinese translation
+      },
+      tdDependenciesDesc: {
+        ru: "Для корректной работы должен быть активирован парсер",
+        en: "Parser must be activated to work correctly",
+        uk: "Для коректної роботи має бути активований парсер",
+        zh: "若要正常工作，必須啟用解析器" // Chinese translation
+      },
+      /* Panel */
+      tdPanel: {
+        ru: "Torrent Panel",
+        en: "Torrent Panel",
+        uk: "Torrent Panel",
+        zh: " BitTorrent 面板" // Chinese translation
+      },
+      tdPanelReload: {
+        ru: "Перезагрузить Лампу",
+        en: "Reload Lampa",
+        uk: "Перезавантажити Лампу",
+        zh: "重新加載라м巴" // Chinese translation
+      },
+      tdPanelMClient: {
+        ru: "Включено 2 или больше торрент клиента, я пока не такой крутой! Выключи кого-то",
+        en: "2 or more torrent clients enabled, I'm not that cool yet! Turn someone off",
+        uk: "Увімкнено 2 або більше торрент-клієнтів, я поки що не такий крутий! Вимкни когось",
+        zh: "已啟用 2 個或更多 BitTorrent 客戶端，我還不夠帥！請關閉一位" // Chinese translation
+      },
+      tdPanelCOff: {
+        ru: "Торрент клиенты не подключены",
+        en: "Torrent clients are not connected",
+        uk: "Торрент клієнти не підключені",
+        zh: "BitTorrent 客戶端未連接" // Chinese translation
+      },
+      tdPanelDataError: {
+        ru: "Данные не найдены",
+        en: "Data not found",
+        uk: "Дані не знайдено",
+        zh: "找不到數據" // Chinese translation
+      },
+      tdPanelName: {
+        ru: "Название",
+        en: "Name",
+        uk: "Назва",
+        zh: "名稱" // Chinese translation
+      },
+      tdPanelAction: {
+        ru: "Действие",
+        en: "Action",
+        uk: "Дія",
+        zh: "操作" // Chinese translation
+      },
+      tdPanelProgress: {
+        ru: "Прогресс",
+        en: "Progress",
+        uk: "Прогрес",
+        zh: "進度" // Chinese translation
+      },
+      tdPanelSize: {
+        ru: "Размер",
+        en: "Size",
+        uk: "Розмір",
+        zh: "大小" // Chinese translation
+      },
+      tdPanelDownloaded: {
+        ru: "Скачано",
+        en: "Downloaded",
+        uk: "Викачано",
+        zh: "已下載" // Chinese translation
+      },
+      tdPanelUploaded: {
+        ru: "Выгружено",
+        en: "Uploaded",
+        uk: "Вивантажено",
+        zh: "已上傳" // Chinese translation
+      },
+      /* Action */
+      tdPanelPaused: {
+        ru: "Восстановить",
+        en: "Resume",
+        uk: "Поновити",
+        zh: "恢復" // Chinese translation
+      },
+      tdPanelDownloading: {
+        ru: "Остановить",
+        en: "Pause",
+        uk: "Зупининти",
+        zh: "暫停" // Chinese translation
+      },
+      /* Menu */
+      tdName: {
+        ru: "Torrent downloader",
+        en: "Torrent downloader",
+        uk: "Torrent downloader",
+        zh: "BitTorrent 下載器" // Chinese translation
+      },
+      tdInfo: {
+        ru: "О плагине",
+        en: "About plugin",
+        uk: "Про розширення",
+        zh: "關於插件" // Chinese translation
+      },
+      tdInfoGr: {
+        ru: "Группа плагина Torrent downloader",
+        en: "Torrent downloader plugin group",
+        uk: "Група плагіна Torrent downloader",
+        zh: "BitTorrent 下載器插件組" // Chinese translation
+      },
+      tdInfoDesc: {
+        ru: "Плагин служит для загрузки торрентов средствами Torrent клиентов. Вызывается через контекстное меню на выбранной раздаче<br>Обязательные зависимости - Активированный парсер для торрентов. Torrserver НЕ ТРЕБУЕТСЯ<br>Пожелания по клиентам принимаются в чате плагина",
+        en: "The plugin is used to download torrents by means of Torrent clients.<br>Called through the context menu on the selected distribution<br>Required dependencies - Activated parser for torrents. Torrserver is NOT REQUIRED<br>Requests for clients are accepted in the plugin chat room",
+        uk: "Плагін служить для завантаження торрентів до Torrent клієнтів.<br>Викликається через контекстне меню на обраній роздачі.<br>Обов'язкові залежності - Активований парсер для торрентів. Torrserver НЕ ПОТРІБЕН<br>Побажання щодо клієнтів приймаються в чаті плагіна",
+        zh: "此插件用于通过 Torrent 客户端下载种子。<br>通过上下文菜单在所选分发中调用<br>必需的依赖项 - 已激活的种子解析器。Torrserver 不是必需的<br>客户端的请求在插件聊天室中接受" // Chinese translation
+      },
+      tweak: {
+        ru: "Tweak",
+        en: "Tweak",
+        uk: "Tweak",
+        zh: "调整" // Chinese translation
+      },
+      tdConfig: {
+        ru: "Настройки клиента",
+        en: "Client settings",
+        uk: "Налаштування клієнта",
+        zh: "客户端设置" // Chinese translation
+      },
+      /* qBittorent */
+      qBittorent: {
+        ru: "qBittorent",
+        en: "qBittorent",
+        uk: "qBittorent",
+        zh: "qBittorent" // Chinese translation
+      },
+      qBittorentSD: {
+        ru: "Последовательная загрузка",
+        en: "Sequential Download",
+        uk: "Послідовне завантаження",
+        zh: "顺序下载" // Chinese translation
+      },
+      qBittorentPDFLP: {
+        ru: "Приоритет загрузки первой и последней части",
+        en: "Prioritize download first last piece",
+        uk: "Пріоритетність завантаження першого останнього фрагмента",
+        zh: "优先下载第一和最后一部分" // Chinese translation
+      },
+      qBittorentCM: {
+        ru: "Категория для Фильмов",
+        en: "Category for Movie",
+        uk: "Категорія для Фільмів",
+        zh: "电影分类" // Chinese translation
+      },
+      qBittorentCS: {
+        ru: "Категория для Сериалов",
+        en: "Category for TVShow",
+        uk: "Категорія для Серіалів",
+        zh: "电视剧分类" // Chinese translation
+      },
+      /* Transmission */
+      transmission: {
+        ru: "Transmission",
+        en: "Transmission",
+        uk: "Transmission",
+        zh: "Transmission" // Chinese translation
+      },
+      transmissionAutostop: {
+        ru: "Автостоп",
+        en: "Autostop",
+        uk: "Автостоп",
+        zh: "自动停止" // Chinese translation
+      },
+      transmissionAutostopDescription: {
+        ru: "Все торренты добавляются на паузе",
+        en: "All torrent will be add on pause",
+        uk: "Всі торренти додаються на паузі",
+        zh: "所有种子都将添加到暂停状态" // Chinese translation
+      },
+      transmissionRPCRoute: {
+        ru: "RPC Path",
+        en: "RPC Path",
+        uk: "RPC Path",
+        zh: "RPC Path" // Chinese translation
+      },
+      transmissionRPCRouteDescription: {
+        ru: "Изменение пути API. Не трогать без необходимости",
+        en: "Change api route. Do not change without need",
+        uk: "Змінити маршрут API. Не чіпати без нагальної потреби",
+        zh: "更改 API 路径。除非必要，否则请勿更改" // Chinese translation
+      },
+      /* Arai2 */
+      aria2: {
+        ru: "Aria2",
+        en: "Aria2",
+        uk: "Aria2",
+        zh: "Aria2" // Chinese translation
+      },
+      aria2RPCRoute: {
+        ru: "RPC Path",
+        en: "RPC Path",
+        uk: "RPC Path",
+        zh: "RPC Path" // Chinese translation
+      },
+      aria2RPCRouteDescription: {
+        ru: "Изменение пути API. Не трогать без необходимости",
+        en: "Change api route. Do not change without need",
+        uk: "Змінити маршрут API. Не чіпати без нагальної потреби",
+        zh: "更改 API 路径。除非必要，否则请勿更改" // Chinese translation
+      },
+      /* Config */
+      clientSSL: {
+        ru: "Использовать https?",
+        en: "Use https?",
+        uk: "Вікористовувати https?",
+        zh: "使用 https？" // Chinese translation
+      },
+      clientAddress: {
+        ru: "Адрес и порт клиента",
+        en: "Client address and port",
+        uk: "Адреса та порт клієнту",
+        zh: "客户端地址和端口" // Chinese translation
+      },
+      clientUser: {
+        ru: "Имя пользователя",
+        en: "Username",
+        uk: "Ім'я користувача",
+        zh: "用户名" // Chinese translation
+      },
+      clientPassword: {
+        ru: "Пароль пользователя",
+        en: "Password",
+        uk: "Пароль користувача",
+        zh: "用户密码" // Chinese translation
+      },
+      /* Notification */
+      tdPanelReloaded: {
+        ru: "Перезагрузить Лампу",
+        en: "Reload Lampa",
+        uk: "Перезавантажити Лампу",
+        zh: "重新加载 Лампа" // Chinese translation
+      },
+      tdMagnetError: {
+        ru: "Ошибка с Magnet ссылкой",
+        en: "Error loading magnet:",
+        uk: "Помилка із Magnet посиланням",
+        zh: "Magnet 链接加载错误：" // Chinese translation
+      },
+      tdAdded: {
+        ru: "Торрент загружается",
+        en: "Torrent is being downloaded",
+        uk: "Торрент завантажується",
+        zh: "种子正在下载" // Chinese translation
+      },
+      tdAddError: {
+        ru: "Ошибка добавления торрента",
+        en: "Failed to add torrent",
+        uk: "Помилка додавання торренту",
+        zh: "添加种子失败" // Chinese translation
+      },
+      tdExist: {
+        ru: "Торрент уже в списке",
+        en: "Torrent already exists",
+        uk: "Торрент вже у списку",
+        zh: "种子已经在列表中" // Chinese translation
+      },
+      tdAction: {
+        ru: "Торрент ",
+        en: "Torrent ",
+        uk: "Торрент ",
+        zh: "种子 " // Chinese translation
+      },
+      tdAuthError: {
+        ru: "Ошибка авторизации ",
+        en: "Authentication failed ",
+        uk: "Помилка авторизації ",
+        zh: "授权失败 " // Chinese translation
+      },
+      tdError: {
+        ru: "Ошибка ",
+        en: "Error ",
+        uk: "Помылка ",
+        zh: "错误 " // Chinese translation
+      }
+      /* Notification Table */
+    });
+  }
+  var Lang = {
+    value: value
+  };
+
   Lampa.Platform.tv();
 
   /* Add client */
@@ -1469,36 +1763,21 @@
   /* init plugin */
   function startPlugin() {
     window.plugin_td_ready = true;
-    Lampa.Lang.add({
-      td_panel: {
-        ru: "TD Panel",
-        en: "TD Panel",
-        uk: "TD Panel"
-      },
-      pausedDL: {
-        ru: "Resume",
-        en: "Resume",
-        uk: "Resume"
-      },
-      downloading: {
-        ru: "Pause",
-        en: "Pause",
-        uk: "Pause"
-      }
-    });
+    /* Add Lang */
+    Lang.value();
     var manifest = {
       type: "other",
       version: "0.0.1",
-      name: Lampa.Lang.translate("td_panel"),
-      description: "",
+      name: "Torrent downloader",
+      description: Lampa.Lang.translate("tdInfoDesc"),
       component: "td"
     };
     Lampa.Manifest.plugins = manifest;
-    Lampa.Template.add("td_panel_page", "<div class='td_panel'></div>");
-    Lampa.Template.add('tdStyle', "\n        <style>\n            @charset 'UTF-8';#error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}#tdStatus table{width:100%;border-collapse:collapse;margin-top:1%;margin-left:1%}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left;border:1px solid #000}#tdStatus table td#tName{max-width:20%}#tdStatus table th{background-color:#fff;color:#000}.simple-button.selector.tdReload{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.selector.tdAction{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}#percent{position:relative;padding:0}#percent::before{content:'';position:absolute;top:0;left:0;height:100%;background-color:#4caf50;-webkit-transition:width .5s ease-in-out;-o-transition:width .5s ease-in-out;transition:width .5s ease-in-out}#percent::after{content:attr(data-percent);position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%);font-size:14px;color:#fff}\n        </style>\n    ");
+    Lampa.Template.add("td_panel_page", "<div class='td_panel2'></div>");
+    Lampa.Template.add('tdStyle', "\n        <style>\n            @charset 'UTF-8';#error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}div#tdStatus{margin:1% 5% 0 5%}#tdStatus table{width:100%;border-collapse:collapse}.simple-button.selector.tdAction{font-size:16px}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left;border:1px solid #000}#tdStatus table td#tName{max-width:20%}#tdStatus table th{background-color:#fff;color:#000}.simple-button.selector.tdReload{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.selector.tdAction{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}#percent{position:relative;padding:0}#percent::before{content:'';position:absolute;top:0;left:0;height:100%;background-color:#4caf50;-webkit-transition:width .5s ease-in-out;-o-transition:width .5s ease-in-out;transition:width .5s ease-in-out}#percent::after{content:attr(data-percent);position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%);font-size:14px;color:#fff}\n        </style>\n    ");
     function add() {
       Menu.setMenu();
-      var button = $('<li class="menu__item selector">\n            <div class="menu__ico">\n                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 48 48" width="48px" height="48px"><path d="M 23.501953 4.125 C 12.485953 4.125 3.5019531 13.11 3.5019531 24.125 C 3.5019531 32.932677 9.2467538 40.435277 17.179688 43.091797 L 17.146484 42.996094 L 7 16 L 15 14 C 17.573 20.519 20.825516 32.721688 27.728516 30.929688 C 35.781516 28.948688 28.615 16.981172 27 12.076172 L 34 11 C 38.025862 19.563024 39.693648 25.901226 43.175781 27.089844 C 43.191423 27.095188 43.235077 27.103922 43.275391 27.113281 C 43.422576 26.137952 43.501953 25.140294 43.501953 24.125 C 43.501953 13.11 34.517953 4.125 23.501953 4.125 z M 34.904297 29.314453 C 34.250297 34.648453 28.811359 37.069578 21.943359 35.517578 L 26.316406 43.763672 L 26.392578 43.914062 C 33.176993 42.923925 38.872645 38.505764 41.660156 32.484375 C 41.603665 32.485465 41.546284 32.486418 41.529297 32.486328 C 38.928405 32.472567 36.607552 31.572967 34.904297 29.314453 z"></path></svg>\n            </div>\n            <div class="menu__text">'.concat(manifest.name, "</div>\n        </li>"));
+      var button = $('<li class="menu__item selector">\n            <div class="menu__ico">\n                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 48 48" width="48px" height="48px"><path d="M 23.501953 4.125 C 12.485953 4.125 3.5019531 13.11 3.5019531 24.125 C 3.5019531 32.932677 9.2467538 40.435277 17.179688 43.091797 L 17.146484 42.996094 L 7 16 L 15 14 C 17.573 20.519 20.825516 32.721688 27.728516 30.929688 C 35.781516 28.948688 28.615 16.981172 27 12.076172 L 34 11 C 38.025862 19.563024 39.693648 25.901226 43.175781 27.089844 C 43.191423 27.095188 43.235077 27.103922 43.275391 27.113281 C 43.422576 26.137952 43.501953 25.140294 43.501953 24.125 C 43.501953 13.11 34.517953 4.125 23.501953 4.125 z M 34.904297 29.314453 C 34.250297 34.648453 28.811359 37.069578 21.943359 35.517578 L 26.316406 43.763672 L 26.392578 43.914062 C 33.176993 42.923925 38.872645 38.505764 41.660156 32.484375 C 41.603665 32.485465 41.546284 32.486418 41.529297 32.486328 C 38.928405 32.472567 36.607552 31.572967 34.904297 29.314453 z"></path></svg>\n            </div>\n            <div class="menu__text">'.concat(Lampa.Lang.translate("tdPanel"), "</div>\n        </li>"));
       button.on("hover:enter", function () {
         Lampa.Activity.push({
           url: "",
