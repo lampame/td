@@ -255,7 +255,7 @@
           Lampa.Noty.show(Lampa.Lang.translate('tdError') + addXhr.status);
         }
       });
-      xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+      xhr.open("POST", "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
       xhr.setRequestHeader("X-Transmission-Session-Id", Lampa.Storage.get("transmissionKey"));
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
@@ -294,7 +294,7 @@
         }
       }
     });
-    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
     xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
     xhr.send();
   }
@@ -321,7 +321,7 @@
           Lampa.Noty.show(Lampa.Lang.translate('tdError') + this.status);
         }
       });
-      xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+      xhr.open("POST", "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
       xhr.setRequestHeader("X-Transmission-Session-Id", Lampa.Storage.get("transmissionKey"));
       xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
       xhr.send(data);
@@ -440,7 +440,7 @@
         return error();
       }
     });
-    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
+    xhr.open("POST", "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
     xhr.setRequestHeader("X-Transmission-Session-Id", Lampa.Storage.get("transmissionKey"));
     xhr.setRequestHeader("Authorization", "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass"))));
     xhr.send(data);
@@ -784,7 +784,7 @@
     });
     /* Menu */
     Lampa.Settings.listener.follow("open", function (e) {
-      /* qBitt */
+      /* Legact */
       if (e.name == "main") {
         if (Lampa.Settings.main().render().find('[data-component="qBittorent"]').length == 0) {
           Lampa.SettingsApi.addComponent({
@@ -805,7 +805,6 @@
         Lampa.Settings.main().update();
         Lampa.Settings.main().render().find('[data-component="qBittorentTweak"]').addClass("hide");
       }
-      /* Transmission */
       if (e.name == "main") {
         if (Lampa.Settings.main().render().find('[data-component="transmission"]').length == 0) {
           Lampa.SettingsApi.addComponent({
@@ -817,16 +816,15 @@
         Lampa.Settings.main().render().find('[data-component="transmission"]').addClass("hide");
       }
       if (e.name == "transmission") {
-        if (Lampa.Settings.main().render().find('[data-component="transmissionTwiks"]').length == 0) {
+        if (Lampa.Settings.main().render().find('[data-component="transmissionTweak"]').length == 0) {
           Lampa.SettingsApi.addComponent({
-            component: "transmissionTwiks",
+            component: "transmissionTweak",
             name: Lampa.Lang.translate('tweak')
           });
         }
         Lampa.Settings.main().update();
-        Lampa.Settings.main().render().find('[data-component="transmissionTwiks"]').addClass("hide");
+        Lampa.Settings.main().render().find('[data-component="transmissionTweak"]').addClass("hide");
       }
-      /* Aria2 */
       if (e.name == "main") {
         if (Lampa.Settings.main().render().find('[data-component="aria2"]').length == 0) {
           Lampa.SettingsApi.addComponent({
@@ -837,7 +835,6 @@
         Lampa.Settings.main().update();
         Lampa.Settings.main().render().find('[data-component="aria2"]').addClass("hide");
       }
-      /* Synalogy */
       if (e.name == "main") {
         if (Lampa.Settings.main().render().find('[data-component="synalogy"]').length == 0) {
           Lampa.SettingsApi.addComponent({
@@ -848,16 +845,15 @@
         Lampa.Settings.main().update();
         Lampa.Settings.main().render().find('[data-component="synalogy"]').addClass("hide");
       }
-      /* Info */
       if (e.name == "main") {
-        if (Lampa.Settings.main().render().find('[data-component="td_info"]').length == 0) {
+        if (Lampa.Settings.main().render().find('[data-component="tdInfo"]').length == 0) {
           Lampa.SettingsApi.addComponent({
-            component: "td_info",
+            component: "tdInfo",
             name: Lampa.Lang.translate('tdInfo')
           });
         }
         Lampa.Settings.main().update();
-        Lampa.Settings.main().render().find('[data-component="td_info"]').addClass("hide");
+        Lampa.Settings.main().render().find('[data-component="tdInfo"]').addClass("hide");
       }
       /* Legace END */
     });
@@ -869,7 +865,7 @@
       TITLE: "title",
       STATIC: "static"
     };
-    var PLUGIN_COMPONENT = "td_info";
+    var PLUGIN_COMPONENT = "tdInfo";
     Lampa.SettingsApi.addParam({
       component: COMPONENT_NAME,
       param: {
@@ -897,7 +893,7 @@
         var paramNameElement = $(".settings-param__name", item);
         paramNameElement.before('<div class="settings-param__status"></div>');
         item.on("hover:enter", function () {
-          Lampa.Settings.create("td_info");
+          Lampa.Settings.create("tdInfo");
           var enabledController = Lampa.Controller.enabled();
           enabledController.controller.back = function () {
             Lampa.Settings.create(COMPONENT_NAME);
@@ -1290,7 +1286,7 @@
       component: 'transmission',
       param: {
         type: 'button',
-        name: "transmissionTwiks"
+        name: "transmissionTweak"
       },
       field: {
         name: Lampa.Lang.translate('tweak')
@@ -1300,7 +1296,7 @@
         var paramNameElement = $(".settings-param__name", item);
         paramNameElement.before('<div class="settings-param__status"></div>');
         item.on("hover:enter", function () {
-          Lampa.Settings.create("transmissionTwiks");
+          Lampa.Settings.create("transmissionTweak");
           var enabledController = Lampa.Controller.enabled();
           enabledController.controller.back = function () {
             Lampa.Settings.create("transmission");
@@ -1310,7 +1306,7 @@
     });
     /* End */
     Lampa.SettingsApi.addParam({
-      component: "transmissionTwiks",
+      component: "transmissionTweak",
       param: {
         name: "transmissionAutostart",
         type: "trigger",
@@ -1327,7 +1323,24 @@
       }
     });
     Lampa.SettingsApi.addParam({
-      component: "transmissionTwiks",
+      component: "transmissionTweak",
+      param: {
+        name: "transmissionKeenetic",
+        type: "trigger",
+        //доступно select,input,trigger,title,static
+        "default": false
+      },
+      field: {
+        name: Lampa.Lang.translate('transmissionKeenetic'),
+        description: Lampa.Lang.translate('transmissionKeeneticDescription')
+      },
+      onChange: function onChange(value) {
+        if (value == "true") Lampa.Storage.set("transmissionKeenetic", true);else Lampa.Storage.set("transmissionKeenetic", false);
+        Lampa.Settings.update();
+      }
+    });
+    Lampa.SettingsApi.addParam({
+      component: "transmissionTweak",
       param: {
         name: "transmissionPath",
         type: "input",
@@ -1643,6 +1656,18 @@
         en: "All torrent will be add on pause",
         uk: "Всі торренти додаються на паузі",
         zh: "所有种子都将添加到暂停状态" // Chinese translation
+      },
+      transmissionKeenetic: {
+        ru: "Keenetic tweak",
+        en: "Keenetic tweak",
+        uk: "Keenetic tweak",
+        zh: "Keenetic tweak" // Chinese translation
+      },
+      transmissionKeeneticDescription: {
+        ru: "Может помочь с подключением к Keenetic",
+        en: "Can help with the Keenetic connection",
+        uk: "Може допомогти з підключенням до Keenetic",
+        zh: "可帮助连接 Keenetic" // Chinese translation
       },
       transmissionRPCRoute: {
         ru: "RPC Path",
