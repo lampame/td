@@ -657,7 +657,8 @@
             Lampa.Parser.marnet(selectedTorrent, function () {
               a.send2app(selectedTorrent);
             }, function (error) {
-              console.error('tmenu', "Error loading magnet:", error);
+              console.log('TD', "Error loading magnet:", error);
+              console.log("TD", selectedTorrent.MagnetUri);
               Lampa.Noty.show(Lampa.Lang.translate('tdMagnetError'), error);
             });
           } else {
@@ -1773,7 +1774,7 @@
       component: "td"
     };
     Lampa.Manifest.plugins = manifest;
-    Lampa.Template.add("td_panel_page", "<div class='td_panel2'></div>");
+    Lampa.Template.add("td_panel_page", "<div class='td_panel'></div>");
     Lampa.Template.add('tdStyle', "\n        <style>\n            @charset 'UTF-8';#error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}div#tdStatus{margin:1% 5% 0 5%}#tdStatus table{width:100%;border-collapse:collapse}.simple-button.selector.tdAction{font-size:16px}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left;border:1px solid #000}#tdStatus table td#tName{max-width:20%}#tdStatus table th{background-color:#fff;color:#000}.simple-button.selector.tdReload{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.selector.tdAction{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}#percent{position:relative;padding:0}#percent::before{content:'';position:absolute;top:0;left:0;height:100%;background-color:#4caf50;-webkit-transition:width .5s ease-in-out;-o-transition:width .5s ease-in-out;transition:width .5s ease-in-out}#percent::after{content:attr(data-percent);position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%);font-size:14px;color:#fff}\n        </style>\n    ");
     function add() {
       Menu.setMenu();
