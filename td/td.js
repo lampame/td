@@ -183,7 +183,13 @@
       footer.classList.add("simple-button", "selector", "tdReload");
       footer.textContent = Lampa.Lang.translate('tdPanelReload');
       footer.on("hover:enter", function () {
-        location.reload();
+        //TODO: Ребут без лампы
+        Lampa.Activity.replace({
+          url: "",
+          title: "Torrent downloader",
+          component: "td",
+          page: 1
+        });
         Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
       });
       // Вставить созданную таблицу в родительский элемент
@@ -388,7 +394,13 @@
       footer.classList.add("simple-button", "selector", "tdReload");
       footer.textContent = Lampa.Lang.translate('tdPanelReload');
       footer.on("hover:enter", function () {
-        location.reload();
+        //TODO: Ребут без лампы
+        Lampa.Activity.replace({
+          url: "",
+          title: "Torrent downloader",
+          component: "td",
+          page: 1
+        });
         Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
       });
       // Вставить созданную таблицу в родительский элемент
