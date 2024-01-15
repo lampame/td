@@ -675,7 +675,7 @@
             a.send2app(selectedTorrent);
           }
         };
-        if (Lampa.Storage.field("td_qBittorent") === true) {
+        if (Lampa.Storage.field("tdClient") === 'qBittorent') {
           typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
           e.menu.push({
             title: '<p id="qBittorentgetStatusBtn">qBittorrent</p>',
@@ -683,7 +683,7 @@
             onSelect: onSelectApp
           });
         }
-        if (Lampa.Storage.field("td_transmission") === true) {
+        if (Lampa.Storage.field("tdClient") === 'transmission') {
           typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
           e.menu.push({
             title: '<p id="transmissionStatusBtn">transmission</p>',
@@ -691,7 +691,7 @@
             onSelect: onSelectApp
           });
         }
-        if (Lampa.Storage.field("td_aria2") === true) {
+        if (Lampa.Storage.field("tdClient") === 'aria2') {
           typeof Lampa.Storage.get("aria2Url") !== 'undefined' && pAria2.getStatus();
           e.menu.push({
             title: '<p id="aria2StatusBtn">aria2</p>',
