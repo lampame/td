@@ -227,8 +227,7 @@
     xhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4 && this.status === 200) {
         return tabels(JSON.parse(this.responseText));
-      } else if (this.readyState === 4 && this.status != 200) {
-        console.log("TD", this);
+      } else if (this.readyState === 4 && this.status !== 200) {
         return error();
       }
     });
@@ -447,8 +446,7 @@
       if (this.readyState === 4 && this.status === 200) {
         console.log("TD", JSON.parse(this.responseText).arguments.torrents);
         return tabels(JSON.parse(this.responseText).arguments.torrents);
-      } else if (this.readyState === 4 && this.status != 200) {
-        console.log("TD", JSON.parse(this));
+      } else if (this.readyState === 4 && this.status !== 200) {
         return error();
       }
     });
@@ -719,15 +717,27 @@
     this.build = function () {
       var tdPanel = html.appendChild(Lampa.Template.js("td_panel_page"));
       tdPanel.innerHTML = "<div id='tdStatus'></div>";
+      /*
       if (Lampa.Storage.field("td_qBittorent") === true && Lampa.Storage.field("td_transmission") === false && Lampa.Storage.field("td_aria2") === false) {
-        qBittorent.qPanels();
-      } else if (Lampa.Storage.field("td_transmission") === true && Lampa.Storage.field("td_qBittorent") === false && Lampa.Storage.field("td_aria2") === false) {
-        transmission.qPanels();
+          qBittorent.qPanels();
+      } else if (Lampa.Storage.field("td_transmission") === true && Lampa.Storage.field("td_qBittorent") === false  && Lampa.Storage.field("td_aria2") === false) {
+          transmission.qPanels();
       } else if (Lampa.Storage.field("td_aria2") === true && Lampa.Storage.field("td_qBittorent") === false && Lampa.Storage.field("td_transmission") === false) {
-        //pAria2.qPanels();
-        tdPanel.innerHTML = "<div id='Error'><h2>We apologize, Aria2 is not supported yet :(</h2></div>";
+           //pAria2.qPanels();
+           tdPanel.innerHTML = "<div id='Error'><h2>We apologize, Aria2 is not supported yet :(</h2></div>";
       } else if (Lampa.Storage.field("td_transmission") === true && Lampa.Storage.field("td_qBittorent") === true && Lampa.Storage.field("td_aria2") === true) {
-        tdPanel.innerHTML = "<div id='Error'><h2>Alert!</h2><br /><p class='more-clients'>".concat(Lampa.Lang.translate('tdInfoDesc'), "</p></div>");
+          tdPanel.innerHTML = `<div id='Error'><h2>Alert!</h2><br /><p class='more-clients'>${Lampa.Lang.translate('tdInfoDesc')}</p></div>`;
+      }else {
+          tdPanel.innerHTML = `<div id='Error'><h2>${Lampa.Lang.translate('tdPanelCOff')}</h2></div>`;
+      } */
+      var tdClient = Lampa.Storage.get('tdClient');
+      var clients = {
+        'qBittorent': qBittorent,
+        'transmission': transmission,
+        'aria2': pAria2
+      };
+      if (tdClient && clients[tdClient]) {
+        clients[tdClient].qPanels();
       } else {
         tdPanel.innerHTML = "<div id='Error'><h2>".concat(Lampa.Lang.translate('tdPanelCOff'), "</h2></div>");
       }
@@ -788,6 +798,17 @@
     });
     /* Menu */
     Lampa.Settings.listener.follow("open", function (e) {
+      /* Client selector */
+      if (e.name === "torrentDownloader") {
+        if (Lampa.Settings.main().render().find('[data-component="tdSelect"]').length === 0) {
+          Lampa.SettingsApi.addComponent({
+            component: "tdSelect",
+            name: "tdSelect"
+          });
+        }
+        Lampa.Settings.main().update();
+        Lampa.Settings.main().render().find('[data-component="tdSelect"]').addClass("hide");
+      }
       /* Legact */
       if (e.name === "main") {
         if (Lampa.Settings.main().render().find('[data-component="qBittorent"]').length === 0) {
@@ -882,74 +903,32 @@
         description: Lampa.Lang.translate('tdDependenciesDesc')
       }
     });
+    /* Selector */
     Lampa.SettingsApi.addParam({
-      component: COMPONENT_NAME,
+      component: 'torrentDownloader',
       param: {
-        name: "tdInfo",
-        type: PARAM_TYPE.STATIC,
-        "default": true
+        name: 'tdSelect',
+        type: 'select',
+        "default": 'no_client',
+        values: {
+          no_client: 'None',
+          qBittorent: Lampa.Lang.translate('qBittorent'),
+          transmission: Lampa.Lang.translate('transmission'),
+          aria2: Lampa.Lang.translate('aria2')
+        }
       },
       field: {
-        name: Lampa.Lang.translate('tdInfo')
+        name: Lampa.Lang.translate('tdSelect')
       },
-      onRender: function onRender(item) {
-        item.show();
-        var paramNameElement = $(".settings-param__name", item);
-        paramNameElement.before('<div class="settings-param__status"></div>');
-        item.on("hover:enter", function () {
-          Lampa.Settings.create("tdInfo");
-          var enabledController = Lampa.Controller.enabled();
-          enabledController.controller.back = function () {
-            Lampa.Settings.create(COMPONENT_NAME);
-          };
-        });
-      }
-    });
-    /* Info block */
-    //migration.rework();
-
-    Lampa.SettingsApi.addParam({
-      component: PLUGIN_COMPONENT,
-      param: {
-        name: "group",
-        type: "static"
-      },
-      field: {
-        name: "<img src=\"https://cdn.glitch.global/d9956867-398e-4a85-9c42-31911adc9981/groupLTD.jpg?v=1702216657917\" alt=\"GroupLTD\" width=\"100%\" height=\"auto\">",
-        description: Lampa.Lang.translate('tdInfoGr')
-      }
-    });
-    Lampa.SettingsApi.addParam({
-      component: PLUGIN_COMPONENT,
-      param: {
-        name: "group",
-        type: "static"
-      },
-      field: {
-        name: "<b>Info</b>",
-        description: Lampa.Lang.translate('tdInfoDesc')
+      onChange: function onChange(value) {
+        console.log("TDDev", value);
+        Lampa.Storage.set('tdClient', value);
+        Lampa.Settings.update();
       }
     });
     /* Synalogy */
     //synalogy.config();
     /* qBittorent */
-    Lampa.SettingsApi.addParam({
-      component: "torrentDownloader",
-      param: {
-        name: "td_qBittorent",
-        type: "trigger",
-        //доступно select,input,trigger,title,static
-        "default": false
-      },
-      field: {
-        name: "qBittorent",
-        description: ""
-      },
-      onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("td_qBittorent", true);else Lampa.Storage.set("td_qBittorent", false);
-        Lampa.Settings.update();
-      }
-    });
     Lampa.SettingsApi.addParam({
       component: "torrentDownloader",
       param: {
@@ -963,7 +942,7 @@
         description: Lampa.Lang.translate('tdConfig')
       },
       onRender: function onRender(item) {
-        if (Lampa.Storage.field("td_qBittorent") === true) {
+        if (Lampa.Storage.field("tdClient") === "qBittorent") {
           typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
           //qBittorent.getStatus();
           item.show();
@@ -1161,23 +1140,6 @@
     Lampa.SettingsApi.addParam({
       component: "torrentDownloader",
       param: {
-        name: "td_transmission",
-        type: "trigger",
-        //доступно select,input,trigger,title,static
-        "default": false
-      },
-      field: {
-        name: Lampa.Lang.translate('transmission'),
-        description: ""
-      },
-      onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("td_transmission", true);else Lampa.Storage.set("td_transmission", false);
-        Lampa.Settings.update();
-      }
-    });
-    Lampa.SettingsApi.addParam({
-      component: "torrentDownloader",
-      param: {
         name: "transmission",
         type: "static",
         //доступно select,input,trigger,title,static
@@ -1188,7 +1150,7 @@
         description: Lampa.Lang.translate('tdConfig')
       },
       onRender: function onRender(item) {
-        if (Lampa.Storage.field("td_transmission") === true) {
+        if (Lampa.Storage.field("tdClient") === "transmission") {
           typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="transmissionStatus" class="settings-param__status wait"></div>');
@@ -1369,23 +1331,6 @@
     Lampa.SettingsApi.addParam({
       component: "torrentDownloader",
       param: {
-        name: "td_aria2",
-        type: "trigger",
-        //доступно select,input,trigger,title,static
-        "default": false
-      },
-      field: {
-        name: Lampa.Lang.translate('aria2'),
-        description: ""
-      },
-      onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("td_aria2", true);else Lampa.Storage.set("td_aria2", false);
-        Lampa.Settings.update();
-      }
-    });
-    Lampa.SettingsApi.addParam({
-      component: "torrentDownloader",
-      param: {
         name: "aria2",
         type: "static",
         //доступно select,input,trigger,title,static
@@ -1396,7 +1341,7 @@
         description: Lampa.Lang.translate('tdConfig')
       },
       onRender: function onRender(item) {
-        if (Lampa.Storage.field("td_aria2") === true) {
+        if (Lampa.Storage.field("tdClient") === "aria2") {
           typeof Lampa.Storage.get("aria2Url") !== 'undefined' && pAria2.getStatus();
           item.show();
           $(".settings-param__name", item).before('<div id="aria2Status" class="settings-param__status wait"></div>');
@@ -1472,6 +1417,52 @@
       onChange: function onChange(item) {
         Lampa.Storage.set("aria2Path", item);
         Lampa.Settings.update();
+      }
+    });
+    /* Info block */
+    Lampa.SettingsApi.addParam({
+      component: COMPONENT_NAME,
+      param: {
+        name: "tdInfo",
+        type: PARAM_TYPE.STATIC,
+        "default": true
+      },
+      field: {
+        name: Lampa.Lang.translate('tdInfo')
+      },
+      onRender: function onRender(item) {
+        item.show();
+        var paramNameElement = $(".settings-param__name", item);
+        paramNameElement.before('<div class="settings-param__status"></div>');
+        item.on("hover:enter", function () {
+          Lampa.Settings.create("tdInfo");
+          var enabledController = Lampa.Controller.enabled();
+          enabledController.controller.back = function () {
+            Lampa.Settings.create(COMPONENT_NAME);
+          };
+        });
+      }
+    });
+    Lampa.SettingsApi.addParam({
+      component: PLUGIN_COMPONENT,
+      param: {
+        name: "group",
+        type: "static"
+      },
+      field: {
+        name: "<img src=\"https://cdn.glitch.global/d9956867-398e-4a85-9c42-31911adc9981/groupLTD.jpg?v=1702216657917\" alt=\"GroupLTD\" width=\"100%\" height=\"auto\">",
+        description: Lampa.Lang.translate('tdInfoGr')
+      }
+    });
+    Lampa.SettingsApi.addParam({
+      component: PLUGIN_COMPONENT,
+      param: {
+        name: "group",
+        type: "static"
+      },
+      field: {
+        name: "<b>Info</b>",
+        description: Lampa.Lang.translate('tdInfoDesc')
       }
     });
   }
@@ -1581,6 +1572,12 @@
         en: "Torrent downloader",
         uk: "Torrent downloader",
         zh: "种子下载器" // Chinese translation
+      },
+      tdSelect: {
+        ru: "Выбор клиента",
+        en: "Select client",
+        uk: "Обраты клієнта",
+        zh: "选择客户" // Chinese translation
       },
       tdInfo: {
         ru: "О плагине",
