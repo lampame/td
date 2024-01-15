@@ -767,14 +767,6 @@
     };
   }
 
-  //TODO: Добавить миграцию
-  function rework() {
-    return console.log("Migration true");
-  }
-  var migration = {
-    rework: rework
-  };
-
   function setMenu() {
     //Создание пункта меню
     Lampa.SettingsApi.addComponent({
@@ -785,8 +777,8 @@
     /* Menu */
     Lampa.Settings.listener.follow("open", function (e) {
       /* Legact */
-      if (e.name == "main") {
-        if (Lampa.Settings.main().render().find('[data-component="qBittorent"]').length == 0) {
+      if (e.name === "main") {
+        if (Lampa.Settings.main().render().find('[data-component="qBittorent"]').length === 0) {
           Lampa.SettingsApi.addComponent({
             component: "qBittorent",
             name: Lampa.Lang.translate('qBittorent')
@@ -795,8 +787,8 @@
         Lampa.Settings.main().update();
         Lampa.Settings.main().render().find('[data-component="qBittorent"]').addClass("hide");
       }
-      if (e.name == "qBittorent") {
-        if (Lampa.Settings.main().render().find('[data-component="qBittorentTweak"]').length == 0) {
+      if (e.name === "qBittorent") {
+        if (Lampa.Settings.main().render().find('[data-component="qBittorentTweak"]').length === 0) {
           Lampa.SettingsApi.addComponent({
             component: "qBittorentTweak",
             name: Lampa.Lang.translate('tweak')
@@ -1488,32 +1480,32 @@
         ru: "Для корректной работы должен быть активирован парсер",
         en: "Parser must be activated to work correctly",
         uk: "Для коректної роботи має бути активований парсер",
-        zh: "解析器必须激活才能正确运行" // Chinese translation
+        zh: "必须激活解析器才能正确运行" // Chinese translation
       },
       /* Panel */
       tdPanel: {
         ru: "Torrent Panel",
         en: "Torrent Panel",
         uk: "Torrent Panel",
-        zh: "Torrent Panel" // Chinese translation
+        zh: "下载" // Chinese translation
       },
       tdPanelReload: {
         ru: "Перезагрузить Лампу",
         en: "Reload Lampa",
         uk: "Перезавантажити Лампу",
-        zh: "重新加载 Lampa" // Chinese translation
+        zh: "重新加载Lampa" // Chinese translation
       },
       tdPanelMClient: {
         ru: "Включено 2 или больше торрент клиента, я пока не такой крутой! Выключи кого-то",
         en: "2 or more torrent clients enabled, I'm not that cool yet! Turn someone off",
         uk: "Увімкнено 2 або більше торрент-клієнтів, я поки що не такий крутий! Вимкни когось",
-        zh: "启用 2 个或更多 torrent 客户端，我还没那么酷！关闭某人" // Chinese translation
+        zh: "您已启用2个或多个种子下载客户端，我还没那么酷！请关闭某个。" // Chinese translation
       },
       tdPanelCOff: {
         ru: "Торрент клиенты не подключены",
         en: "Torrent clients are not connected",
         uk: "Торрент клієнти не підключені",
-        zh: "未连接 Torrent 客户端" // Chinese translation
+        zh: "未连接种子客户端" // Chinese translation
       },
       tdPanelDataError: {
         ru: "Данные не найдены",
@@ -1525,25 +1517,25 @@
         ru: "Название",
         en: "Name",
         uk: "Назва",
-        zh: "标题" // Chinese translation
+        zh: "名称" // Chinese translation
       },
       tdPanelAction: {
         ru: "Действие",
         en: "Action",
         uk: "Дія",
-        zh: "行动" // Chinese translation
+        zh: "操作" // Chinese translation
       },
       tdPanelProgress: {
         ru: "Прогресс",
         en: "Progress",
         uk: "Прогрес",
-        zh: "进展情况" // Chinese translation
+        zh: "进度" // Chinese translation
       },
       tdPanelSize: {
         ru: "Размер",
         en: "Size",
         uk: "Розмір",
-        zh: "尺寸" // Chinese translation
+        zh: "大小" // Chinese translation
       },
       tdPanelDownloaded: {
         ru: "Скачано",
@@ -1562,7 +1554,7 @@
         ru: "Восстановить",
         en: "Resume",
         uk: "Поновити",
-        zh: "简历" // Chinese translation
+        zh: "恢复" // Chinese translation
       },
       tdPanelDownloading: {
         ru: "Остановить",
@@ -1575,7 +1567,7 @@
         ru: "Torrent downloader",
         en: "Torrent downloader",
         uk: "Torrent downloader",
-        zh: "Torrent downloader" // Chinese translation
+        zh: "种子下载器" // Chinese translation
       },
       tdInfo: {
         ru: "О плагине",
@@ -1587,19 +1579,19 @@
         ru: "Группа плагина Torrent downloader",
         en: "Torrent downloader plugin group",
         uk: "Група плагіна Torrent downloader",
-        zh: "BitTorrent 下载插件组" // Chinese translation
+        zh: "种子下载插件电报组" // Chinese translation
       },
       tdInfoDesc: {
         ru: "Плагин служит для загрузки торрентов средствами Torrent клиентов. Вызывается через контекстное меню на выбранной раздаче<br>Обязательные зависимости - Активированный парсер для торрентов. Torrserver НЕ ТРЕБУЕТСЯ<br>Пожелания по клиентам принимаются в чате плагина",
         en: "The plugin is used to download torrents by means of Torrent clients.<br>Called through the context menu on the selected distribution<br>Required dependencies - Activated parser for torrents. Torrserver is NOT REQUIRED<br>Requests for clients are accepted in the plugin chat room",
         uk: "Плагін служить для завантаження торрентів до Torrent клієнтів.<br>Викликається через контекстне меню на обраній роздачі.<br>Обов'язкові залежності - Активований парсер для торрентів. Torrserver НЕ ПОТРІБЕН<br>Побажання щодо клієнтів приймаються в чаті плагіна",
-        zh: "该插件用于通过 Torrent 客户端下载 Torrent<br>通过所选发行版的上下文菜单调用<br>必备依赖项 - 激活的 Torrent 解析器。不需要 Torrserver<br>插件聊天室接受客户端请求" // Chinese translation
+        zh: "该插件用于通过Torrent客户端下载种子<br>通过所选内容的菜单调用<br>必备依赖项 - 激活的Torrent解析器。不需要 Torrserver<br>插件聊天室接受客户端请求" // Chinese translation
       },
       tweak: {
         ru: "Tweak",
         en: "Tweak",
         uk: "Tweak",
-        zh: "调整" // Chinese translation
+        zh: "高级设置" // Chinese translation
       },
       tdConfig: {
         ru: "Настройки клиента",
@@ -1630,13 +1622,13 @@
         ru: "Категория для Фильмов",
         en: "Category for Movie",
         uk: "Категорія для Фільмів",
-        zh: "电影类别" // Chinese translation
+        zh: "电影分类名" // Chinese translation
       },
       qBittorentCS: {
         ru: "Категория для Сериалов",
         en: "Category for TVShow",
         uk: "Категорія для Серіалів",
-        zh: "电视节目类别" // Chinese translation
+        zh: "电视剧集分类名" // Chinese translation
       },
       /* Transmission */
       transmission: {
@@ -1649,37 +1641,37 @@
         ru: "Автостоп",
         en: "Autostop",
         uk: "Автостоп",
-        zh: "自动停车" // Chinese translation
+        zh: "自动停止" // Chinese translation
       },
       transmissionAutostopDescription: {
         ru: "Все торренты добавляются на паузе",
         en: "All torrent will be add on pause",
         uk: "Всі торренти додаються на паузі",
-        zh: "所有洪流都将暂停添加" // Chinese translation
+        zh: "所有种子都将暂停添加" // Chinese translation
       },
       transmissionKeenetic: {
         ru: "Keenetic tweak",
         en: "Keenetic tweak",
         uk: "Keenetic tweak",
-        zh: "Keenetic tweak" // Chinese translation
+        zh: "Keenetic优化" // Chinese translation
       },
       transmissionKeeneticDescription: {
         ru: "Может помочь с подключением к Keenetic",
         en: "Can help with the Keenetic connection",
         uk: "Може допомогти з підключенням до Keenetic",
-        zh: "可帮助连接 Keenetic" // Chinese translation
+        zh: "可以帮助建立 Keenetic 连接" // Chinese translation
       },
       transmissionRPCRoute: {
         ru: "RPC Path",
         en: "RPC Path",
         uk: "RPC Path",
-        zh: "RPC Path" // Chinese translation
+        zh: "RPC 路径" // Chinese translation
       },
       transmissionRPCRouteDescription: {
         ru: "Изменение пути API. Не трогать без необходимости",
         en: "Change api route. Do not change without need",
         uk: "Змінити маршрут API. Не чіпати без нагальної потреби",
-        zh: "更改 api 路由。如无必要，请勿更改" // Chinese translation
+        zh: "更改API路径。如无必要，请勿更改" // Chinese translation
       },
       /* Arai2 */
       aria2: {
@@ -1692,13 +1684,13 @@
         ru: "RPC Path",
         en: "RPC Path",
         uk: "RPC Path",
-        zh: "RPC Path" // Chinese translation
+        zh: "RPC 路径" // Chinese translation
       },
       aria2RPCRouteDescription: {
         ru: "Изменение пути API. Не трогать без необходимости",
         en: "Change api route. Do not change without need",
         uk: "Змінити маршрут API. Не чіпати без нагальної потреби",
-        zh: "更改 api 路由。如无必要，请勿更改" // Chinese translation
+        zh: "更改API路径。如无必要，请勿更改" // Chinese translation
       },
       /* Config */
       clientSSL: {
@@ -1723,44 +1715,44 @@
         ru: "Пароль пользователя",
         en: "Password",
         uk: "Пароль користувача",
-        zh: "用户密码" // Chinese translation
+        zh: "密码" // Chinese translation
       },
       /* Notification */
       tdPanelReloaded: {
         ru: "Перезагрузить Лампу",
         en: "Reload Lampa",
         uk: "Перезавантажити Лампу",
-        zh: "重装兰帕" // Chinese translation
+        zh: "重新加载Lampa" // Chinese translation
       },
       tdMagnetError: {
         ru: "Ошибка с Magnet ссылкой",
         en: "Error loading magnet:",
         uk: "Помилка із Magnet посиланням",
-        zh: "加载磁铁时出错:" // Chinese translation
+        zh: "加载磁力时出错:" // Chinese translation
       },
       tdAdded: {
         ru: "Торрент загружается",
         en: "Torrent is being downloaded",
         uk: "Торрент завантажується",
-        zh: "正在下载 Torrent" // Chinese translation
+        zh: "正在下载种子" // Chinese translation
       },
       tdAddError: {
         ru: "Ошибка добавления торрента",
         en: "Failed to add torrent",
         uk: "Помилка додавання торренту",
-        zh: "添加 torrent 失败" // Chinese translation
+        zh: "添加种子失败" // Chinese translation
       },
       tdExist: {
         ru: "Торрент уже в списке",
         en: "Torrent already exists",
         uk: "Торрент вже у списку",
-        zh: "Torrent 已经存在" // Chinese translation
+        zh: "种子已经存在" // Chinese translation
       },
       tdAction: {
         ru: "Торрент ",
         en: "Torrent ",
         uk: "Торрент ",
-        zh: "Torrent " // Chinese translation
+        zh: "种子 " // Chinese translation
       },
       tdAuthError: {
         ru: "Ошибка авторизации ",
