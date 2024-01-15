@@ -658,7 +658,7 @@
               a.send2app(selectedTorrent);
             }, function (error) {
               console.log('TD', "Error loading magnet:", error);
-              console.log("TD", selectedTorrent.MagnetUri);
+              console.log("TD", "Проверяем что нам отдает парсер", selectedTorrent);
               Lampa.Noty.show(Lampa.Lang.translate('tdMagnetError'), error);
             });
           } else {
