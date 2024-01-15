@@ -894,7 +894,8 @@
       }
     });
     /* Info block */
-    migration.rework();
+    //migration.rework();
+
     Lampa.SettingsApi.addParam({
       component: PLUGIN_COMPONENT,
       param: {
