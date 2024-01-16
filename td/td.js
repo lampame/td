@@ -30,7 +30,7 @@
         addXhr.onreadystatechange = function () {
           if (addXhr.readyState === 4) {
             if (addXhr.status !== 200) {
-              console.log("TD", addXhr);
+              console.log("TD", addXhr.status, addXhr.response);
               Lampa.Noty.show(Lampa.Lang.translate('tdAddError'));
               return;
             }
