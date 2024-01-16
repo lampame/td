@@ -193,6 +193,9 @@
         Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
       });
       // Вставить созданную таблицу в родительский элемент
+      if ($("#tdStatus").children().length > 0) {
+        $("#tdStatus").empty();
+      }
       parentElement.appendChild(table);
       parentElement.appendChild(footer);
       function formatPercent(percent) {
@@ -403,6 +406,9 @@
         Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
       });
       // Вставить созданную таблицу в родительский элемент
+      if ($("#tdStatus").children().length > 0) {
+        $("#tdStatus").empty();
+      }
       parentElement.appendChild(table);
       parentElement.appendChild(footer);
       function formatPercent(percent) {
@@ -707,7 +713,8 @@
   };
 
   function Panels() {
-    var last;
+    var last,
+      scroll;
     var html = document.createElement("div");
     html.id = "tdPanel";
     this.create = function () {
@@ -715,8 +722,18 @@
       return this.render();
     };
     this.build = function () {
+      var _this = this;
+      scroll = new Lampa.Scroll({
+        mask: true,
+        over: true
+      });
+      scroll.onEnd = function () {
+        _this.next();
+      };
       var tdPanel = html.appendChild(Lampa.Template.js("td_panel_page"));
       tdPanel.innerHTML = "<div id='tdStatus'></div>";
+      html.find('.td_panel').append(scroll.render(true));
+      scroll.minus(html.find('#tdPanel'));
       /*
       if (Lampa.Storage.field("td_qBittorent") === true && Lampa.Storage.field("td_transmission") === false && Lampa.Storage.field("td_aria2") === false) {
           qBittorent.qPanels();
@@ -746,6 +763,9 @@
       this.activity.loader(false);
     };
     this.display = function () {
+      scroll.clear();
+      scroll.reset();
+      Lampa.Layer.visible(scroll.render(true));
       this.activity.toggle();
     };
     this.background = function () {
@@ -785,6 +805,7 @@
       return html;
     };
     this.destroy = function () {
+      if (scroll) scroll.destroy();
       html.remove();
     };
   }
@@ -1577,7 +1598,7 @@
         ru: "Выбор клиента",
         en: "Select client",
         uk: "Обраты клієнта",
-        zh: "选择客户" // Chinese translation
+        zh: "选择客户端" // Chinese translation
       },
       tdInfo: {
         ru: "О плагине",
