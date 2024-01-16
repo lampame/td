@@ -19,6 +19,7 @@
     authXhr.onreadystatechange = function () {
       if (authXhr.readyState === 4) {
         if (authXhr.status !== 200) {
+          console.log("TD", "Bad auth");
           Lampa.Noty.show(Lampa.Lang.translate('tdAuthError'));
           return;
         }
@@ -30,16 +31,16 @@
         addXhr.onreadystatechange = function () {
           if (addXhr.readyState === 4) {
             if (addXhr.status !== 200) {
-              console.log("TD", addXhr.status, addXhr.response);
+              console.log("TD", "Server return ".concat(addXhr.status, " when try add torrent"));
               Lampa.Noty.show(Lampa.Lang.translate('tdAddError'));
               return;
             }
             if (addXhr.response === "Fails.") {
-              console.log("TD", addXhr);
+              console.log("TD", addXhr.response);
               Lampa.Noty.show(Lampa.Lang.translate('tdExist'));
               return;
             }
-            console.log("TD", addXhr.status);
+            console.log("TD", addXhr.response);
             Lampa.Noty.show(Lampa.Lang.translate('tdAdded'));
           }
         };
@@ -734,19 +735,6 @@
       tdPanel.innerHTML = "<div id='tdStatus'></div>";
       html.find('.td_panel').append(scroll.render(true));
       scroll.minus(html.find('#tdPanel'));
-      /*
-      if (Lampa.Storage.field("td_qBittorent") === true && Lampa.Storage.field("td_transmission") === false && Lampa.Storage.field("td_aria2") === false) {
-          qBittorent.qPanels();
-      } else if (Lampa.Storage.field("td_transmission") === true && Lampa.Storage.field("td_qBittorent") === false  && Lampa.Storage.field("td_aria2") === false) {
-          transmission.qPanels();
-      } else if (Lampa.Storage.field("td_aria2") === true && Lampa.Storage.field("td_qBittorent") === false && Lampa.Storage.field("td_transmission") === false) {
-           //pAria2.qPanels();
-           tdPanel.innerHTML = "<div id='Error'><h2>We apologize, Aria2 is not supported yet :(</h2></div>";
-      } else if (Lampa.Storage.field("td_transmission") === true && Lampa.Storage.field("td_qBittorent") === true && Lampa.Storage.field("td_aria2") === true) {
-          tdPanel.innerHTML = `<div id='Error'><h2>Alert!</h2><br /><p class='more-clients'>${Lampa.Lang.translate('tdInfoDesc')}</p></div>`;
-      }else {
-          tdPanel.innerHTML = `<div id='Error'><h2>${Lampa.Lang.translate('tdPanelCOff')}</h2></div>`;
-      } */
       var tdClient = Lampa.Storage.get('tdClient');
       var clients = {
         'qBittorent': qBittorent,
