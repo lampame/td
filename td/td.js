@@ -258,7 +258,7 @@
         if (this.readyState === 4 && this.status === 200) {
           Lampa.Noty.show(Lampa.Lang.translate('tdAdded'));
           console.log("TD", this.responseText);
-        } else if (addXhr.status != 200) {
+        } else if (addXhr.status !== 200) {
           console.log("TD", addXhr);
           Lampa.Noty.show(Lampa.Lang.translate('tdError') + addXhr.status);
         }
