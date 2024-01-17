@@ -171,13 +171,13 @@
           deleteCell.classList.add("simple-button", "selector", "tdActionDell");
           deleteCell.innerHTML = "&#128465;";
           deleteCell.on("hover:enter", function () {
-            action("delete", item, true);
+            action("delete", item, false);
           });
           var fdeleteCell = row.insertCell();
           fdeleteCell.classList.add("simple-button", "selector", "tdActionDell");
           fdeleteCell.innerHTML = "&#129699;";
           fdeleteCell.on("hover:enter", function () {
-            action("delete", item, false);
+            action("delete", item, true);
           });
           var actionCell = row.insertCell();
           actionCell.classList.add("tdActionBlock");
@@ -335,17 +335,21 @@
     Lampa.Storage.get("transmissionPort");
     Lampa.Storage.get("transmissionUser");
     Lampa.Storage.get("transmissionPass");
-    function action(action, item) {
+    function action(action, item, deleteFiles) {
+      //const dellParam = action === "torrent-remove" ? {"delete-local-data": deleteFiles} : "";
       var data = JSON.stringify({
         "method": action,
         "arguments": {
-          "ids": item
+          "ids": item.id,
+          //dellParam
+          "delete-local-data": deleteFiles
         }
       });
       var xhr = new XMLHttpRequest();
       xhr.withCredentials = false;
       xhr.addEventListener("readystatechange", function () {
         if (this.readyState === 4 && this.status === 200) {
+          console.log("TDDev", item);
           Lampa.Noty.show(Lampa.Lang.translate('tdAction') + item.name + " " + action);
         } else {
           console.log("TD", this.status.text);
@@ -367,7 +371,7 @@
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
       //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
-      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelAction'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelDownloaded'), Lampa.Lang.translate('tdPanelUploaded')];
+      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelDownloaded'), Lampa.Lang.translate('tdPanelUploaded')];
       headerCells.forEach(function (headerCell) {
         var th = document.createElement("th");
         th.id = "header";
@@ -389,15 +393,34 @@
             stateCell.classList.add("simple-button", "selector", "tdAction");
             stateCell.textContent = Lampa.Lang.translate('tdPanelPaused');
             stateCell.on("hover:enter", function () {
-              action("torrent-start", item.id);
+              action("torrent-start", item);
             });
           } else if (item.status === 4) {
             stateCell.classList.add("simple-button", "selector", "tdAction");
             stateCell.textContent = Lampa.Lang.translate('tdPanelDownloading');
             stateCell.on("hover:enter", function () {
-              action("torrent-stop", item.id);
+              action("torrent-stop", item);
             });
+          } else {
+            stateCell.classList.add("tdAction");
+            stateCell.textContent = Lampa.Lang.translate("transmission".concat(item.status));
           }
+          var deleteCell = row.insertCell();
+          deleteCell.classList.add("simple-button", "selector", "tdActionDell");
+          deleteCell.innerHTML = "&#128465;";
+          deleteCell.on("hover:enter", function () {
+            action("torrent-remove", item, false);
+          });
+          var fdeleteCell = row.insertCell();
+          fdeleteCell.classList.add("simple-button", "selector", "tdActionDell");
+          fdeleteCell.innerHTML = "&#129699;";
+          fdeleteCell.on("hover:enter", function () {
+            action("torrent-remove", item, true);
+          });
+          var actionCell = row.insertCell();
+          actionCell.classList.add("tdActionBlock");
+          actionCell.appendChild(deleteCell);
+          actionCell.appendChild(fdeleteCell);
           var progressCell = row.insertCell();
           progressCell.id = "percent";
           progressCell.textContent = formatPercent(item.percentDone);
@@ -1834,6 +1857,49 @@
         en: "Change api route. Do not change without need",
         uk: "Змінити маршрут API. Не чіпати без нагальної потреби",
         zh: "更改API路径。如无必要，请勿更改" // Chinese translation
+      },
+      /* panels */
+      transmission0: {
+        ru: "Торрент остановлен",
+        en: "Torrent is stopped",
+        uk: "Торрент зупинено",
+        zh: "种子已停止"
+      },
+      transmission1: {
+        ru: "Торрент в очереди для проверки локальных данных",
+        en: "Torrent is queued to verify local data",
+        uk: "Торрент у черзі для перевірки локальних даних",
+        zh: "种子正在排队等待本地数据验证"
+      },
+      transmission2: {
+        ru: "Торрент проверяет локальные данные",
+        en: "Torrent is verifying local data",
+        uk: "Торрент перевіряє локальні дані",
+        zh: "种子正在验证本地数据"
+      },
+      transmission3: {
+        ru: "Торрент в очереди для загрузки",
+        en: "Torrent is queued to download",
+        uk: "Торрент у черзі для завантаження",
+        zh: "种子正在排队等待下载"
+      },
+      transmission4: {
+        ru: "Торрент загружается",
+        en: "Torrent is downloading",
+        uk: "Торрент завантажується",
+        zh: "种子正在下载"
+      },
+      transmission5: {
+        ru: "Торрент в очереди для раздачи",
+        en: "Torrent is queued to seed",
+        uk: "Торрент у черзі для роздачі",
+        zh: "种子正在排队等待做种"
+      },
+      transmission6: {
+        ru: "Торрент раздаётся",
+        en: "Torrent is seeding",
+        uk: "Торрент роздається",
+        zh: "种子正在做种"
       },
       /* Arai2 */
       aria2: {
