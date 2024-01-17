@@ -91,7 +91,7 @@
     var url = Lampa.Storage.get("qBittorentUrl");
     var user = Lampa.Storage.get("qBittorentUser");
     var pass = Lampa.Storage.get("qBittorentPass");
-    function action(action, item) {
+    function action(action, item, deleteFiles) {
       var authXhr = new XMLHttpRequest();
       authXhr.open("POST", "".concat(protocol).concat(url, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
       authXhr.onreadystatechange = function () {
@@ -102,7 +102,8 @@
             return;
           }
           if (authXhr.status === 200) {
-            var data = "hashes=".concat(item.hash);
+            var deleteParam = action === "delete" ? "&deleteFiles=".concat(deleteFiles) : "";
+            var data = "hashes=".concat(item.hash).concat(deleteParam);
             var _xhr = new XMLHttpRequest();
             _xhr.withCredentials = false;
             _xhr.addEventListener("readystatechange", function () {
@@ -114,7 +115,7 @@
                 Lampa.Noty.show(Lampa.Lang.translate('tdError') + this.status);
               }
             });
-            _xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/torrents/").concat(action, "?hashes=").concat(item.hash));
+            _xhr.open("POST", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/torrents/").concat(action));
             _xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             _xhr.send(data);
           }
@@ -132,7 +133,7 @@
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
       //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
-      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelAction'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelDownloaded'), Lampa.Lang.translate('tdPanelUploaded')];
+      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelDownloaded'), Lampa.Lang.translate('tdPanelUploaded')];
       headerCells.forEach(function (headerCell) {
         var th = document.createElement("th");
         th.id = "header";
@@ -152,17 +153,36 @@
           var stateCell = row.insertCell();
           if (item.state === "pausedDL") {
             stateCell.classList.add("simple-button", "selector", "tdAction");
-            stateCell.textContent = Lampa.Lang.translate('tdPanelPaused');
+            stateCell.textContent = Lampa.Lang.translate("qBittorent".concat(item.state));
             stateCell.on("hover:enter", function () {
               action("resume", item);
             });
           } else if (item.state === "downloading") {
             stateCell.classList.add("simple-button", "selector", "tdAction");
-            stateCell.textContent = Lampa.Lang.translate('tdPanelDownloading');
+            stateCell.textContent = Lampa.Lang.translate("qBittorent".concat(item.state));
             stateCell.on("hover:enter", function () {
               action("pause", item);
             });
+          } else {
+            stateCell.classList.add("tdAction");
+            stateCell.textContent = Lampa.Lang.translate("qBittorent".concat(item.state));
           }
+          var deleteCell = row.insertCell();
+          deleteCell.classList.add("simple-button", "selector", "tdActionDell");
+          deleteCell.innerHTML = "&#128465;";
+          deleteCell.on("hover:enter", function () {
+            action("delete", item, true);
+          });
+          var fdeleteCell = row.insertCell();
+          fdeleteCell.classList.add("simple-button", "selector", "tdActionDell");
+          fdeleteCell.innerHTML = "&#129699;";
+          fdeleteCell.on("hover:enter", function () {
+            action("delete", item, false);
+          });
+          var actionCell = row.insertCell();
+          actionCell.classList.add("tdActionBlock");
+          actionCell.appendChild(deleteCell);
+          actionCell.appendChild(fdeleteCell);
           var progressCell = row.insertCell();
           progressCell.id = "percent";
           progressCell.textContent = formatPercent(item.progress);
@@ -239,10 +259,12 @@
     //xhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/info?limit=10"));
     xhr.send();
   }
+  function getData() {}
   var qBittorent = {
     qBittorrentClient: qBittorrentClient,
     getStatus: getStatus$2,
-    qPanels: qPanels$2
+    qPanels: qPanels$2,
+    getData: getData
   };
 
   function transmissionClient(selectedTorrent) {
@@ -1538,6 +1560,12 @@
         uk: "Дія",
         zh: "操作" // Chinese translation
       },
+      tdPanelStatus: {
+        ru: "Статус",
+        en: "Status",
+        uk: "Статус",
+        zh: "现状" // Chinese translation
+      },
       tdPanelProgress: {
         ru: "Прогресс",
         en: "Progress",
@@ -1648,6 +1676,121 @@
         en: "Category for TVShow",
         uk: "Категорія для Серіалів",
         zh: "电视剧集分类名" // Chinese translation
+      },
+      /* panel */
+      qBittorenterror: {
+        ru: "Ошибка",
+        en: "Error",
+        uk: "Помилка",
+        zh: "错误"
+      },
+      qBittorentmissingFiles: {
+        ru: "Отсутствуют файлы",
+        en: "Missing files",
+        uk: "Відсутні файли",
+        zh: "缺少文件"
+      },
+      qBittorentuploading: {
+        ru: "Отдача",
+        en: "Uploading",
+        uk: "Віддача",
+        zh: "上传中"
+      },
+      qBittorentpausedUP: {
+        ru: "Приостановлено (загрузка завершена)",
+        en: "Paused (finished downloading)",
+        uk: "Призупинено (завантаження завершено)",
+        zh: "已暂停（下载已完成）"
+      },
+      qBittorentqueuedUP: {
+        ru: "В очереди (отдача)",
+        en: "Queued (uploading)",
+        uk: "В черзі (віддача)",
+        zh: "排队中（上传中）"
+      },
+      qBittorentstalledUP: {
+        ru: "Застопорено (отдача)",
+        en: "Stalled (uploading)",
+        uk: "Зупинено (віддача)",
+        zh: "停滞（上传中）"
+      },
+      qBittorentcheckingUP: {
+        ru: "Проверка (отдача)",
+        en: "Checking (uploading)",
+        uk: "Перевірка (віддача)",
+        zh: "检查中（上传中）"
+      },
+      qBittorentforcedUP: {
+        ru: "Принудительно (отдача)",
+        en: "Forced (uploading)",
+        uk: "Примусово (віддача)",
+        zh: "强制（上传中）"
+      },
+      qBittorentallocating: {
+        ru: "Выделяется место",
+        en: "Allocating",
+        uk: "Виділяється місце",
+        zh: "分配空间"
+      },
+      qBittorentdownloading: {
+        ru: "Загрузка",
+        en: "Downloading",
+        uk: "Завантаження",
+        zh: "下载中"
+      },
+      qBittorentmetaDL: {
+        ru: "Метаданные",
+        en: "Metadata",
+        uk: "Метадані",
+        zh: "元数据"
+      },
+      qBittorentpausedDL: {
+        ru: "Приостановлено (загрузка не завершена)",
+        en: "Paused (not finished downloading)",
+        uk: "Призупинено (завантаження не завершено)",
+        zh: "已暂停（下载未完成）"
+      },
+      qBittorentqueuedDL: {
+        ru: "В очереди (загрузка)",
+        en: "Queued (downloading)",
+        uk: "В черзі (завантаження)",
+        zh: "排队中（下载中）"
+      },
+      qBittorentstalledDL: {
+        ru: "Застопорено (загрузка)",
+        en: "Stalled (downloading)",
+        uk: "Зупинено (завантаження)",
+        zh: "停滞（下载中）"
+      },
+      qBittorentcheckingDL: {
+        ru: "Проверка (загрузка)",
+        en: "Checking (downloading)",
+        uk: "Перевірка (завантаження)",
+        zh: "检查中（下载中）"
+      },
+      qBittorentforcedDL: {
+        ru: "Принудительно (загрузка)",
+        en: "Forced (downloading)",
+        uk: "Примусово (завантаження)",
+        zh: "强制（下载中）"
+      },
+      qBittorentcheckingResumeData: {
+        ru: "Проверка данных возобновления",
+        en: "Checking resume data",
+        uk: "Перевірка даних відновлення",
+        zh: "检查恢复数据"
+      },
+      qBittorentmoving: {
+        ru: "Перемещение",
+        en: "Moving",
+        uk: "Переміщення",
+        zh: "移动中"
+      },
+      qBittorentunknown: {
+        ru: "Неизвестный статус",
+        en: "Unknown status",
+        uk: "Невідомий статус",
+        zh: "未知状态"
       },
       /* Transmission */
       transmission: {
@@ -1811,7 +1954,7 @@
     };
     Lampa.Manifest.plugins = manifest;
     Lampa.Template.add("td_panel_page", "<div class='td_panel'></div>");
-    Lampa.Template.add('tdStyle', "\n        <style>\n            @charset 'UTF-8';#error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}div#tdStatus{margin:1% 5% 0 5%}#tdStatus table{width:100%;border-collapse:collapse}.simple-button.selector.tdAction{font-size:16px}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left;border:1px solid #000}#tdStatus table td#tName{max-width:20%}#tdStatus table th{background-color:#fff;color:#000}.simple-button.selector.tdReload{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.selector.tdAction{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}#percent{position:relative;padding:0}#percent::before{content:'';position:absolute;top:0;left:0;height:100%;background-color:#4caf50;-webkit-transition:width .5s ease-in-out;-o-transition:width .5s ease-in-out;transition:width .5s ease-in-out}#percent::after{content:attr(data-percent);position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%);font-size:14px;color:#fff}\n        </style>\n    ");
+    Lampa.Template.add('tdStyle', "\n        <style>\n            @charset 'UTF-8';#error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}div#tdStatus{margin:1% 5% 0 5%}#tdStatus table{width:100%;border-collapse:collapse}.simple-button.selector.tdAction{font-size:16px}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left;border:1px solid #000}#tdStatus table td.tdAction{text-align:center}.simple-button.selector.tdActionDell{display:inline}#tdStatus table td#tName{max-width:20%}#tdStatus table th{background-color:#fff;color:#000}.simple-button.selector.tdReload{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.selector.tdAction{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}#percent{position:relative;padding:0}#percent::before{content:'';position:absolute;top:0;left:0;height:100%;background-color:#4caf50;-webkit-transition:width .5s ease-in-out;-o-transition:width .5s ease-in-out;transition:width .5s ease-in-out}#percent::after{content:attr(data-percent);position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%);font-size:14px;color:#fff}\n        </style>\n    ");
     function add() {
       Menu.setMenu();
       var button = $('<li class="menu__item selector">\n            <div class="menu__ico">\n                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 48 48" width="48px" height="48px"><path d="M 23.501953 4.125 C 12.485953 4.125 3.5019531 13.11 3.5019531 24.125 C 3.5019531 32.932677 9.2467538 40.435277 17.179688 43.091797 L 17.146484 42.996094 L 7 16 L 15 14 C 17.573 20.519 20.825516 32.721688 27.728516 30.929688 C 35.781516 28.948688 28.615 16.981172 27 12.076172 L 34 11 C 38.025862 19.563024 39.693648 25.901226 43.175781 27.089844 C 43.191423 27.095188 43.235077 27.103922 43.275391 27.113281 C 43.422576 26.137952 43.501953 25.140294 43.501953 24.125 C 43.501953 13.11 34.517953 4.125 23.501953 4.125 z M 34.904297 29.314453 C 34.250297 34.648453 28.811359 37.069578 21.943359 35.517578 L 26.316406 43.763672 L 26.392578 43.914062 C 33.176993 42.923925 38.872645 38.505764 41.660156 32.484375 C 41.603665 32.485465 41.546284 32.486418 41.529297 32.486328 C 38.928405 32.472567 36.607552 31.572967 34.904297 29.314453 z"></path></svg>\n            </div>\n            <div class="menu__text">'.concat(Lampa.Lang.translate("tdPanel"), "</div>\n        </li>"));
