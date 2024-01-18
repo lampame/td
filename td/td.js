@@ -1587,7 +1587,7 @@
         ru: "Статус",
         en: "Status",
         uk: "Статус",
-        zh: "现状" // Chinese translation
+        zh: "状态" // Chinese translation
       },
       tdPanelProgress: {
         ru: "Прогресс",
