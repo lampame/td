@@ -1548,10 +1548,10 @@
         zh: "下载" // Chinese translation
       },
       tdPanelReload: {
-        ru: "Перезагрузить Лампу",
-        en: "Reload Lampa",
-        uk: "Перезавантажити Лампу",
-        zh: "重新加载Lampa" // Chinese translation
+        ru: "Перезагрузить",
+        en: "Reload",
+        uk: "Перезавантажити",
+        zh: "重新加载" // Chinese translation
       },
       tdPanelMClient: {
         ru: "Включено 2 или больше торрент клиента, я пока не такой крутой! Выключи кого-то",
