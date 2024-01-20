@@ -91,6 +91,19 @@
     var url = Lampa.Storage.get("qBittorentUrl");
     var user = Lampa.Storage.get("qBittorentUser");
     var pass = Lampa.Storage.get("qBittorentPass");
+    var footer = document.createElement("div");
+    footer.classList.add("simple-button", "selector", "tdReload");
+    footer.textContent = Lampa.Lang.translate('tdPanelReload');
+    footer.on("hover:enter", function () {
+      //TODO: Ребут без лампы
+      Lampa.Activity.replace({
+        url: "",
+        title: "Torrent downloader",
+        component: "td",
+        page: 1
+      });
+      Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
+    });
     function action(action, item, deleteFiles) {
       var authXhr = new XMLHttpRequest();
       authXhr.open("POST", "".concat(protocol).concat(url, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
@@ -124,7 +137,6 @@
       authXhr.send();
     }
     function tabels(response) {
-      // Function implementation
       // Получить элемент, в который нужно вставить таблицу
       var parentElement = document.getElementById("tdStatus");
       // Создать таблицу
@@ -133,7 +145,13 @@
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
       //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
-      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelDownloaded'), Lampa.Lang.translate('tdPanelUploaded')];
+      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction')
+      /*
+      ,
+      Lampa.Lang.translate('tdPanelSize')
+      Lampa.Lang.translate('tdPanelDownloaded'),
+      Lampa.Lang.translate('tdPanelUploaded')
+       */];
       headerCells.forEach(function (headerCell) {
         var th = document.createElement("th");
         th.id = "header";
@@ -150,6 +168,9 @@
           var nameCell = row.insertCell();
           nameCell.id = "tName";
           nameCell.textContent = item.name;
+          var progressCell = row.insertCell();
+          progressCell.id = "percent";
+          progressCell.textContent = "".concat(formatPercent(item.progress), " / ").concat(formatBytes(item.size));
           var stateCell = row.insertCell();
           if (item.state === "pausedDL") {
             stateCell.classList.add("simple-button", "selector", "tdAction");
@@ -183,15 +204,15 @@
           actionCell.classList.add("tdActionBlock");
           actionCell.appendChild(deleteCell);
           actionCell.appendChild(fdeleteCell);
-          var progressCell = row.insertCell();
-          progressCell.id = "percent";
-          progressCell.textContent = formatPercent(item.progress);
-          var sizeCell = row.insertCell();
+
+          /*
+          const sizeCell = row.insertCell();
           sizeCell.textContent = formatBytes(item.size);
-          var downloadedCell = row.insertCell();
+          const downloadedCell = row.insertCell();
           downloadedCell.textContent = formatBytes(item.downloaded);
-          var uploadedCell = row.insertCell();
+          const uploadedCell = row.insertCell();
           uploadedCell.textContent = formatBytes(item.uploaded);
+           */
         });
       } else {
         // Если ответ пустой, добавить строку с сообщением
@@ -200,19 +221,7 @@
         emptyCell.colSpan = headerCells.length;
         emptyCell.textContent = Lampa.Lang.translate('tdPanelDataError');
       }
-      var footer = document.createElement("div");
-      footer.classList.add("simple-button", "selector", "tdReload");
-      footer.textContent = Lampa.Lang.translate('tdPanelReload');
-      footer.on("hover:enter", function () {
-        //TODO: Ребут без лампы
-        Lampa.Activity.replace({
-          url: "",
-          title: "Torrent downloader",
-          component: "td",
-          page: 1
-        });
-        Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
-      });
+
       // Вставить созданную таблицу в родительский элемент
       if ($("#tdStatus").children().length > 0) {
         $("#tdStatus").empty();
@@ -245,6 +254,7 @@
       var error = document.createElement("div");
       error.innerHTML = "<div id='Error'><h2>".concat(Lampa.Lang.translate('tdPanelDataError'), "</h2></div>");
       tdPanel.appendChild(error);
+      tdPanel.appendChild(footer);
     }
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = false;
@@ -335,13 +345,25 @@
     Lampa.Storage.get("transmissionPort");
     Lampa.Storage.get("transmissionUser");
     Lampa.Storage.get("transmissionPass");
+    var footer = document.createElement("div");
+    footer.classList.add("simple-button", "selector", "tdReload");
+    footer.textContent = Lampa.Lang.translate('tdPanelReload');
+    footer.on("hover:enter", function () {
+      //TODO: Ребут без лампы
+      Lampa.Activity.replace({
+        url: "",
+        title: "Torrent downloader",
+        component: "td",
+        page: 1
+      });
+      Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
+    });
     function action(action, item, deleteFiles) {
       //const dellParam = action === "torrent-remove" ? {"delete-local-data": deleteFiles} : "";
       var data = JSON.stringify({
         "method": action,
         "arguments": {
           "ids": item.id,
-          //dellParam
           "delete-local-data": deleteFiles
         }
       });
@@ -371,7 +393,12 @@
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
       //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
-      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelDownloaded'), Lampa.Lang.translate('tdPanelUploaded')];
+      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction')
+      /*
+      Lampa.Lang.translate('tdPanelProgress'),
+      Lampa.Lang.translate('tdPanelDownloaded'),
+      Lampa.Lang.translate('tdPanelUploaded')
+       */];
       headerCells.forEach(function (headerCell) {
         var th = document.createElement("th");
         th.id = "header";
@@ -388,6 +415,9 @@
           var nameCell = row.insertCell();
           nameCell.id = "tName";
           nameCell.textContent = item.name;
+          var progressCell = row.insertCell();
+          progressCell.id = "percent";
+          progressCell.textContent = "".concat(formatPercent(item.percentDone), " / ").concat(formatBytes(item.totalSize));
           var stateCell = row.insertCell();
           if (item.status === 0) {
             stateCell.classList.add("simple-button", "selector", "tdAction");
@@ -421,15 +451,17 @@
           actionCell.classList.add("tdActionBlock");
           actionCell.appendChild(deleteCell);
           actionCell.appendChild(fdeleteCell);
-          var progressCell = row.insertCell();
+          /*
+          const progressCell = row.insertCell();
           progressCell.id = "percent";
           progressCell.textContent = formatPercent(item.percentDone);
-          var sizeCell = row.insertCell();
+          const sizeCell = row.insertCell();
           sizeCell.textContent = formatBytes(item.totalSize);
-          var downloadedCell = row.insertCell();
+          const downloadedCell = row.insertCell();
           downloadedCell.textContent = formatBytes(item.downloadedEver);
-          var uploadedCell = row.insertCell();
+          const uploadedCell = row.insertCell();
           uploadedCell.textContent = formatBytes(item.uploadedEver);
+           */
         });
       } else {
         // Если ответ пустой, добавить строку с сообщением
@@ -438,19 +470,7 @@
         emptyCell.colSpan = headerCells.length;
         emptyCell.textContent = Lampa.Lang.translate('tdPanelDataError');
       }
-      var footer = document.createElement("div");
-      footer.classList.add("simple-button", "selector", "tdReload");
-      footer.textContent = Lampa.Lang.translate('tdPanelReload');
-      footer.on("hover:enter", function () {
-        //TODO: Ребут без лампы
-        Lampa.Activity.replace({
-          url: "",
-          title: "Torrent downloader",
-          component: "td",
-          page: 1
-        });
-        Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
-      });
+
       // Вставить созданную таблицу в родительский элемент
       if ($("#tdStatus").children().length > 0) {
         $("#tdStatus").empty();
@@ -483,6 +503,7 @@
       var error = document.createElement("div");
       error.innerHTML = "<div id='Error'><h2>".concat(Lampa.Lang.translate('tdPanelDataError'), "</h2></div>");
       tdPanel.appendChild(error);
+      tdPanel.appendChild(footer);
     }
 
     /* Get data */
@@ -763,6 +784,19 @@
       scroll;
     var html = document.createElement("div");
     html.id = "tdPanel";
+    var footer = document.createElement("div");
+    footer.classList.add("simple-button", "selector", "tdReload");
+    footer.textContent = Lampa.Lang.translate('tdPanelReload');
+    footer.on("hover:enter", function () {
+      //TODO: Ребут без лампы
+      Lampa.Activity.replace({
+        url: "",
+        title: "Torrent downloader",
+        component: "td",
+        page: 1
+      });
+      Lampa.Noty.show(Lampa.Lang.translate('tdPanelReloaded'));
+    });
     this.create = function () {
       this.build();
       return this.render();
@@ -790,6 +824,7 @@
         clients[tdClient].qPanels();
       } else {
         tdPanel.innerHTML = "<div id='Error'><h2>".concat(Lampa.Lang.translate('tdPanelCOff'), "</h2></div>");
+        tdPanel.appendChild(footer);
       }
       this.display();
       Lampa.Layer.update(html);
@@ -1947,10 +1982,10 @@
       },
       /* Notification */
       tdPanelReloaded: {
-        ru: "Перезагрузить Лампу",
-        en: "Reload Lampa",
-        uk: "Перезавантажити Лампу",
-        zh: "重新加载Lampa" // Chinese translation
+        ru: "Перезагружено",
+        en: "Reloaded",
+        uk: "Перезавантажено",
+        zh: "重装上阵" // Chinese translation
       },
       tdMagnetError: {
         ru: "Ошибка с Magnet ссылкой",
