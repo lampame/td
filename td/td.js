@@ -142,6 +142,25 @@
       // Создать таблицу
       var table = document.createElement("table");
       table.id = "tdStatus table";
+      // Info block
+
+      var settings = {
+        "url": "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/sync/maindata"),
+        "method": "GET",
+        "timeout": 0
+      };
+      $.ajax(settings).done(function (response) {
+        console.log("TDDev", response.server_state);
+        var serverInfo = document.createElement("div");
+        serverInfo.id = "serverInfo";
+        serverInfo.innerHTML = "<b>Free space</b>: ".concat(formatBytes(response.server_state.free_space_on_disk));
+        var systemTool = document.createElement("div");
+        systemTool.id = "systemTool";
+        systemTool.appendChild(serverInfo);
+        systemTool.appendChild(footer);
+        parentElement.insertBefore(systemTool, parentElement.firstChild);
+      });
+      //parentElement.appendChild(info);
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
       //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
@@ -387,9 +406,34 @@
       // Function implementation
       // Получить элемент, в который нужно вставить таблицу
       var parentElement = document.getElementById("tdStatus");
+
       // Создать таблицу
       var table = document.createElement("table");
       table.id = "tdStatus table";
+      var settings = {
+        "url": "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"),
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+          "X-Transmission-Session-Id": Lampa.Storage.get("transmissionKey"),
+          "Content-Type": "application/json",
+          "Authorization": "Basic ".concat(btoa(Lampa.Storage.get("transmissionUser") + ":" + Lampa.Storage.get("transmissionPass")))
+        },
+        "data": JSON.stringify({
+          "method": "session-get"
+        })
+      };
+      $.ajax(settings).done(function (response) {
+        console.log("TDDev", response);
+        var serverInfo = document.createElement("div");
+        serverInfo.id = "serverInfo";
+        serverInfo.innerHTML = "<b>Free space</b>: ".concat(formatBytes(response.arguments["download-dir-free-space"]));
+        var systemTool = document.createElement("div");
+        systemTool.id = "systemTool";
+        systemTool.appendChild(serverInfo);
+        systemTool.appendChild(footer);
+        parentElement.insertBefore(systemTool, parentElement.firstChild);
+      });
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
       //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
@@ -2055,7 +2099,7 @@
     };
     Lampa.Manifest.plugins = manifest;
     Lampa.Template.add("td_panel_page", "<div class='td_panel'></div>");
-    Lampa.Template.add('tdStyle', "\n        <style>\n            @charset 'UTF-8';#error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}div#tdStatus{margin:1% 5% 0 5%}#tdStatus table{width:100%;border-collapse:collapse}.simple-button.selector.tdAction{font-size:16px}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left;border:1px solid #000}#tdStatus table td.tdAction{text-align:center}.simple-button.selector.tdActionDell{display:inline}#tdStatus table td#tName{max-width:20%}#tdStatus table th{background-color:#fff;color:#000}.simple-button.selector.tdReload{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.selector.tdAction{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}#percent{position:relative;padding:0}#percent::before{content:'';position:absolute;top:0;left:0;height:100%;background-color:#4caf50;-webkit-transition:width .5s ease-in-out;-o-transition:width .5s ease-in-out;transition:width .5s ease-in-out}#percent::after{content:attr(data-percent);position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%);font-size:14px;color:#fff}\n        </style>\n    ");
+    Lampa.Template.add('tdStyle', "\n        <style>\n            @charset 'UTF-8';#error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}div#tdStatus{margin:1% 5% 0 5%}#tdStatus table{width:100%;border-collapse:collapse}.simple-button.selector.tdAction{font-size:16px}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left;border:1px solid #000}#tdStatus table td.tdAction{text-align:center}.simple-button.selector.tdActionDell{display:inline}#systemTool{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}#systemTool>div{margin-right:10px}#systemTool>div.simple-button.selector.tdReload{width:auto}#tdStatus table td#tName{max-width:20%}#tdStatus table th{background-color:#fff;color:#000}.simple-button.selector.tdReload{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.selector.tdAction{margin:2% auto;width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}#percent{position:relative;padding:0}#percent::before{content:'';position:absolute;top:0;left:0;height:100%;background-color:#4caf50;-webkit-transition:width .5s ease-in-out;-o-transition:width .5s ease-in-out;transition:width .5s ease-in-out}#percent::after{content:attr(data-percent);position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%);font-size:14px;color:#fff}\n        </style>\n    ");
     function add() {
       Menu.setMenu();
       var button = $('<li class="menu__item selector">\n            <div class="menu__ico">\n                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 48 48" width="48px" height="48px"><path d="M 23.501953 4.125 C 12.485953 4.125 3.5019531 13.11 3.5019531 24.125 C 3.5019531 32.932677 9.2467538 40.435277 17.179688 43.091797 L 17.146484 42.996094 L 7 16 L 15 14 C 17.573 20.519 20.825516 32.721688 27.728516 30.929688 C 35.781516 28.948688 28.615 16.981172 27 12.076172 L 34 11 C 38.025862 19.563024 39.693648 25.901226 43.175781 27.089844 C 43.191423 27.095188 43.235077 27.103922 43.275391 27.113281 C 43.422576 26.137952 43.501953 25.140294 43.501953 24.125 C 43.501953 13.11 34.517953 4.125 23.501953 4.125 z M 34.904297 29.314453 C 34.250297 34.648453 28.811359 37.069578 21.943359 35.517578 L 26.316406 43.763672 L 26.392578 43.914062 C 33.176993 42.923925 38.872645 38.505764 41.660156 32.484375 C 41.603665 32.485465 41.546284 32.486418 41.529297 32.486328 C 38.928405 32.472567 36.607552 31.572967 34.904297 29.314453 z"></path></svg>\n            </div>\n            <div class="menu__text">'.concat(Lampa.Lang.translate("tdPanel"), "</div>\n        </li>"));
