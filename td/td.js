@@ -159,23 +159,11 @@
         systemTool.appendChild(footer);
         parentElement.insertBefore(systemTool, parentElement.firstChild);
       });
-      //parentElement.appendChild(info);
-      // Создать заголовок таблицы
-      var headerRow = table.insertRow();
-      //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
-      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction')];
-      headerCells.forEach(function (headerCell) {
-        var th = document.createElement("th");
-        th.id = "header";
-        th.textContent = headerCell;
-        headerRow.appendChild(th);
-      });
-
       // Добавить строки с данными из переменной response
       if (response && response.length > 0) {
         response.forEach(function (item) {
           var row = table.insertRow();
-          row.id = "td_panel row";
+          row.id = "td_panel";
           // Создать ячейки для каждой строки
           var nameCell = row.insertCell();
           nameCell.id = "tName";
@@ -202,13 +190,13 @@
           }
           var deleteCell = row.insertCell();
           deleteCell.classList.add("simple-button", "selector", "tdActionDell");
-          deleteCell.innerHTML = "&#128465;";
+          deleteCell.innerHTML = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.228 5.79003C19.57 5.84203 19.91 5.89703 20.25 5.95603M19.228 5.79003L18.16 19.673C18.1164 20.2383 17.8611 20.7662 17.445 21.1513C17.029 21.5364 16.4829 21.7502 15.916 21.75H8.084C7.5171 21.7502 6.97102 21.5364 6.55498 21.1513C6.13894 20.7662 5.88359 20.2383 5.84 19.673L4.772 5.79003M19.228 5.79003C18.0739 5.61555 16.9138 5.48313 15.75 5.39303M4.772 5.79003C4.43 5.84103 4.09 5.89603 3.75 5.95503M4.772 5.79003C5.92613 5.61555 7.08623 5.48313 8.25 5.39303M15.75 5.39303V4.47703C15.75 3.29703 14.84 2.31303 13.66 2.27603C12.5536 2.24067 11.4464 2.24067 10.34 2.27603C9.16 2.31303 8.25 3.29803 8.25 4.47703V5.39303M15.75 5.39303C13.2537 5.20011 10.7463 5.20011 8.25 5.39303\" stroke=\"white\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11.1738 9.48535L11.0576 12.7939C11.0576 13.514 11.1055 14.0016 11.2012 14.2568C11.3014 14.512 11.4199 14.6966 11.5566 14.8105C11.6979 14.9199 11.8757 14.9746 12.0898 14.9746C12.3086 14.9746 12.5 14.9336 12.6641 14.8516C12.8281 14.7695 12.9762 14.6602 13.1084 14.5234C13.3454 14.2773 13.5322 13.9561 13.6689 13.5596C13.6735 13.4365 13.6758 13.3112 13.6758 13.1836V12.7939C13.6758 11.0713 13.5527 9.94336 13.3066 9.41016C13.3066 9.41016 13.2565 9.30534 13.1562 9.0957H15.1045C15.109 9.16862 15.1113 9.23698 15.1113 9.30078V9.49902C15.1113 9.49902 15.0726 10.5973 14.9951 12.7939C14.9951 14.0381 15.1045 14.8926 15.3232 15.3574C15.4007 15.526 15.5374 15.7402 15.7334 16H13.7852L13.7373 15.7266C13.6826 15.4349 13.6439 15.1113 13.6211 14.7559C13.1836 15.6764 12.5957 16.1367 11.8574 16.1367C11.4928 16.1367 11.1943 16.0091 10.9619 15.7539C10.9984 16.9297 11.0485 17.6292 11.1123 17.8525C11.1761 18.0804 11.2354 18.2513 11.29 18.3652C11.3493 18.4837 11.4131 18.5931 11.4814 18.6934L11.7139 19.0078H9.42383C9.55143 18.5703 9.62435 18.1328 9.64258 17.6953C9.66536 17.2624 9.68132 16.891 9.69043 16.5811C9.7041 16.2757 9.71549 15.959 9.72461 15.6309C9.74284 14.9837 9.75195 14.3411 9.75195 13.7031C9.75195 11.7663 9.69043 10.5768 9.56738 10.1348C9.49447 9.86133 9.40104 9.64941 9.28711 9.49902L9 9.0957H11.167L11.1738 9.48535Z\" fill=\"white\"/></svg>";
           deleteCell.on("hover:enter", function () {
             action("delete", item, false);
           });
           var fdeleteCell = row.insertCell();
           fdeleteCell.classList.add("simple-button", "selector", "tdActionDell");
-          fdeleteCell.innerHTML = "&#129699;";
+          fdeleteCell.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.25 7.5L19.625 18.132C19.5913 18.705 19.3399 19.2436 18.9222 19.6373C18.5045 20.031 17.952 20.2502 17.378 20.25H6.622C6.04796 20.2502 5.49555 20.031 5.07783 19.6373C4.66011 19.2436 4.40868 18.705 4.375 18.132L3.75 7.5M9.75 11.625L12 13.875M12 13.875L14.25 16.125M12 13.875L14.25 11.625M12 13.875L9.75 16.125M3.375 7.5H20.625C21.246 7.5 21.75 6.996 21.75 6.375V4.875C21.75 4.254 21.246 3.75 20.625 3.75H3.375C2.754 3.75 2.25 4.254 2.25 4.875V6.375C2.25 6.996 2.754 7.5 3.375 7.5Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           fdeleteCell.on("hover:enter", function () {
             action("delete", item, true);
           });
@@ -418,27 +406,12 @@
         systemTool.appendChild(footer);
         parentElement.insertBefore(systemTool, parentElement.firstChild);
       });
-      // Создать заголовок таблицы
-      var headerRow = table.insertRow();
-      //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
-      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelSize'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction')
-      /*
-      Lampa.Lang.translate('tdPanelProgress'),
-      Lampa.Lang.translate('tdPanelDownloaded'),
-      Lampa.Lang.translate('tdPanelUploaded')
-       */];
-      headerCells.forEach(function (headerCell) {
-        var th = document.createElement("th");
-        th.id = "header";
-        th.textContent = headerCell;
-        headerRow.appendChild(th);
-      });
 
       // Добавить строки с данными из переменной response
       if (response && response.length > 0) {
         response.forEach(function (item) {
           var row = table.insertRow();
-          row.id = "td_panel row";
+          row.id = "td_panel";
           // Создать ячейки для каждой строки
           var nameCell = row.insertCell();
           nameCell.id = "tName";
@@ -465,13 +438,13 @@
           }
           var deleteCell = row.insertCell();
           deleteCell.classList.add("simple-button", "selector", "tdActionDell");
-          deleteCell.innerHTML = "&#128465;";
+          deleteCell.innerHTML = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.228 5.79003C19.57 5.84203 19.91 5.89703 20.25 5.95603M19.228 5.79003L18.16 19.673C18.1164 20.2383 17.8611 20.7662 17.445 21.1513C17.029 21.5364 16.4829 21.7502 15.916 21.75H8.084C7.5171 21.7502 6.97102 21.5364 6.55498 21.1513C6.13894 20.7662 5.88359 20.2383 5.84 19.673L4.772 5.79003M19.228 5.79003C18.0739 5.61555 16.9138 5.48313 15.75 5.39303M4.772 5.79003C4.43 5.84103 4.09 5.89603 3.75 5.95503M4.772 5.79003C5.92613 5.61555 7.08623 5.48313 8.25 5.39303M15.75 5.39303V4.47703C15.75 3.29703 14.84 2.31303 13.66 2.27603C12.5536 2.24067 11.4464 2.24067 10.34 2.27603C9.16 2.31303 8.25 3.29803 8.25 4.47703V5.39303M15.75 5.39303C13.2537 5.20011 10.7463 5.20011 8.25 5.39303\" stroke=\"white\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11.1738 9.48535L11.0576 12.7939C11.0576 13.514 11.1055 14.0016 11.2012 14.2568C11.3014 14.512 11.4199 14.6966 11.5566 14.8105C11.6979 14.9199 11.8757 14.9746 12.0898 14.9746C12.3086 14.9746 12.5 14.9336 12.6641 14.8516C12.8281 14.7695 12.9762 14.6602 13.1084 14.5234C13.3454 14.2773 13.5322 13.9561 13.6689 13.5596C13.6735 13.4365 13.6758 13.3112 13.6758 13.1836V12.7939C13.6758 11.0713 13.5527 9.94336 13.3066 9.41016C13.3066 9.41016 13.2565 9.30534 13.1562 9.0957H15.1045C15.109 9.16862 15.1113 9.23698 15.1113 9.30078V9.49902C15.1113 9.49902 15.0726 10.5973 14.9951 12.7939C14.9951 14.0381 15.1045 14.8926 15.3232 15.3574C15.4007 15.526 15.5374 15.7402 15.7334 16H13.7852L13.7373 15.7266C13.6826 15.4349 13.6439 15.1113 13.6211 14.7559C13.1836 15.6764 12.5957 16.1367 11.8574 16.1367C11.4928 16.1367 11.1943 16.0091 10.9619 15.7539C10.9984 16.9297 11.0485 17.6292 11.1123 17.8525C11.1761 18.0804 11.2354 18.2513 11.29 18.3652C11.3493 18.4837 11.4131 18.5931 11.4814 18.6934L11.7139 19.0078H9.42383C9.55143 18.5703 9.62435 18.1328 9.64258 17.6953C9.66536 17.2624 9.68132 16.891 9.69043 16.5811C9.7041 16.2757 9.71549 15.959 9.72461 15.6309C9.74284 14.9837 9.75195 14.3411 9.75195 13.7031C9.75195 11.7663 9.69043 10.5768 9.56738 10.1348C9.49447 9.86133 9.40104 9.64941 9.28711 9.49902L9 9.0957H11.167L11.1738 9.48535Z\" fill=\"white\"/></svg>";
           deleteCell.on("hover:enter", function () {
             action("torrent-remove", item, false);
           });
           var fdeleteCell = row.insertCell();
           fdeleteCell.classList.add("simple-button", "selector", "tdActionDell");
-          fdeleteCell.innerHTML = "&#129699;";
+          fdeleteCell.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.25 7.5L19.625 18.132C19.5913 18.705 19.3399 19.2436 18.9222 19.6373C18.5045 20.031 17.952 20.2502 17.378 20.25H6.622C6.04796 20.2502 5.49555 20.031 5.07783 19.6373C4.66011 19.2436 4.40868 18.705 4.375 18.132L3.75 7.5M9.75 11.625L12 13.875M12 13.875L14.25 16.125M12 13.875L14.25 11.625M12 13.875L9.75 16.125M3.375 7.5H20.625C21.246 7.5 21.75 6.996 21.75 6.375V4.875C21.75 4.254 21.246 3.75 20.625 3.75H3.375C2.754 3.75 2.25 4.254 2.25 4.875V6.375C2.25 6.996 2.754 7.5 3.375 7.5Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           fdeleteCell.on("hover:enter", function () {
             action("torrent-remove", item, true);
           });
@@ -479,17 +452,6 @@
           actionCell.classList.add("tdActionBlock");
           actionCell.appendChild(deleteCell);
           actionCell.appendChild(fdeleteCell);
-          /*
-          const progressCell = row.insertCell();
-          progressCell.id = "percent";
-          progressCell.textContent = formatPercent(item.percentDone);
-          const sizeCell = row.insertCell();
-          sizeCell.textContent = formatBytes(item.totalSize);
-          const downloadedCell = row.insertCell();
-          downloadedCell.textContent = formatBytes(item.downloadedEver);
-          const uploadedCell = row.insertCell();
-          uploadedCell.textContent = formatBytes(item.uploadedEver);
-           */
         });
       } else {
         // Если ответ пустой, добавить строку с сообщением
@@ -538,7 +500,7 @@
     var data = JSON.stringify({
       "method": "torrent-get",
       "arguments": {
-        "fields": ["status", "totalSize", "percentDone", "name", "uploadedEver", "downloadedEver", "id"]
+        "fields": ["status", "totalSize", "percentDone", "name", "id"]
       }
     });
     var xhr = new XMLHttpRequest();
@@ -2100,7 +2062,7 @@
     };
     Lampa.Manifest.plugins = manifest;
     Lampa.Template.add("td_panel_page", "<div class='td_panel'></div>");
-    Lampa.Template.add('tdStyle', "\n        <style>\n            @charset 'UTF-8';#error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}#systemTool{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center;margin:0 2% 0 2%;-webkit-box-pack:justify;-webkit-justify-content:space-between;-moz-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}#systemTool>div{margin-right:10px}#systemTool>div.simple-button.selector.tdReload{width:auto}#tdStatus{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:start;-webkit-justify-content:flex-start;-moz-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}#cardList{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap}.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(25% - 10px);-moz-box-flex:0;-ms-flex:0 0 calc(25% - 10px);flex:0 0 calc(25% - 10px);margin:5px;padding:10px;border:1px solid white;-webkit-border-radius:5px;border-radius:5px;-webkit-box-shadow:0 2px 4px rgba(0,0,0,0.1);box-shadow:0 2px 4px rgba(0,0,0,0.1)}.titleTd{font-weight:bold;margin-bottom:10px;white-space:nowrap;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}.statusTd{-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-bottom:5px;border:1px solid white;padding:5px}.buttons{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center}.simple-button{background-color:transparent;border:1px solid white;outline:0;margin-left:5px}@media(max-width:768px){#tdStatus{-webkit-box-orient:initial;-webkit-box-direction:initial;-webkit-flex-direction:initial;-moz-box-orient:initial;-moz-box-direction:initial;-ms-flex-direction:initial;flex-direction:initial;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(100% - 20px);-moz-box-flex:0;-ms-flex:0 0 calc(100% - 20px);flex:0 0 calc(100% - 20px);width:100%}.titleTd{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}}@media(max-width:480px){.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(100% - 10px);-moz-box-flex:0;-ms-flex:0 0 calc(100% - 10px);flex:0 0 calc(100% - 10px)}}#tdStatus table{width:100%;border-collapse:collapse}@media(min-width:1920px){#tdStatus table{font-size:inherit}}@media(max-width:480px){#tdStatus table{font-size:inherit}}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left;border:1px solid #000}#tdStatus table td.tdAction{text-align:center;font-size:inherit}.simple-button.selector.tdActionDell{display:inline}#tdStatus table td#tName{max-width:20%}#tdStatus table th{background-color:#fff;color:#000}#percent{position:relative;padding:0}#percent::before{content:'';position:absolute;top:0;left:0;height:100%;background-color:#4caf50;-webkit-transition:width .5s ease-in-out;-o-transition:width .5s ease-in-out;transition:width .5s ease-in-out}#percent::after{content:attr(data-percent);position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%);color:#fff}\n        </style>\n    ");
+    Lampa.Template.add('tdStyle', "\n        <style>\n            #error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}#systemTool{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center;margin:0 1.5em 0 1.5em;-webkit-box-pack:justify;-webkit-justify-content:space-between;-moz-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;width:-webkit-calc(100% - 3em);width:calc(100% - 3em)}#systemTool>div{margin-right:10px}#systemTool>div.simple-button.selector.tdReload{width:auto}#tdStatus{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:start;-webkit-justify-content:flex-start;-moz-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}#cardList{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap}.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(25% - 10px);-moz-box-flex:0;-ms-flex:0 0 calc(25% - 10px);flex:0 0 calc(25% - 10px);margin:5px;padding:10px;border:1px solid white;-webkit-border-radius:5px;border-radius:5px;-webkit-box-shadow:0 2px 4px rgba(0,0,0,0.1);box-shadow:0 2px 4px rgba(0,0,0,0.1)}.titleTd{font-weight:bold;margin-bottom:10px;white-space:nowrap;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}.statusTd{-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-bottom:5px;border:1px solid white;padding:5px}.buttons{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center}.simple-button{background-color:transparent;border:1px solid white;outline:0;margin:0 !important}@media(max-width:768px){#tdStatus{-webkit-box-orient:initial;-webkit-box-direction:initial;-webkit-flex-direction:initial;-moz-box-orient:initial;-moz-box-direction:initial;-ms-flex-direction:initial;flex-direction:initial;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(100% - 20px);-moz-box-flex:0;-ms-flex:0 0 calc(100% - 20px);flex:0 0 calc(100% - 20px);width:100%}.titleTd{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}}@media(max-width:480px){.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(100% - 10px);-moz-box-flex:0;-ms-flex:0 0 calc(100% - 10px);flex:0 0 calc(100% - 10px)}}#tdStatus table{width:-webkit-calc(100% - 3em);width:calc(100% - 3em);border-collapse:collapse;margin-top:16px;margin-left:1.5em;margin-right:1.5em;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column}@media(max-width:480px){tr#td_panel{-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:start !important;-webkit-align-items:start !important;-moz-box-align:start !important;-ms-flex-align:start !important;align-items:start !important}}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left}#tdStatus table td.tdAction{text-align:center}#tdStatus table td#tName{-webkit-box-flex:1;-webkit-flex-grow:1;-moz-box-flex:1;-ms-flex-positive:1;flex-grow:1;width:100%;word-break:break-all}#tdStatus table th{background-color:#fff;color:#000}tr#td_panel{background-color:rgba(0,0,0,0.3);-webkit-border-radius:1em;border-radius:1em;padding:1em;line-height:1.4;top:16px;position:relative;margin-top:8px;width:100%;-webkit-align-content:center;-ms-flex-line-pack:center;align-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center;justify-items:start;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex}td#percent{white-space:nowrap}td.tdActionBlock{white-space:nowrap}td.simple-button.selector.tdActionDell{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.focus>svg{fill:#000}.tdActionBlock{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;gap:8px}#tdStatus .row{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center;margin-top:8px;padding:1em;background-color:rgba(0,0,0,0.3);-webkit-border-radius:1em;border-radius:1em;position:relative;top:16px;width:100%;-webkit-box-pack:justify;-webkit-justify-content:space-between;-moz-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}#tdStatus .cell{padding:10px;text-align:left}#tdStatus .cell.tdAction{text-align:center}#tdStatus .cell#tName{-webkit-box-flex:1;-webkit-flex-grow:1;-moz-box-flex:1;-ms-flex-positive:1;flex-grow:1;word-break:break-all}#tdStatus .row:nth-child(even){background-color:rgba(255,255,255,0.1)}#tdStatus .row{height:-webkit-fit-content;height:-moz-fit-content;height:fit-content;max-height:5em}#tdStatus .cell.tdActionBlock{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}#tdStatus .cell.tdActionBlock .tdActionDell{gap:8px}.cell.delete.tdActionDell,.cell.fdelete.tdActionDell{height:3em;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center}#serverInfo{font-size:initial}\n        </style>\n    ");
     function add() {
       Menu.setMenu();
       var button = $('<li class="menu__item selector">\n            <div class="menu__ico">\n                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 48 48" width="48px" height="48px"><path d="M 23.501953 4.125 C 12.485953 4.125 3.5019531 13.11 3.5019531 24.125 C 3.5019531 32.932677 9.2467538 40.435277 17.179688 43.091797 L 17.146484 42.996094 L 7 16 L 15 14 C 17.573 20.519 20.825516 32.721688 27.728516 30.929688 C 35.781516 28.948688 28.615 16.981172 27 12.076172 L 34 11 C 38.025862 19.563024 39.693648 25.901226 43.175781 27.089844 C 43.191423 27.095188 43.235077 27.103922 43.275391 27.113281 C 43.422576 26.137952 43.501953 25.140294 43.501953 24.125 C 43.501953 13.11 34.517953 4.125 23.501953 4.125 z M 34.904297 29.314453 C 34.250297 34.648453 28.811359 37.069578 21.943359 35.517578 L 26.316406 43.763672 L 26.392578 43.914062 C 33.176993 42.923925 38.872645 38.505764 41.660156 32.484375 C 41.603665 32.485465 41.546284 32.486418 41.529297 32.486328 C 38.928405 32.472567 36.607552 31.572967 34.904297 29.314453 z"></path></svg>\n            </div>\n            <div class="menu__text">'.concat(Lampa.Lang.translate("tdPanel"), "</div>\n        </li>"));
