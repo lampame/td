@@ -202,6 +202,7 @@
           });
           var actionCell = row.insertCell();
           actionCell.classList.add("tdActionBlock");
+          actionCell.appendChild(stateCell);
           actionCell.appendChild(deleteCell);
           actionCell.appendChild(fdeleteCell);
         });
@@ -450,6 +451,7 @@
           });
           var actionCell = row.insertCell();
           actionCell.classList.add("tdActionBlock");
+          actionCell.appendChild(stateCell);
           actionCell.appendChild(deleteCell);
           actionCell.appendChild(fdeleteCell);
         });
