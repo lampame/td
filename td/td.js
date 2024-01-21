@@ -75,7 +75,7 @@
             return "🔴 " + text;
           });
         } else {
-          console.log("TD", "Status " + this);
+          console.log("TD", "Status " + this.status);
           $('#qBittorentgetStatus').removeClass('active error wait').addClass('error');
           $("#qBittorentgetStatusBtn").text(function (i, text) {
             return "🔴 " + text;
