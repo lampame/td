@@ -10,13 +10,12 @@
     //const port = Lampa.Storage.get("qBittorentPort");
     var user = Lampa.Storage.get("qBittorentUser");
     var pass = Lampa.Storage.get("qBittorentPass");
-    var qBittTweak = Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "";
     var sd = Lampa.Storage.get("qBittorentSequentialDownload");
     var flpp = Lampa.Storage.get("qBittorentfirstLastPiecePrio");
 
     // Authentication request
     var authXhr = new XMLHttpRequest();
-    authXhr.open("POST", "".concat(qBittTweak).concat(protocol).concat(url, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
+    authXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentKeenetic") === true ? "https://corsproxy.io/?" : "").concat(protocol).concat(url, "/api/v2/auth/login?username=").concat(user, "&password=").concat(pass), true);
     authXhr.onreadystatechange = function () {
       if (authXhr.readyState === 4) {
         if (authXhr.status !== 200) {
@@ -27,7 +26,7 @@
 
         // Add torrent request
         var addXhr = new XMLHttpRequest();
-        addXhr.open("POST", "".concat(qBittTweak).concat(protocol).concat(url, "/api/v2/torrents/add"), true);
+        addXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentKeenetic") === true ? "https://corsproxy.io/?" : "").concat(protocol).concat(url, "/api/v2/torrents/add"), true);
         addXhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         addXhr.onreadystatechange = function () {
           if (addXhr.readyState === 4) {
@@ -84,7 +83,7 @@
         }
       }
     });
-    statusXhr.open("POST", "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "1", "&password=").concat(Lampa.Storage.get("qBittorentPass") || "1"));
+    statusXhr.open("POST", "".concat(Lampa.Storage.get("qBittorentKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/auth/login?username=").concat(Lampa.Storage.get("qBittorentUser") || "1", "&password=").concat(Lampa.Storage.get("qBittorentPass") || "1"));
     statusXhr.send();
   }
   function qPanels$2() {
@@ -145,7 +144,7 @@
       // Info block
 
       var settings = {
-        "url": "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/sync/maindata"),
+        "url": "".concat(Lampa.Storage.get("qBittorentKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/sync/maindata"),
         "method": "GET",
         "timeout": 0
       };
@@ -164,13 +163,7 @@
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
       //const headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
-      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction')
-      /*
-      ,
-      Lampa.Lang.translate('tdPanelSize')
-      Lampa.Lang.translate('tdPanelDownloaded'),
-      Lampa.Lang.translate('tdPanelUploaded')
-       */];
+      var headerCells = [Lampa.Lang.translate('tdPanelName'), Lampa.Lang.translate('tdPanelProgress'), Lampa.Lang.translate('tdPanelStatus'), Lampa.Lang.translate('tdPanelAction')];
       headerCells.forEach(function (headerCell) {
         var th = document.createElement("th");
         th.id = "header";
@@ -223,15 +216,6 @@
           actionCell.classList.add("tdActionBlock");
           actionCell.appendChild(deleteCell);
           actionCell.appendChild(fdeleteCell);
-
-          /*
-          const sizeCell = row.insertCell();
-          sizeCell.textContent = formatBytes(item.size);
-          const downloadedCell = row.insertCell();
-          downloadedCell.textContent = formatBytes(item.downloaded);
-          const uploadedCell = row.insertCell();
-          uploadedCell.textContent = formatBytes(item.uploaded);
-           */
         });
       } else {
         // Если ответ пустой, добавить строку с сообщением
@@ -285,8 +269,7 @@
         return error();
       }
     });
-    xhr.open("GET", "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/torrents/info?limit=10"));
-    //xhr.open("GET", "".concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", ":").concat(parseInt(Lampa.Storage.get("qBittorentPort") || "9999"), "/api/v2/torrents/info?limit=10"));
+    xhr.open("GET", "".concat(Lampa.Storage.get("qBittorentKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/torrents/info?limit=10"));
     xhr.send();
   }
   function getData() {}
