@@ -774,8 +774,7 @@
   };
 
   function Panels() {
-    var last,
-      scroll;
+    var last;
     var html = document.createElement("div");
     html.id = "tdPanel";
     var footer = document.createElement("div");
@@ -796,18 +795,8 @@
       return this.render();
     };
     this.build = function () {
-      var _this = this;
-      scroll = new Lampa.Scroll({
-        mask: true,
-        over: true
-      });
-      scroll.onEnd = function () {
-        _this.next();
-      };
       var tdPanel = html.appendChild(Lampa.Template.js("td_panel_page"));
       tdPanel.innerHTML = "<div id='tdStatus'></div>";
-      html.find('.td_panel').append(scroll.render(true));
-      scroll.minus(html.find('#tdPanel'));
       var tdClient = Lampa.Storage.get('tdClient');
       var clients = {
         'qBittorent': qBittorent,
@@ -825,9 +814,6 @@
       this.activity.loader(false);
     };
     this.display = function () {
-      scroll.clear();
-      scroll.reset();
-      Lampa.Layer.visible(scroll.render(true));
       this.activity.toggle();
     };
     this.background = function () {
@@ -836,7 +822,7 @@
     this.start = function () {
       if (Lampa.Activity.active() && Lampa.Activity.active().activity !== this.activity) return;
       this.background();
-      Lampa.Controller.add("content", {
+      Lampa.Controller.add("tdPanel", {
         link: this,
         invisible: true,
         toggle: function toggle() {
@@ -859,15 +845,12 @@
           Lampa.Activity.backward();
         }
       });
-      Lampa.Controller.toggle("content");
+      Lampa.Controller.toggle("tdPanel");
     };
-    this.pause = function () {};
-    this.stop = function () {};
     this.render = function () {
       return html;
     };
     this.destroy = function () {
-      if (scroll) scroll.destroy();
       html.remove();
     };
   }
@@ -1594,10 +1577,10 @@
         zh: "下载" // Chinese translation
       },
       tdPanelReload: {
-        ru: "Перезагрузить",
-        en: "Reload",
-        uk: "Перезавантажити",
-        zh: "重新加载" // Chinese translation
+        ru: "Обновить",
+        en: "Update",
+        uk: "Оновити",
+        zh: "更新内容" // Chinese translation
       },
       tdPanelMClient: {
         ru: "Включено 2 или больше торрент клиента, я пока не такой крутой! Выключи кого-то",
@@ -1993,10 +1976,10 @@
       },
       /* Notification */
       tdPanelReloaded: {
-        ru: "Перезагружено",
-        en: "Reloaded",
-        uk: "Перезавантажено",
-        zh: "重装上阵" // Chinese translation
+        ru: "Обновлено",
+        en: "Updated",
+        uk: "Оновлено",
+        zh: "已更新" // Chinese translation
       },
       tdMagnetError: {
         ru: "Ошибка с Magnet ссылкой",
