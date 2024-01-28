@@ -65,23 +65,20 @@
         if (this.status === 200) {
           console.log("TD", "Status " + this.status);
           $('#qBittorentgetStatus').removeClass('active error wait').addClass('active');
-          $("#qBittorentgetStatusBtn").text(function (i, text) {
-            return "🟢 " + text;
-          });
+          $('#qBittorentgetStatusBtn').removeClass('active error wait').addClass('active');
+          //$("#qBittorentgetStatusBtn").text(function (i, text) { return "🟢 " + text; });
         } else if (this.status === undefined) {
           console.log("TD", "Status - undefined");
           $('#qBittorentgetStatus').removeClass('active error wait').addClass('error');
-          $("#qBittorentgetStatusBtn").text(function (i, text) {
-            return "🔴 " + text;
-          });
+          $('#qBittorentgetStatusBtn').removeClass('active error wait').addClass('error');
+          //$("#qBittorentgetStatusBtn").text(function (i, text) { return "🔴 " + text; });
         } else {
           console.log("TD", "Status " + this.response);
           console.log("TD", "Status " + this.status);
           console.log("TD", this);
           $('#qBittorentgetStatus').removeClass('active error wait').addClass('error');
-          $("#qBittorentgetStatusBtn").text(function (i, text) {
-            return "🔴 " + text;
-          });
+          $('#qBittorentgetStatusBtn').removeClass('active error wait').addClass('error');
+          //$("#qBittorentgetStatusBtn").text(function (i, text) { return "🔴 " + text; });
         }
       }
     });
@@ -263,12 +260,10 @@
     xhr.open("GET", "".concat(Lampa.Storage.get("qBittorentKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("qBittorentProtocol") || "http://").concat(Lampa.Storage.get("qBittorentUrl") || "127.0.0.1", "/api/v2/torrents/info?limit=10"));
     xhr.send();
   }
-  function getData() {}
   var qBittorent = {
     qBittorrentClient: qBittorrentClient,
     getStatus: getStatus$2,
-    qPanels: qPanels$2,
-    getData: getData
+    qPanels: qPanels$2
   };
 
   function transmissionClient(selectedTorrent) {
@@ -285,9 +280,9 @@
         if (this.readyState === 4 && this.status === 200) {
           Lampa.Noty.show(Lampa.Lang.translate('tdAdded'));
           console.log("TD", this.responseText);
-        } else if (addXhr.status !== 200) {
-          console.log("TD", addXhr);
-          Lampa.Noty.show(Lampa.Lang.translate('tdError') + addXhr.status);
+        } else if (xhr.status !== 200) {
+          console.log("TD", xhr);
+          Lampa.Noty.show(Lampa.Lang.translate('tdError') + xhr.status);
         }
       });
       xhr.open("POST", "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"));
@@ -313,19 +308,13 @@
         if (this.status === 200 || this.status === 409) {
           Lampa.Storage.set("transmissionKey", xhr.getResponseHeader("X-Transmission-Session-Id"));
           $("#transmissionStatus").removeClass("active error wait").addClass("active");
-          $("#transmissionStatusBtn").text(function (i, text) {
-            return "🟢 " + text;
-          });
+          $("#transmissionStatusBtn").removeClass("active error wait").addClass("active");
         } else if (this.status === undefined) {
           $("#transmissionStatus").removeClass("active error wait").addClass("error");
-          $("#transmissionStatusBtn").text(function (i, text) {
-            return "🔴 " + text;
-          });
+          $("#transmissionStatusBtn").removeClass("active error wait").addClass("error");
         } else {
           $("#transmissionStatus").removeClass("active error wait").addClass("error");
-          $("#transmissionStatusBtn").text(function (i, text) {
-            return "🔴 " + text;
-          });
+          $("#transmissionStatusBtn").removeClass("active error wait").addClass("error");
         }
       }
     });
@@ -667,7 +656,7 @@
       if (this.readyState === 4) {
         console.log("TD", this.responseText);
         return tabels(JSON.parse(this.responseText));
-      } else if (this.readyState === 4 && this.status != 200) {
+      } else if (this.readyState === 4 && this.status !== 200) {
         return error();
       }
     });
@@ -688,21 +677,18 @@
         if (this.status === 200) {
           console.log("TD", "Status " + this.status);
           $('#aria2Status').removeClass('active error wait').addClass('active');
-          $("#aria2StatusBtn").text(function (i, text) {
-            return "🟢 " + text;
-          });
+          $('#aria2StatusBtn').removeClass('active error wait').addClass('active');
+          //$("#aria2StatusBtn").text(function (i, text) { return "🟢 " + text; });
         } else if (this.status === undefined) {
           console.log("TD", "Status - undefined");
           $('#aria2Status').removeClass('active error wait').addClass('error');
-          $("#aria2StatusBtn").text(function (i, text) {
-            return "🔴 " + text;
-          });
+          $('#aria2StatusBtn').removeClass('active error wait').addClass('error');
+          //$("#aria2StatusBtn").text(function (i, text) { return "🔴 " + text; });
         } else {
           console.log("TD", "Status " + this.status);
           $('#aria2Status').removeClass('active error wait').addClass('error');
-          $("#aria2StatusBtn").text(function (i, text) {
-            return "🔴 " + text;
-          });
+          $('#aria2StatusBtn').removeClass('active error wait').addClass('error');
+          //$("#aria2StatusBtn").text(function (i, text) { return "🔴 " + text; });
         }
       }
     });
@@ -745,7 +731,7 @@
         if (Lampa.Storage.field("tdClient") === 'qBittorent') {
           typeof Lampa.Storage.get("qBittorentUrl") !== 'undefined' && typeof Lampa.Storage.get("qBittorentUser") !== 'undefined' && typeof Lampa.Storage.get("qBittorentPass") !== 'undefined' && qBittorent.getStatus();
           e.menu.push({
-            title: '<p id="qBittorentgetStatusBtn">qBittorrent</p>',
+            title: '<div id="qBittorentgetStatusBtn" class="btnTD wait"><svg class="download" width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n' + '<path class="path" d="M8.5 7L8.5 14M8.5 14L11 11M8.5 14L6 11" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n' + '<path class="path" d="M15.5 7L15.5 14M15.5 14L18 11M15.5 14L13 11" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n' + '<path class="path" d="M18 17H12H6" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>\n' + '<path class="path" d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>\n' + '</svg>qBittorrent</div>',
             send2app: send2qBittorrent,
             onSelect: onSelectApp
           });
@@ -753,7 +739,7 @@
         if (Lampa.Storage.field("tdClient") === 'transmission') {
           typeof Lampa.Storage.get("transmissionUrl") !== 'undefined' && typeof Lampa.Storage.get("transmissionUser") !== 'undefined' && typeof Lampa.Storage.get("transmissionPass") !== 'undefined' && transmission.getStatus();
           e.menu.push({
-            title: '<p id="transmissionStatusBtn">transmission</p>',
+            title: '<div id="transmissionStatusBtn" class="btnTD wait"><svg class="download" width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n' + '<path class="path" d="M8.5 7L8.5 14M8.5 14L11 11M8.5 14L6 11" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n' + '<path class="path" d="M15.5 7L15.5 14M15.5 14L18 11M15.5 14L13 11" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n' + '<path class="path" d="M18 17H12H6" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>\n' + '<path class="path" d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>\n' + '</svg>Transmission</div>',
             send2app: send2transmission,
             onSelect: onSelectApp
           });
@@ -761,7 +747,7 @@
         if (Lampa.Storage.field("tdClient") === 'aria2') {
           typeof Lampa.Storage.get("aria2Url") !== 'undefined' && pAria2.getStatus();
           e.menu.push({
-            title: '<p id="aria2StatusBtn">aria2</p>',
+            title: '<div id="aria2StatusBtn" class="btnTD wait"><svg class="download" width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n' + '<path class="path" d="M8.5 7L8.5 14M8.5 14L11 11M8.5 14L6 11" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n' + '<path class="path" d="M15.5 7L15.5 14M15.5 14L18 11M15.5 14L13 11" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n' + '<path class="path" d="M18 17H12H6" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>\n' + '<path class="path" d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>\n' + '</svg>Aria2</div>',
             send2app: send2aria2,
             onSelect: onSelectApp
           });
@@ -1063,7 +1049,7 @@
         description: ""
       },
       onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("qBittorentProtocol", "https://");else Lampa.Storage.set("qBittorentProtocol", "http://");
+        if (value === "true") Lampa.Storage.set("qBittorentProtocol", "https://");else Lampa.Storage.set("qBittorentProtocol", "http://");
         Lampa.Settings.update();
       }
     });
@@ -1160,7 +1146,7 @@
         description: ""
       },
       onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("qBittorentSequentialDownload", true);else Lampa.Storage.set("qBittorentSequentialDownload", false);
+        if (value === "true") Lampa.Storage.set("qBittorentSequentialDownload", true);else Lampa.Storage.set("qBittorentSequentialDownload", false);
         Lampa.Settings.update();
       }
     });
@@ -1177,7 +1163,7 @@
         description: ""
       },
       onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("qBittorentfirstLastPiecePrio", true);else Lampa.Storage.set("qBittorentfirstLastPiecePrio", false);
+        if (value === "true") Lampa.Storage.set("qBittorentfirstLastPiecePrio", true);else Lampa.Storage.set("qBittorentfirstLastPiecePrio", false);
         Lampa.Settings.update();
       }
     });
@@ -1287,7 +1273,7 @@
         description: ""
       },
       onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("transmissionProtocol", "https://");else Lampa.Storage.set("transmissionProtocol", "http://");
+        if (value === "true") Lampa.Storage.set("transmissionProtocol", "https://");else Lampa.Storage.set("transmissionProtocol", "http://");
         Lampa.Settings.update();
       }
     });
@@ -1385,7 +1371,7 @@
         description: Lampa.Lang.translate('transmissionAutostopDescription')
       },
       onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("transmissionAutostart", true);else Lampa.Storage.set("transmissionAutostart", false);
+        if (value === "true") Lampa.Storage.set("transmissionAutostart", true);else Lampa.Storage.set("transmissionAutostart", false);
         Lampa.Settings.update();
       }
     });
@@ -1402,7 +1388,7 @@
         description: Lampa.Lang.translate('transmissionKeeneticDescription')
       },
       onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("transmissionKeenetic", true);else Lampa.Storage.set("transmissionKeenetic", false);
+        if (value === "true") Lampa.Storage.set("transmissionKeenetic", true);else Lampa.Storage.set("transmissionKeenetic", false);
         Lampa.Settings.update();
       }
     });
@@ -1478,7 +1464,7 @@
         description: ""
       },
       onChange: function onChange(value) {
-        if (value == "true") Lampa.Storage.set("aria2Protocol", "https://");else Lampa.Storage.set("aria2Protocol", "http://");
+        if (value === "true") Lampa.Storage.set("aria2Protocol", "https://");else Lampa.Storage.set("aria2Protocol", "http://");
         Lampa.Settings.update();
       }
     });
@@ -2066,7 +2052,8 @@
     };
     Lampa.Manifest.plugins = manifest;
     Lampa.Template.add("td_panel_page", "<div class='td_panel'></div>");
-    Lampa.Template.add('tdStyle', "\n        <style>\n            #error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}#systemTool{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center;margin:0 1.5em 0 1.5em;-webkit-box-pack:justify;-webkit-justify-content:space-between;-moz-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;width:-webkit-calc(100% - 3em);width:calc(100% - 3em)}#systemTool>div{margin-right:10px}#systemTool>div.simple-button.selector.tdReload{width:auto}#tdStatus{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:start;-webkit-justify-content:flex-start;-moz-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}#cardList{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap}.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(25% - 10px);-moz-box-flex:0;-ms-flex:0 0 calc(25% - 10px);flex:0 0 calc(25% - 10px);margin:5px;padding:10px;border:1px solid white;-webkit-border-radius:5px;border-radius:5px;-webkit-box-shadow:0 2px 4px rgba(0,0,0,0.1);box-shadow:0 2px 4px rgba(0,0,0,0.1)}.titleTd{font-weight:bold;margin-bottom:10px;white-space:nowrap;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}.statusTd{-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-bottom:5px;border:1px solid white;padding:5px}.buttons{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center}.tdAction,.tdActionDell{background-color:transparent;border:1px solid white;outline:0;margin:0 !important}@media(max-width:768px){#tdStatus{-webkit-box-orient:initial;-webkit-box-direction:initial;-webkit-flex-direction:initial;-moz-box-orient:initial;-moz-box-direction:initial;-ms-flex-direction:initial;flex-direction:initial;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(100% - 20px);-moz-box-flex:0;-ms-flex:0 0 calc(100% - 20px);flex:0 0 calc(100% - 20px);width:100%}.titleTd{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}}@media(max-width:480px){.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(100% - 10px);-moz-box-flex:0;-ms-flex:0 0 calc(100% - 10px);flex:0 0 calc(100% - 10px)}}#tdStatus table{width:-webkit-calc(100% - 3em);width:calc(100% - 3em);border-collapse:collapse;margin-top:16px;margin-left:1.5em;margin-right:1.5em;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column}@media(max-width:480px){tr#td_panel{-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:start !important;-webkit-align-items:start !important;-moz-box-align:start !important;-ms-flex-align:start !important;align-items:start !important}}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left}#tdStatus table td.tdAction{text-align:center}#tdStatus table td#tName{-webkit-box-flex:1;-webkit-flex-grow:1;-moz-box-flex:1;-ms-flex-positive:1;flex-grow:1;width:100%;word-break:break-all}#tdStatus table th{background-color:#fff;color:#000}tr#td_panel{background-color:rgba(0,0,0,0.3);-webkit-border-radius:1em;border-radius:1em;padding:1em;line-height:1.4;top:16px;position:relative;margin-top:8px;width:100%;-webkit-align-content:center;-ms-flex-line-pack:center;align-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center;justify-items:start;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex}td#percent{white-space:nowrap}td.tdActionBlock{white-space:nowrap}td.simple-button.selector.tdActionDell{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.focus>svg{fill:#000}.tdActionBlock{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;gap:8px}#serverInfo{font-size:initial}\n        </style>\n    ");
+    Lampa.Template.add("td_panel_scroll", "<div class='td_panel'></div>");
+    Lampa.Template.add('tdStyle', "\n        <style>\n            #error h2{width:90%;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.more-clients{text-align:center}#systemTool{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center;margin:0 1.5em 0 1.5em;-webkit-box-pack:justify;-webkit-justify-content:space-between;-moz-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;width:-webkit-calc(100% - 3em);width:calc(100% - 3em)}#systemTool>div{margin-right:10px}#systemTool>div.simple-button.selector.tdReload{width:auto}#tdStatus{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:start;-webkit-justify-content:flex-start;-moz-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}#cardList{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap}.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(25% - 10px);-moz-box-flex:0;-ms-flex:0 0 calc(25% - 10px);flex:0 0 calc(25% - 10px);margin:5px;padding:10px;border:1px solid white;-webkit-border-radius:5px;border-radius:5px;-webkit-box-shadow:0 2px 4px rgba(0,0,0,0.1);box-shadow:0 2px 4px rgba(0,0,0,0.1)}.titleTd{font-weight:bold;margin-bottom:10px;white-space:nowrap;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}.statusTd{-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-bottom:5px;border:1px solid white;padding:5px}.buttons{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center}.tdAction,.tdActionDell{background-color:transparent;border:1px solid white;outline:0;margin:0 !important}@media(max-width:768px){#tdStatus{-webkit-box-orient:initial;-webkit-box-direction:initial;-webkit-flex-direction:initial;-moz-box-orient:initial;-moz-box-direction:initial;-ms-flex-direction:initial;flex-direction:initial;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(100% - 20px);-moz-box-flex:0;-ms-flex:0 0 calc(100% - 20px);flex:0 0 calc(100% - 20px);width:100%}.titleTd{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis}}#tdStatus table{width:-webkit-calc(100% - 3em);width:calc(100% - 3em);border-collapse:collapse;margin-top:16px;margin-left:1.5em;margin-right:1.5em;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column}#tdStatus table th,#tdStatus table td{padding:10px;text-align:left}#tdStatus table td.tdAction{text-align:center}#tdStatus table td#tName{-webkit-box-flex:1;-webkit-flex-grow:1;-moz-box-flex:1;-ms-flex-positive:1;flex-grow:1;width:100%;word-break:break-all;font-size:1.5vw}#tdStatus table th{background-color:#fff;color:#000}tr#td_panel{background-color:rgba(0,0,0,0.3);-webkit-border-radius:1em;border-radius:1em;padding:1em;line-height:1.4;top:16px;position:relative;margin-top:8px;width:100%;-webkit-align-content:center;-ms-flex-line-pack:center;align-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center;justify-items:start;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex}td#percent{white-space:nowrap}td.tdActionBlock{white-space:nowrap}td.simple-button.selector.tdActionDell{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-moz-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}.simple-button.focus>svg{fill:#000}.tdActionBlock{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;gap:8px}#serverInfo{font-size:initial}.btnTD{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-moz-box-align:center;-ms-flex-align:center;align-items:center}svg.download{width:36px;height:36px;margin-right:5%}.error .download .path{stroke:red}.active .download .path{stroke:green}.wait .download .path{stroke:gray}@media(max-width:720px){.cardTd{-webkit-box-flex:0;-webkit-flex:0 0 -webkit-calc(100% - 10px);-moz-box-flex:0;-ms-flex:0 0 calc(100% - 10px);flex:0 0 calc(100% - 10px)}tr#td_panel{-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-moz-box-orient:vertical;-moz-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:start !important;-webkit-align-items:start !important;-moz-box-align:start !important;-ms-flex-align:start !important;align-items:start !important}#tdStatus table td#tName{font-size:3vw}}\n        </style>\n    ");
     function add() {
       Menu.setMenu();
       var button = $('<li class="menu__item selector">\n            <div class="menu__ico">\n                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 48 48" width="48px" height="48px"><path d="M 23.501953 4.125 C 12.485953 4.125 3.5019531 13.11 3.5019531 24.125 C 3.5019531 32.932677 9.2467538 40.435277 17.179688 43.091797 L 17.146484 42.996094 L 7 16 L 15 14 C 17.573 20.519 20.825516 32.721688 27.728516 30.929688 C 35.781516 28.948688 28.615 16.981172 27 12.076172 L 34 11 C 38.025862 19.563024 39.693648 25.901226 43.175781 27.089844 C 43.191423 27.095188 43.235077 27.103922 43.275391 27.113281 C 43.422576 26.137952 43.501953 25.140294 43.501953 24.125 C 43.501953 13.11 34.517953 4.125 23.501953 4.125 z M 34.904297 29.314453 C 34.250297 34.648453 28.811359 37.069578 21.943359 35.517578 L 26.316406 43.763672 L 26.392578 43.914062 C 33.176993 42.923925 38.872645 38.505764 41.660156 32.484375 C 41.603665 32.485465 41.546284 32.486418 41.529297 32.486328 C 38.928405 32.472567 36.607552 31.572967 34.904297 29.314453 z"></path></svg>\n            </div>\n            <div class="menu__text">'.concat(Lampa.Lang.translate("tdPanel"), "</div>\n        </li>"));
@@ -2084,7 +2071,7 @@
     Lampa.Component.add(manifest.component, Panels);
     if (window.appready) add();else {
       Lampa.Listener.follow("app", function (e) {
-        if (e.type == "ready") add();
+        if (e.type === "ready") add();
       });
     }
   }
