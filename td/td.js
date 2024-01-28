@@ -139,7 +139,7 @@
       var parentElement = document.getElementById("tdStatus");
       // Создать таблицу
       var table = document.createElement("table");
-      table.id = "tdStatus table";
+      table.id = "tdStatus_table";
       // Info block
 
       var settings = {
@@ -373,7 +373,7 @@
 
       // Создать таблицу
       var table = document.createElement("table");
-      table.id = "tdStatus table";
+      table.id = "tdStatus_table";
       var settings = {
         "url": "".concat(Lampa.Storage.get("transmissionKeenetic") === true ? "https://corsproxy.io/?" : "").concat(Lampa.Storage.get("transmissionProtocol") || "http://").concat(Lampa.Storage.get("transmissionUrl") || "127.0.0.1:9001").concat(Lampa.Storage.get("transmissionPath") || "/transmission/rpc"),
         "method": "POST",
@@ -555,7 +555,7 @@
       var parentElement = document.getElementById("tdStatus");
       // Создать таблицу
       var table = document.createElement("table");
-      table.id = "tdStatus table";
+      table.id = "tdStatus_table";
       // Создать заголовок таблицы
       var headerRow = table.insertRow();
       var headerCells = ["Название", "Состояние", "Прогресс", "Размер", "Скачано", "Отдано"];
