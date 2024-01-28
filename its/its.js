@@ -15,7 +15,7 @@
           }, {
             title: "<div class\"infuseSaver\"><svg class=\"infuseSaverLogo\" xmlns=\"http://www.w3.org/2000/svg\"\n                aria-label=\"VLC\" role=\"img\"\n                viewBox=\"0 0 512 512\">\n                <rect\n                width=\"512\" height=\"512\"\n                rx=\"15%\"\n                fill=\"#ffffff\"/>\n                <g fill=\"#f7901e\">\n                <path d=\"M437 400l-36-94c-3-10-13-16-23-16H134c-10 0-20 6-23 16l-36 94c-2 3-2 7-2 11 0 16 13 29 29 29h308a29 29 0 0 0 27-40z\"/>\n                <path d=\"M299 109l-15-51c-3-11-13-18-24-18h-8c-11 0-21 7-24 18l-15 51a307 307 0 0 0 86 0zM256 183c-24 0-46-2-64-6l-19 65c20 8 49 13 83 13s63-5 83-13l-20-65c-17 4-39 6-63 6z\"/>\n                </g>\n                <g fill=\"#f2f2f2\">\n                <path d=\"M319 177l-20-68a307 307 0 0 1-86 0l-21 68c18 4 40 6 64 6s46-2 63-6z\"/>\n                <path d=\"M173 242l-18 62c19 14 55 23 101 23s82-9 101-23l-18-62c-20 8-49 13-83 13s-63-5-83-13z\"/>\n                </g>\n                </svg>Save to VLC</div>",
             onSelect: function onSelect(a) {
-              window.location.href = "vlc-x-callback://x-callback-url/download?url=".concat(encodeURIComponent(data.element.url));
+              window.location.href = "vlc://".concat(encodeURIComponent(data.element.url));
             }
           });
         }
