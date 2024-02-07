@@ -10,17 +10,13 @@
       setTimeout(function () {
         var myLink;
         var myAdder = '';
-        if (parserBase[i] === 'spawn.pp.ua:59117' || parserBase[i] === 'https://gwynnbleiidd-jackett.elfhosted.com') {
-          myAdder = '2&Query=Rebel%20Moon%20-%20Part%20One%3A%20A%20Child%20of%20Fire&title=%D0%9C%D1%8F%D1%82%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F%20%D0%9B%D1%83%D0%BD%D0%B0%2C%20%D1%87%D0%B0%D1%81%D1%82%D1%8C%201%3A%20%D0%94%D0%B8%D1%82%D1%8F%20%D0%BE%D0%B3%D0%BD%D1%8F&title_original=Rebel%20Moon%20-%20Part%20One%3A%20A%20Child%20of%20Fire&year=2023&is_serial=1&genres=%D1%84%D0%B0%D0%BD%D1%82%D0%B0%D1%81%D1%82%D0%B8%D0%BA%D0%B0%2C%D0%B1%D0%BE%D0%B5%D0%B2%D0%B8%D0%BA%2C%D0%BF%D1%80%D0%B8%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%BD%D0%B8%D1%8F&Category[]=2000';
+        if (parserBase[i] === 'spawn.pp.ua:59117') {
+          myAdder = '2';
         }
         var k = i + 2;
         var mySelector = 'body > div.selectbox > div.selectbox__content.layer--height > div.selectbox__body.layer--wheight > div > div > div > div:nth-child(' + k + ') > div';
         if ($('body > div.selectbox > div.selectbox__content.layer--height > div.selectbox__body.layer--wheight > div > div > div > div:nth-child(1) > div').text() !== 'Не выбран') return;
-        if (parserBase[i] === 'https://gwynnbleiidd-jackett.elfhosted.com') {
-          myLink = 'https://gwynnbleiidd-jackett.elfhosted.com' + '/api/v2.0/indexers/status:healthy/results?apikey=ij9g5oxuhft7gs3z27y5eaf4bqvygh0n' + myAdder;
-        } else {
-          myLink = proto + parserBase[i] + '/api/v2.0/indexers/status:healthy/results?apikey=' + myAdder;
-        }
+        myLink = proto + parserBase[i] + '/api/v2.0/indexers/status:healthy/results?apikey=' + myAdder;
         var xhr = new XMLHttpRequest();
         xhr.timeout = 2000;
         xhr.open("GET", myLink, true);
@@ -60,66 +56,35 @@
       var parserSettings = {
         no_parser: {
           url: '',
-          key: '',
-          interview: 'all',
-          parse_in_search: false,
-          parse_lang: 'lg'
-        },
-        lme_jackett: {
-          url: 'https://gwynnbleiidd-jackett.elfhosted.com',
-          key: 'ij9g5oxuhft7gs3z27y5eaf4bqvygh0n',
-          interview: 'all',
-          parse_in_search: false,
-          parse_lang: 'lg'
+          key: ''
         },
         jac_lampa32_ru: {
           url: 'jac.lampa32.ru',
-          key: '',
-          interview: 'all',
-          parse_in_search: true,
-          parse_lang: 'lg'
+          key: ''
         },
         spawn_jacred: {
           url: 'spawn.pp.ua:59118',
-          key: '',
-          interview: 'all',
-          parse_in_search: true,
-          parse_lang: 'lg'
+          key: ''
         },
         jacred_xyz: {
           url: 'jacred.xyz',
-          key: '',
-          interview: 'all',
-          parse_in_search: true,
-          parse_lang: 'lg'
+          key: ''
         },
         spawn_jackett: {
           url: 'spawn.pp.ua:59117',
-          key: '2',
-          interview: 'healthy',
-          parse_in_search: true,
-          parse_lang: 'df'
+          key: '2'
         },
         jacred_ru: {
           url: 'jacred.ru',
-          key: '',
-          interview: 'all',
-          parse_in_search: true,
-          parse_lang: 'lg'
+          key: ''
         },
         unknown: {
           url: '188.119.113.252:9117',
-          key: '1',
-          interview: 'all',
-          parse_in_search: true,
-          parse_lang: 'lg'
+          key: '1'
         },
         jacred_viewbox_dev: {
           url: 'jacred.viewbox.dev',
-          key: 'viewbox',
-          interview: 'all',
-          parse_in_search: true,
-          parse_lang: 'df_lg'
+          key: 'viewbox'
         }
       };
       var settings = parserSettings[jackettUrlTwo] || parserSettings.no_parser;
@@ -136,7 +101,6 @@
         type: 'select',
         values: {
           no_parser: 'Не выбран',
-          lme_jackett: 'LME Jackett',
           jac_lampa32_ru: 'Lampa32',
           jacred_xyz: 'Jacred.xyz',
           jacred_ru: 'Jacred.ru',
